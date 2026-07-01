@@ -1,0 +1,5 @@
+versions:
+  - id: "latest"
+    label: "Latest"
+    stable: true
+    nav: nav/nav.yml

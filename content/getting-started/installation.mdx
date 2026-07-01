@@ -1,0 +1,82 @@
+---
+title: Installation
+description: System requirements and installation options for CamelMind.
+---
+
+# Installation
+
+## Requirements
+
+| Requirement | Minimum version |
+|---|---|
+| Node.js | 20 or higher |
+| npm / pnpm / yarn | any recent version |
+
+<Callout type="tip">
+Use [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to manage Node versions. Run `node --version` to check your current version.
+</Callout>
+
+## Scaffold a new site
+
+The fastest way to create a CamelMind site is with the `init` CLI:
+
+```bash
+npx camelmind@latest init my-docs
+```
+
+The CLI will:
+1. Copy the starter template into `./my-docs/`
+2. Run `npm install` automatically
+3. Print next steps
+
+Then start the development server:
+
+```bash
+cd my-docs
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Manual installation
+
+If you prefer to set up from scratch or integrate CamelMind into an existing Next.js monorepo, install the package directly:
+
+```bash
+npm install camelmind
+```
+
+<Callout type="warning">
+Manual installation is advanced. The `init` CLI is recommended for new projects — it scaffolds all required files, config, and dependencies in the correct versions.
+</Callout>
+
+## Updating CamelMind
+
+CamelMind publishes the CLI and template together as the `camelmind` npm package. To update:
+
+```bash
+npm install camelmind@latest
+```
+
+Check the [GitHub releases](https://github.com/conniehnguyen/camelmind/releases) for a changelog before upgrading.
+
+## Environment variables
+
+Copy `.env.example` to `.env.local` and set values as needed:
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable | Default | Description |
+|---|---|---|
+| `CAMELMIND_URL` | `http://localhost:3000` | Public-facing URL of your site |
+| `CAMELMIND_AUTH_ENABLED` | `false` | Enable authentication |
+| `CAMELMIND_AUTH_REQUIRE_LOGIN` | `false` | Require login for all pages |
+| `SESSION_SECRET` | — | Random secret for session encryption (required when auth is on) |
+
+<Callout type="note">
+Auth is disabled by default — your site is fully public until you enable it.
+</Callout>
+
+See [Environment Variables](/reference/env-vars) for the full reference.

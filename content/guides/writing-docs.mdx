@@ -1,0 +1,72 @@
+---
+title: Writing Docs
+description: How to write and organize documentation in CamelMind.
+---
+
+# Writing Docs
+
+CamelMind uses MDX — Markdown with support for React components. Any `.mdx` file in `content/` can be referenced from `nav/nav.yml`.
+
+## Frontmatter
+
+Every doc file starts with YAML frontmatter:
+
+```mdx
+---
+title: My Page
+description: A short description shown in search results.
+---
+```
+
+## Headings and structure
+
+Use standard Markdown headings. The right-side table of contents auto-generates from `##` and `###` headings.
+
+## MDX components
+
+### Callout
+
+```mdx
+<Callout type="tip">This is a tip.</Callout>
+<Callout type="warning">Watch out!</Callout>
+<Callout type="note">Just a note.</Callout>
+<Callout type="danger">Critical warning.</Callout>
+```
+
+### Steps
+
+```mdx
+<Steps>
+<Step n={1} title="First step">
+  Step content goes here.
+</Step>
+<Step n={2} title="Second step">
+  More content.
+</Step>
+</Steps>
+```
+
+### Code blocks
+
+Use standard fenced code blocks with a language identifier:
+
+````mdx
+```bash
+npm run dev
+```
+````
+
+## Registering pages in nav.yml
+
+Every page must be listed in `nav/nav.yml` to appear in navigation:
+
+```yaml
+nav:
+  - label: "My Section"
+    dropdown: true
+    items:
+      - label: "My Page"
+        slug: /my-section/my-page      # URL served at this path
+        file: content/my-section/my-page.mdx  # source file
+        roles: []                      # [] = public; ["admin"] = admin-only
+```

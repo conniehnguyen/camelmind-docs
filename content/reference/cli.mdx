@@ -1,0 +1,69 @@
+---
+title: CLI Commands
+description: Reference for all CamelMind CLI commands.
+---
+
+# CLI Commands
+
+The `camelmind` CLI is installed with the `camelmind` npm package. The only command available in v0.2.2 is `init`.
+
+## camelmind init
+
+Scaffolds a new CamelMind documentation site.
+
+```bash
+npx camelmind@latest init [directory]
+```
+
+| Argument | Required | Description |
+|---|---|---|
+| `directory` | No | Directory name to create. Prompts if omitted. |
+
+### What it does
+
+1. Creates a new directory (or uses the current directory if `.` is passed)
+2. Copies the starter template into it — `content/`, `nav/`, `app/`, `components/`, `lib/`, config files
+3. Renames `_package.json` → `package.json` and `_gitignore` → `.gitignore`
+4. Runs `npm install`
+5. Prints next steps
+
+### Examples
+
+```bash
+# Scaffold into ./my-docs/
+npx camelmind@latest init my-docs
+
+# Scaffold into the current directory
+npx camelmind@latest init .
+```
+
+<Callout type="tip">
+Use `npx camelmind@latest` (with `@latest`) to always scaffold with the most recent template. Omitting `@latest` may use a cached older version.
+</Callout>
+
+## Project scripts
+
+After scaffolding, the following scripts are available in `package.json`:
+
+| Script | Command | Description |
+|---|---|---|
+| `dev` | `next dev` | Start the development server at `http://localhost:3000` |
+| `build` | `next build` | Build for production |
+| `start` | `next start` | Start the production server (run after `build`) |
+| `lint` | `eslint` | Run the linter |
+
+### Build scripts
+
+Additional build scripts in `scripts/`:
+
+| Script | Description |
+|---|---|
+| `scripts/build-offline.sh [version]` | Build a static offline ZIP package |
+| `scripts/build-search-index.ts` | Pre-generate `public/search-index.json` for offline search |
+| `scripts/generate-pdfs.ts` | Generate PDF files for pages with `download_pdf` set in frontmatter |
+
+Run the TypeScript scripts with:
+
+```bash
+npx tsx scripts/build-search-index.ts
+```

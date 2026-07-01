@@ -1,0 +1,133 @@
+---
+title: Configuration Reference
+description: Complete reference for camelmind.config.ts — all options and their defaults.
+---
+
+# Configuration Reference
+
+All site-level configuration lives in `camelmind.config.ts` at the project root. The file exports a single `CamelMindConfig` object.
+
+## Full example
+
+```typescript
+import type { CamelMindConfig } from "./lib/config-types"
+
+const config: CamelMindConfig = {
+  title: "My Docs",
+  tagline: "Documentation made simple.",
+  url: process.env.CAMELMIND_URL ?? "http://localhost:3000",
+
+  contentDir: "content",
+  navFile: "nav/nav.yml",
+  versionsFile: "versions.yml",
+
+  auth: {
+    enabled: false,
+    requireLogin: false,
+    provider: "dev-mock",
+    oidc: {
+      issuer: "",
+      clientId: "",
+      clientSecret: "",
+      rolesClaim: "realm_access.roles",
+      roleMapping: {},
+    },
+    publicPaths: ["/", "/home", "/login", "/api/auth"],
+  },
+
+  links: {
+    github: "https://github.com/you/your-repo",
+  },
+
+  site: {
+    showLastUpdated: false,
+    showFeedbackWidget: false,
+  },
+
+  apiReference: {
+    enabled: false,
+    navLabel: "API Reference",
+    specs: {},
+    languages: ["curl", "javascript", "python"],
+    roles: [],
+  },
+
+  llms: {
+    enabled: false,
+    directive: "",
+  },
+}
+
+export default config
+```
+
+## Top-level fields
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `title` | `string` | Yes | Site title shown in the top nav and browser tab |
+| `tagline` | `string` | Yes | Subtitle shown on the homepage |
+| `url` | `string` | Yes | Public URL of the site — used in auth callbacks and meta tags |
+| `contentDir` | `string` | Yes | Root folder for MDX content files (default: `"content"`) |
+| `navFile` | `string` | Yes | Path to the default nav YAML file (default: `"nav/nav.yml"`) |
+| `versionsFile` | `string` | Yes | Path to `versions.yml` (default: `"versions.yml"`) |
+
+## `auth`
+
+Controls authentication and role-based access.
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `enabled` | `boolean` | `false` | Enable the auth layer |
+| `requireLogin` | `boolean` | `false` | If `true`, all pages require a valid session |
+| `provider` | `"dev-mock" \| "oidc"` | `"dev-mock"` | Auth provider to use |
+| `publicPaths` | `string[]` | `["/", "/home", "/login", "/api/auth"]` | Paths that bypass auth even when `requireLogin` is `true` |
+
+### `auth.oidc`
+
+Only used when `provider` is `"oidc"`.
+
+| Field | Type | Description |
+|---|---|---|
+| `issuer` | `string` | OIDC issuer URL (your IdP's realm URL) |
+| `clientId` | `string` | Client ID registered in your IdP |
+| `clientSecret` | `string` | Client secret (use env var — never hardcode) |
+| `rolesClaim` | `string` | JWT claim path containing the user's roles (e.g., `"realm_access.roles"`) |
+| `roleMapping` | `Record<string, string>` | Map IdP role names to internal role names |
+
+## `links`
+
+| Field | Type | Description |
+|---|---|---|
+| `github` | `string` | GitHub repo URL — shown as a link in the top nav and footer |
+
+## `site`
+
+Optional UI feature flags.
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `showLastUpdated` | `boolean` | `false` | Show "last updated" timestamp at the bottom of pages |
+| `showLastUpdateAuthor` | `boolean` | `false` | Include the git author in the last-updated line |
+| `showFeedbackWidget` | `boolean` | `false` | Show a thumbs up/down feedback widget at the bottom of pages |
+
+## `apiReference`
+
+Controls the OpenAPI-powered API reference section.
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `enabled` | `boolean` | `false` | Enable the API reference |
+| `navLabel` | `string` | `"API Reference"` | Top nav label for the API reference link |
+| `specs` | `Record<string, ApiSpecEntry>` | `{}` | Map of spec IDs to `{ label, file }` entries |
+| `languages` | `string[]` | `["curl", "javascript", "python"]` | Code sample languages |
+| `roles` | `string[]` | `[]` | Roles required to access the API reference |
+
+## `llms`
+
+Controls the LLMs.txt output.
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `enabled` | `boolean` | `false` | Enable `/llms.txt` and `/api/llms` endpoints |
+| `directive` | `string` | `""` | System prompt prepended to the output for AI context |

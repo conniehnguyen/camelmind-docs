@@ -1,0 +1,137 @@
+---
+title: API Reference
+description: How to add an OpenAPI-powered API reference to your CamelMind documentation site.
+---
+
+# API Reference
+
+CamelMind can render a full interactive API reference from an OpenAPI 3.x spec file. Enable it in `camelmind.config.ts` and point it at your spec — CamelMind handles the rest.
+
+## Enabling the API reference
+
+In `camelmind.config.ts`:
+
+```typescript
+const config: CamelMindConfig = {
+  // ... other config
+
+  apiReference: {
+    enabled: true,
+    navLabel: "API Reference",    // label shown in the top nav
+    specs: {
+      "v1": {
+        label: "API v1",
+        file: "openapi/v1.yaml",
+      },
+    },
+    languages: ["curl", "javascript", "python"],
+    roles: [],                    // [] = public; restrict with role names
+  },
+}
+```
+
+### Configuration fields
+
+| Field | Required | Description |
+|---|---|---|
+| `enabled` | Yes | Set `true` to activate the API reference |
+| `navLabel` | No | Label for the top nav link (default: `"API Reference"`) |
+| `specs` | Yes | Map of spec entries. Key is the spec ID, value has `label` and `file`. |
+| `languages` | No | Code sample languages to show. Defaults to `["curl", "javascript", "python"]`. |
+| `roles` | No | Role names required to access the API reference. `[]` = public. |
+
+## Spec file format
+
+CamelMind accepts **OpenAPI 3.x** specs in YAML or JSON format. Place your spec file anywhere in the project and reference it with a path relative to the project root:
+
+```typescript
+specs: {
+  "main": {
+    label: "REST API",
+    file: "openapi/openapi.yaml",
+  },
+}
+```
+
+### Example spec structure
+
+```yaml
+# openapi/openapi.yaml
+openapi: "3.1.0"
+info:
+  title: My API
+  version: "1.0.0"
+paths:
+  /users:
+    get:
+      summary: List users
+      responses:
+        "200":
+          description: OK
+```
+
+## Multiple specs
+
+You can register multiple spec files under different IDs:
+
+```typescript
+specs: {
+  "rest": {
+    label: "REST API",
+    file: "openapi/rest.yaml",
+  },
+  "webhooks": {
+    label: "Webhooks",
+    file: "openapi/webhooks.yaml",
+  },
+},
+```
+
+Each spec gets its own section in the API reference sidebar.
+
+## Where the API reference lives
+
+The API reference is served at `/api-reference` (or `/api-reference/[version-id]` for versioned sites). The link appears in the top nav automatically when `apiReference.enabled` is `true`.
+
+<Callout type="note">
+The API reference URL is separate from your docs navigation — it does not appear in `nav.yml`. It's controlled entirely by the `apiReference` config block.
+</Callout>
+
+## Access control
+
+Use the `roles` field to restrict the API reference to specific user roles:
+
+```typescript
+apiReference: {
+  enabled: true,
+  roles: ["developer", "admin"],
+  // ...
+}
+```
+
+This gates the entire API reference section. You cannot currently gate individual endpoints by role.
+
+## Versioned API reference
+
+When using [versioning](/guides/versioning), each version can reference a different spec:
+
+```yaml
+# versions.yml
+versions:
+  - id: "v2"
+    label: "v2 (Latest)"
+    stable: true
+    nav: nav/nav-v2.yml
+    apiSpec:
+      label: "API v2"
+      file: openapi/v2.yaml
+  - id: "v1"
+    label: "v1"
+    stable: true
+    nav: nav/nav-v1.yml
+    apiSpec:
+      label: "API v1"
+      file: openapi/v1.yaml
+```
+
+The version selector in the top nav also switches the displayed API spec.

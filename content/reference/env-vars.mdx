@@ -1,0 +1,86 @@
+---
+title: Environment Variables
+description: Complete reference for all environment variables supported by CamelMind.
+---
+
+# Environment Variables
+
+CamelMind is configured at runtime via environment variables. Set them in `.env.local` for local development, or in your hosting platform's environment settings for production.
+
+```bash
+# Copy the example file to get started
+cp .env.example .env.local
+```
+
+<Callout type="warning">
+Never commit `.env.local` or any file containing secrets to version control. The `.gitignore` in the starter template already excludes `.env.local`.
+</Callout>
+
+## Site
+
+| Variable | Default | Description |
+|---|---|---|
+| `CAMELMIND_URL` | `http://localhost:3000` | Public-facing URL of your site. Used in auth callbacks and `<meta>` tags. Must not have a trailing slash. |
+
+## Authentication
+
+| Variable | Default | Description |
+|---|---|---|
+| `CAMELMIND_AUTH_ENABLED` | `false` | Set `"true"` to enable the auth layer. |
+| `CAMELMIND_AUTH_REQUIRE_LOGIN` | `false` | Set `"true"` to require a valid session on all pages (except `publicPaths`). |
+| `CAMELMIND_AUTH_PROVIDER` | `dev-mock` | Auth provider: `"dev-mock"` or `"oidc"`. |
+| `SESSION_SECRET` | — | Random string used to sign and encrypt session cookies. **Required when auth is enabled.** Minimum 32 characters. Generate one with: `openssl rand -base64 32` |
+
+## OIDC / SSO
+
+Only needed when `CAMELMIND_AUTH_PROVIDER=oidc`.
+
+| Variable | Description |
+|---|---|
+| `OIDC_ISSUER` | OIDC issuer URL — your IdP's realm URL, e.g. `https://auth.example.com/realms/my-realm` |
+| `OIDC_CLIENT_ID` | Client ID registered in your IdP |
+| `OIDC_CLIENT_SECRET` | Client secret from your IdP (keep this secret) |
+| `OIDC_ROLES_CLAIM` | JWT claim path containing user roles. Default: `realm_access.roles` (Keycloak format). |
+
+## Build flags
+
+| Variable | Description |
+|---|---|
+| `OFFLINE_MODE` | Set `"true"` to enable static export mode (`output: export`). Bypasses auth and hides server-only UI. Used by `build-offline.sh`. |
+
+## Example .env.local
+
+```bash
+# Site
+CAMELMIND_URL=http://localhost:3000
+
+# Auth — disabled by default
+CAMELMIND_AUTH_ENABLED=false
+CAMELMIND_AUTH_REQUIRE_LOGIN=false
+CAMELMIND_AUTH_PROVIDER=dev-mock
+SESSION_SECRET=change-me-to-a-random-32-char-string
+
+# OIDC — only needed when AUTH_PROVIDER=oidc
+# OIDC_ISSUER=https://auth.example.com/realms/my-realm
+# OIDC_CLIENT_ID=my-docs
+# OIDC_CLIENT_SECRET=
+# OIDC_ROLES_CLAIM=realm_access.roles
+```
+
+## Production .env example
+
+```bash
+CAMELMIND_URL=https://docs.example.com
+CAMELMIND_AUTH_ENABLED=true
+CAMELMIND_AUTH_REQUIRE_LOGIN=true
+CAMELMIND_AUTH_PROVIDER=oidc
+SESSION_SECRET=a-truly-random-32-character-secret
+OIDC_ISSUER=https://auth.example.com/realms/prod
+OIDC_CLIENT_ID=docs-prod
+OIDC_CLIENT_SECRET=prod-secret-from-your-idp
+OIDC_ROLES_CLAIM=realm_access.roles
+```
+
+<Callout type="tip">
+On Vercel, set environment variables in **Project Settings → Environment Variables**. They are injected at build and runtime automatically — no `.env` file needed.
+</Callout>

@@ -1,0 +1,101 @@
+---
+title: Quick Start
+description: Get a CamelMind documentation site running locally in under five minutes.
+---
+
+# Quick Start
+
+<Steps>
+<Step n={1} title="Scaffold a new site">
+
+Run the `init` command and give your project a name:
+
+```bash
+npx camelmind@latest init my-docs
+cd my-docs
+```
+
+The CLI copies the starter template into `./my-docs/` and installs all dependencies automatically.
+
+</Step>
+<Step n={2} title="Start the dev server">
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). You should see the CamelMind starter homepage.
+
+</Step>
+<Step n={3} title="Edit your first page">
+
+Open `content/getting-started/overview.mdx` and make a change. The browser hot-reloads instantly — no manual refresh needed.
+
+</Step>
+<Step n={4} title="Add a page to nav">
+
+Register your new page in `nav/nav.yml`:
+
+```yaml
+nav:
+  - label: "Getting Started"
+    dropdown: true
+    items:
+      - label: "My New Page"
+        slug: /getting-started/my-new-page
+        file: content/getting-started/my-new-page.mdx
+        roles: []
+```
+
+Create the corresponding MDX file and it appears in the sidebar immediately.
+
+</Step>
+<Step n={5} title="Deploy">
+
+Push to GitHub and [connect to Vercel](/deployment/vercel) for instant public hosting — or run `npm run build && npm start` on any Node.js server.
+
+</Step>
+</Steps>
+
+## What you get out of the box
+
+After scaffolding, your site already includes:
+
+- **Homepage** at `/home` with feature cards
+- **Sidebar navigation** driven by `nav/nav.yml`
+- **Full-text search** at `⌘K`
+- **Right-side table of contents** with active-heading tracking
+- **Dark mode** toggle
+- **Prev / Next page** navigation
+- **Breadcrumbs**
+- **MDX components** — Callout, Steps, Tabs, Details, code blocks
+
+## Project structure
+
+```text
+my-docs/
+├── content/               # MDX source files (any folder structure)
+│   └── getting-started/
+│       └── overview.mdx
+├── nav/
+│   └── nav.yml            # Navigation — source of truth for all URLs
+├── versions.yml           # Version registry
+├── camelmind.config.ts    # Site title, auth, links, features
+└── package.json
+```
+
+<Callout type="note">
+The `content/` folder is a convention — you can change the directory name in `camelmind.config.ts` via the `contentDir` field.
+</Callout>
+
+## Common next steps
+
+| Goal | Where to go |
+|---|---|
+| Add more pages | [Writing Content](/guides/writing-content) |
+| Use callouts, steps, tabs | [MDX Components](/guides/mdx-components) |
+| Restructure your nav | [Navigation](/guides/navigation) |
+| Add doc versions | [Versioning](/guides/versioning) |
+| Gate pages by user role | [Authentication & RBAC](/guides/auth-rbac) |
+| Add an API reference | [API Reference](/guides/api-reference) |
+| Go live on Vercel | [Deploy to Vercel](/deployment/vercel) |

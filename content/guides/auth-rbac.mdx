@@ -1,0 +1,148 @@
+---
+title: Authentication & RBAC
+description: How to enable login, configure OIDC/SSO, and restrict pages by user role in CamelMind.
+---
+
+# Authentication & RBAC
+
+CamelMind has built-in support for optional authentication and role-based access control (RBAC). Auth is disabled by default — your site is fully public until you enable it.
+
+## Auth modes
+
+| Mode | Description |
+|---|---|
+| **Disabled** (default) | No login required. All pages are public. |
+| **Optional login** | Users can log in to see role-gated pages, but public pages remain accessible. |
+| **Required login** | All pages require authentication. |
+
+## Enabling auth
+
+Set the following in `camelmind.config.ts`:
+
+```typescript
+auth: {
+  enabled: true,
+  requireLogin: true,   // false = optional login
+  provider: "oidc",
+  oidc: {
+    issuer: process.env.OIDC_ISSUER ?? "",
+    clientId: process.env.OIDC_CLIENT_ID ?? "",
+    clientSecret: process.env.OIDC_CLIENT_SECRET ?? "",
+    rolesClaim: "realm_access.roles",
+    roleMapping: {},
+  },
+  publicPaths: ["/", "/home", "/login", "/api/auth"],
+},
+```
+
+And set the corresponding environment variables in `.env.local`:
+
+```bash
+CAMELMIND_AUTH_ENABLED=true
+CAMELMIND_AUTH_REQUIRE_LOGIN=true
+CAMELMIND_AUTH_PROVIDER=oidc
+OIDC_ISSUER=https://auth.example.com/realms/my-realm
+OIDC_CLIENT_ID=my-docs-client
+OIDC_CLIENT_SECRET=super-secret
+SESSION_SECRET=a-random-32-character-string
+```
+
+## OIDC / SSO setup
+
+CamelMind supports any OIDC-compliant identity provider — Keycloak, Auth0, Okta, Azure AD, and others.
+
+### Required provider configuration
+
+Your identity provider must be configured to:
+1. Register your docs site as a client
+2. Set the redirect URI to `https://your-site.example.com/api/auth/callback`
+3. Include user roles in the JWT token claims (the claim path is set via `rolesClaim`)
+
+### Keycloak example
+
+For Keycloak, roles are typically in `realm_access.roles`:
+
+```typescript
+oidc: {
+  issuer: "https://auth.gamewarden.io/realms/my-realm",
+  clientId: "my-docs",
+  clientSecret: process.env.OIDC_CLIENT_SECRET ?? "",
+  rolesClaim: "realm_access.roles",
+  roleMapping: {},
+},
+```
+
+### Role mapping
+
+If your provider uses different role names than what you want in `nav.yml`, use `roleMapping` to translate:
+
+```typescript
+roleMapping: {
+  "MyIdP_AdminRole": "admin",
+  "MyIdP_VendorRole": "vendor",
+}
+```
+
+## Role-based access control
+
+Once auth is enabled, assign roles to nav entries in `nav.yml`:
+
+```yaml
+- label: "Admin Dashboard"
+  slug: /admin/dashboard
+  file: content/admin/dashboard.mdx
+  roles: [admin]
+
+- label: "Getting Started"
+  slug: /getting-started/introduction
+  file: content/getting-started/introduction.mdx
+  roles: []           # [] = accessible to any authenticated user
+```
+
+### How access is enforced
+
+Roles are enforced at two levels:
+
+1. **Nav visibility** — items are hidden from the sidebar for users who lack the required roles
+2. **Page access** — direct URL access is blocked even if the nav item is hidden
+
+<Callout type="important">
+Both layers work together. Don't rely on hiding the link alone — the page-level check blocks direct URL access too.
+</Callout>
+
+### Role semantics
+
+| `roles` value | Who can access |
+|---|---|
+| `[]` | Any authenticated user (no specific role required) |
+| `["admin"]` | Users with the `admin` role |
+| `["vendor", "admin"]` | Users with either the `vendor` or `admin` role |
+
+## Public paths
+
+Pages listed in `publicPaths` bypass authentication entirely, even when `requireLogin` is `true`:
+
+```typescript
+publicPaths: ["/", "/home", "/login", "/api/auth"],
+```
+
+Add any paths that should be accessible without a session.
+
+## Dev mock auth
+
+During local development, set `provider: "dev-mock"` to test with a hardcoded user and roles without running an identity provider:
+
+```typescript
+auth: {
+  enabled: true,
+  requireLogin: false,
+  provider: "dev-mock",
+  // ... oidc config not used in dev-mock mode
+}
+```
+
+The dev-mock provider simulates a logged-in user. Adjust the mock user's roles in `lib/auth.ts` to test different access scenarios.
+
+<Callout type="warning">
+Never deploy with `provider: "dev-mock"` in production. It grants access without any real authentication.
+</Callout>

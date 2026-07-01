@@ -1,0 +1,146 @@
+---
+title: Writing Content
+description: How to write and organize documentation pages in CamelMind using Markdown and MDX.
+---
+
+# Writing Content
+
+CamelMind uses **MDX** — Markdown extended with JSX. Any `.mdx` file in your `content/` directory can be registered in `nav/nav.yml` and served as a page.
+
+## File format
+
+Every content file is a plain `.mdx` file with optional YAML frontmatter at the top:
+
+```mdx
+---
+title: My Page
+description: A short summary used in search results and meta tags.
+---
+
+# My Page
+
+Body content goes here.
+```
+
+### Frontmatter fields
+
+| Field | Required | Description |
+|---|---|---|
+| `title` | Yes | Page title shown in the browser tab and sidebar |
+| `description` | No | Short summary for search results and `<meta>` description |
+| `download_pdf` | No | Path to a PDF file offered as a download button |
+
+## Markdown basics
+
+CamelMind supports full [CommonMark](https://commonmark.org/) Markdown plus [GitHub Flavored Markdown](https://github.github.com/gfm/) extensions via `remark-gfm`.
+
+### Headings
+
+```mdx
+# H1 — page title (one per page)
+## H2 — appears in the right-side table of contents
+### H3 — also in ToC
+#### H4 — not in ToC
+```
+
+The right-side table of contents auto-generates from `##` and `###` headings. All headings get anchor links automatically.
+
+### Tables
+
+```mdx
+| Column A | Column B |
+|---|---|
+| Row 1 | Value |
+| Row 2 | Value |
+```
+
+### Task lists
+
+```mdx
+- [x] Done
+- [ ] Not done
+```
+
+### Strikethrough
+
+```mdx
+~~removed text~~
+```
+
+## Code blocks
+
+Use fenced code blocks with a language identifier for syntax highlighting:
+
+````mdx
+```bash
+npm run dev
+```
+
+```typescript
+const greeting = "Hello, world!"
+```
+
+```yaml
+nav:
+  - label: "Getting Started"
+    dropdown: true
+```
+````
+
+<Callout type="tip">
+Supported languages include `bash`, `typescript`, `javascript`, `python`, `yaml`, `json`, `mdx`, `css`, `html`, `sql`, and many more.
+</Callout>
+
+## Inline elements
+
+```mdx
+**Bold text**
+*Italic text*
+`inline code`
+[Link text](https://example.com)
+![Alt text](image.png)
+```
+
+## Images
+
+Place images in `public/images/` and reference them with a root-relative path:
+
+```mdx
+![Diagram](/images/architecture.png)
+```
+
+Click any image to zoom in — CamelMind has built-in image zoom on all doc pages.
+
+## Organizing content
+
+Content files can live anywhere inside `content/`. A common pattern:
+
+```text
+content/
+├── getting-started/
+│   ├── introduction.mdx
+│   └── installation.mdx
+├── guides/
+│   ├── writing-content.mdx
+│   └── navigation.mdx
+└── reference/
+    └── configuration.mdx
+```
+
+The folder structure does **not** determine your URLs — URLs come from `nav/nav.yml`. You can organize files however you like.
+
+## MDX components
+
+Because content files are MDX, you can use any of the built-in components anywhere in a page without importing them:
+
+```mdx
+<Callout type="tip">
+This is a tip.
+</Callout>
+
+<Steps>
+<Step n={1} title="First step">Content</Step>
+</Steps>
+```
+
+See [MDX Components](/guides/mdx-components) for the full component reference.

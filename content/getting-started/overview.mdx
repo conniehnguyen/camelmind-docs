@@ -1,0 +1,39 @@
+---
+title: Welcome to My Docs
+description: A CamelMind documentation site — write docs in Markdown, configure nav in YAML.
+---
+
+# Welcome
+
+This is your new CamelMind documentation site. Write docs in Markdown and MDX, configure navigation in `nav/nav.yml`, and customize the site in `camelmind.config.ts`.
+
+<Callout type="tip">
+Edit this file at `content/getting-started/overview.mdx` to get started.
+</Callout>
+
+## What you can do
+
+- **Write in Markdown** — all standard Markdown plus MDX components
+- **Configure nav in YAML** — decouple URLs from file paths in `nav/nav.yml`
+- **Add versions** — manage multiple doc versions via `versions.yml`
+- **Enable auth** — gate pages by role with optional SSO (OIDC/Keycloak)
+
+## Next steps
+
+<Steps>
+<Step n={1} title="Edit your content">
+
+Add Markdown files to the `content/` folder and register them in `nav/nav.yml`.
+
+</Step>
+<Step n={2} title="Customize your site">
+
+Edit `camelmind.config.ts` to set your site title, tagline, and GitHub link.
+
+</Step>
+<Step n={3} title="Deploy">
+
+Run `npm run build` to build a production bundle, then deploy to any Node.js host or use `OFFLINE_MODE=true npm run build` for a static export.
+
+</Step>
+</Steps>
