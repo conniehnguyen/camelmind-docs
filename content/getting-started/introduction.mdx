@@ -1,81 +1,83 @@
 ---
 title: Introduction
-description: CamelMind is an open-source docs-as-code platform built on Next.js. Ship beautiful documentation sites in minutes.
+description: CamelMind is an open-source docs-as-code platform built on Next.js. Build and ship beautiful documentation sites in minutes.
 ---
 
 # Introduction
 
-CamelMind is an open-source documentation platform built on Next.js. Write content in Markdown and MDX, define navigation in YAML, and deploy to any Node.js host or static CDN — no lock-in, no build servers, no magic.
+CamelMind is an open-source documentation platform built on Next.js. Write in Markdown and MDX, manage navigation with YAML, and deploy anywhere: Node.js hosts, Docker, Vercel, or static CDNs.
+
+Use CamelMind to build product docs, API references, internal knowledge bases, blogs, personal sites, and more.
 
 <Callout type="tip">
-New here? Jump straight to [Quick Start](/getting-started/quick-start) to have a site running in under five minutes.
+New here? Start with the [Quick Start](/getting-started/quick-start) and get your first site running in under five minutes.
 </Callout>
+
+---
 
 ## Why CamelMind?
 
-Most documentation tools make one of two tradeoffs: simple to start but inflexible at scale, or powerful but painful to set up. CamelMind aims at neither extreme.
+Many free documentation tools work well at first, but become rigid as your docs grow. Others miss critical capabilities for modern teams, especially LLM-native workflows, access control, offline delivery, and compliance-ready exports.
+
+Enterprise documentation platforms solve many of these problems, but they can be costly for startups and small teams.
+
+CamelMind bridges that gap: flexible, open-source documentation infrastructure with the features growing teams actually need.
 
 | Feature | What it means for you |
 |---|---|
-| **Markdown-first** | Write in plain `.mdx` files — no database, no CMS, no lock-in |
-| **YAML navigation** | URLs and file paths are fully decoupled; reuse one file at multiple slugs |
-| **Versioning built-in** | Ship `v1`, `v2`, and `dev` docs from a single codebase |
-| **Optional auth** | Gate pages by role with OIDC/SSO, or keep everything public |
-| **OpenAPI ready** | Drop in an OpenAPI spec and get a rendered API reference automatically |
-| **Deploy anywhere** | Vercel, Docker, static export — your choice |
+| **Markdown-first** | Write content in plain `.mdx` files using the tools and workflows you already know. |
+| **YAML navigation** | Decouple URLs from file paths, reuse pages across multiple slugs, and manage complex docs structures cleanly. |
+| **Built-in versioning** | Publish `v1`, `v2`, `dev`, and other doc versions from a single codebase. |
+| **RBAC support** | Keep docs public or restrict pages by role using OIDC/SSO. |
+| **OpenAPI ready** | Add an OpenAPI spec and generate a rendered API reference automatically. |
+| **Deploy anywhere** | Ship to Vercel, Docker, any Node.js host, or a static CDN. |
+| **Offline mode** | Package your full documentation site for offline use, ideal for air-gapped or restricted environments. |
+| **PDF generation** | Export a complete PDF version of your docs for audits, reviews, and compliance workflows. |
+
+---
 
 ## Core concepts
 
 ### Docs as code
 
-Every page is a `.mdx` file checked into version control alongside your source code. Navigation lives in `nav/nav.yml`. Configuration lives in `camelmind.config.ts`. There is no admin panel, no database, and no CMS to log into.
+CamelMind treats documentation as source code. Docs pages are `.mdx` files checked into version control alongside your app, navigation is defined in `nav/nav.yml`, and site behavior is configured in `camelmind.config.ts`.
+
+There is no admin panel, database, or CMS workflow to maintain. You edit files, review changes in pull requests, and deploy like any other Next.js project.
 
 ### Decoupled URLs
 
-Unlike MkDocs or Docusaurus, CamelMind fully separates URL slugs from file paths. The `slug` field in `nav.yml` defines the URL; the `file` field points to the source MDX file. The same file can appear at multiple URLs with independent roles.
+CamelMind separates where content lives from where it appears on your site. In `nav.yml`, the `slug` field defines the public URL, while the `file` field points to the MDX source file.
+
+That means your content folder can stay organized for maintainers, while your URLs stay clean for readers. The same source file can also appear at multiple URLs with different labels or role requirements.
 
 ```yaml
 - label: "Submit an Application"
-  slug: /applications/submit        # URL served here
-  file: content/apps/submit.mdx    # source file (any path)
-  roles: []
-```
+  slug: /applications/submit       # URL served here
+  file: content/apps/submit.mdx    # source file, independent of the URL
+  roles: []                        # public page
+```  
 
 ### MDX components
 
-All content files are MDX, so you can use React components inline. CamelMind ships a built-in component library — callouts, steps, tabs, collapsible sections, and code blocks — that works out of the box without any imports.
+CamelMind content is written in MDX, so you can combine Markdown with React-powered components. Built-in components such as Callout, Steps, Tabs, Details, Icon, LLMOnly, LLMIgnore, and enhanced code blocks work out of the box without local imports.
+
+Use them to add structure, interactive sections, AI-specific content, and polished examples while keeping pages readable in plain text.
+
+---
 
 ## What's in v0.2.2
 
-This release ships the following features:
+CamelMind v0.2.2 includes the core features needed to build, secure, search, and distribute a production documentation site:
 
-- `camelmind init` CLI to scaffold a new site in seconds
-- YAML navigation with dropdown menus
-- Multi-version support via `versions.yml`
-- Full MDX component library (Callout, Steps, Tabs, Details)
-- Built-in full-text search (`⌘K`)
-- OpenAPI / API reference rendering
+- `camelmind init` CLI for scaffolding a new site
+- Markdown and MDX content with built-in docs components
+- YAML navigation with dropdown groups and decoupled URL slugs
+- Multi-version docs via `versions.yml`
+- Built-in full-text search
+- OpenAPI 3.x API reference rendering from YAML or JSON specs
 - Optional OIDC authentication and role-based access control
-- LLMs.txt generation for AI-readable documentation
-- Static export and offline ZIP builds
-- Vercel and Docker deployment support
-
-## Next steps
-
-<Steps>
-<Step n={1} title="Scaffold your site">
-
-Run `npx camelmind@latest init my-docs` to create a new site from the starter template.
-
-</Step>
-<Step n={2} title="Write your first page">
-
-Add MDX files to `content/` and register them in `nav/nav.yml`.
-
-</Step>
-<Step n={3} title="Deploy">
-
-Push to GitHub and connect to Vercel for zero-config deployment, or run `npm run build` and deploy the output yourself.
-
-</Step>
-</Steps>
+- `llms.txt` and `/api/llms` output for AI-readable documentation
+- Static export for CDN, S3, GitHub Pages, and offline use
+- Offline ZIP builds with a prebuilt search index and local launcher scripts
+- Master PDF generation for versioned documentation packages
+- Vercel, Docker, and self-hosted deployment support
