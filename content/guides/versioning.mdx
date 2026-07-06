@@ -82,9 +82,9 @@ nav:
   - label: "Getting Started"
     dropdown: true
     items:
-      - label: "Introduction"
-        slug: /getting-started/introduction
-        file: content/v1/getting-started/introduction.mdx
+      - label: "Overview"
+        slug: /getting-started/overview
+        file: content/v1/getting-started/overview.mdx
         roles: []
 ```
 
@@ -96,10 +96,10 @@ nav:
 CamelMind automatically prefixes all slugs in a versioned nav with the version `id`. You write:
 
 ```yaml
-slug: /getting-started/introduction
+slug: /getting-started/overview
 ```
 
-And the site serves it at `/v2/getting-started/introduction`. The unversioned nav (the first entry in `versions.yml`) is served at the root path `/getting-started/introduction`.
+And the site serves it at `/v2/getting-started/overview`. The unversioned nav (the first entry in `versions.yml`) is served at the root path `/getting-started/overview`.
 
 <Callout type="note">
 The version selector in the top nav preserves the current page path when switching versions. If the equivalent slug doesn't exist in the target version, it redirects to the home page.

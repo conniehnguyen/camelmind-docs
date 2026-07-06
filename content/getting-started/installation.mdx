@@ -1,42 +1,45 @@
 ---
 title: Installation
-description: System requirements and installation options for CamelMind.
+description: System requirements and installation options for CamelMind. Follow this guide to set up and customize your site.
 ---
 
-# Installation
-
-## Requirements
+Before you begin, ensure your local machine meets the following requirements:
 
 | Requirement | Minimum version |
 |---|---|
 | Node.js | 20 or higher |
-| npm / pnpm / yarn | any recent version |
+| Package manager | Any recent version of `npm`, `pnpm`, or `yarn` |
 
 <Callout type="tip">
 Use [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to manage Node versions. Run `node --version` to check your current version.
 </Callout>
 
+---
+
 ## Scaffold a new site
 
-The fastest way to create a CamelMind site is with the `init` CLI:
+Get started in seconds with the CamelMind `init` CLI. Open your terminal and run the following command, replacing `my-docs` with your project name.
 
 ```bash
 npx camelmind@latest init my-docs
 ```
 
 The CLI will:
-1. Copy the starter template into `./my-docs/`
-2. Run `npm install` automatically
-3. Print next steps
 
-Then start the development server:
+1. Create a new project from the CamelMind starter template.
+2. Install all project dependencies automatically.
+3. Display the next steps to get started.
+
+Next, start the development server:
 
 ```bash
 cd my-docs
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Then open **http://localhost:3000** in your browser to preview your documentation site.
+
+---
 
 ## Manual installation
 
@@ -47,36 +50,59 @@ npm install camelmind
 ```
 
 <Callout type="warning">
-Manual installation is advanced. The `init` CLI is recommended for new projects — it scaffolds all required files, config, and dependencies in the correct versions.
+Manual installation is intended for advanced use cases. For most projects, we recommend using the <code>init</code> CLI, which automatically creates your project with the correct directory structure, configuration, and compatible dependency versions.
 </Callout>
 
-## Updating CamelMind
+---
 
-CamelMind publishes the CLI and template together as the `camelmind` npm package. To update:
+## Update CamelMind
 
-```bash
-npm install camelmind@latest
-```
+To update an existing CamelMind site, use one of the following update options:
 
-Check the [GitHub releases](https://github.com/conniehnguyen/camelmind/releases) for a changelog before upgrading.
+| Option | command |
+|---|---|
+| Update your site to the latest CamelMind platform files | npx camelmind@latest update |
+| Preview the changes without modifying any files | npx camelmind@latest update --dry-run |
+| Update files without running npm install | npx camelmind@latest update --no-install |
+| Preserve a customized scaffold file during the update | npx camelmind@latest update --ignore-file app/page.tsx|
+
+Before upgrading, review the changelog for any breaking changes or migration notes.
+
+---
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local` and set values as needed:
+CamelMind works out of the box with the default configuration. You only need to customize environment variables when enabling features such as authentication or deploying your site to a production domain.
+
+To get started, copy the example file:
 
 ```bash
 cp .env.example .env.local
 ```
 
-| Variable | Default | Description |
-|---|---|---|
-| `CAMELMIND_URL` | `http://localhost:3000` | Public-facing URL of your site |
-| `CAMELMIND_AUTH_ENABLED` | `false` | Enable authentication |
-| `CAMELMIND_AUTH_REQUIRE_LOGIN` | `false` | Require login for all pages |
-| `SESSION_SECRET` | — | Random secret for session encryption (required when auth is on) |
+Then update the values you need.
 
-<Callout type="note">
-Auth is disabled by default — your site is fully public until you enable it.
+| Variable | Default | Description |
+| --- | --- | --- |
+| `CAMELMIND_URL` | `http://localhost:3000` | The public URL of your documentation site. Update this before deploying (for example, `https://docs.example.com`). |
+| `CAMELMIND_AUTH_ENABLED` | `false` | Enables built-in authentication. |
+| `CAMELMIND_AUTH_REQUIRE_LOGIN` | `false` | Requires users to sign in before accessing any page. |
+| `SESSION_SECRET` | — | A long, random secret used to encrypt user sessions. Required when authentication is enabled. |
+
+---
+
+## Deploying to production
+
+Before making your site live, update `CAMELMIND_URL` to match your production domain. For example:
+
+```env
+CAMELMIND_URL=https://docs.example.com
+```
+
+Then configure the same environment variables in your hosting provider (such as Vercel, Netlify, or your own infrastructure) before deploying your site.
+
+<Callout type="tip">
+If your site is publicly accessible, you can leave authentication disabled. Enable it only if you want to protect your documentation behind a login.
 </Callout>
 
-See [Environment Variables](/reference/env-vars) for the full reference.
+See the [Environment Variables](/reference/env-vars) reference for the complete list of available options.

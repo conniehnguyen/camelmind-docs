@@ -1,72 +1,146 @@
 ---
-title: Writing Docs
-description: How to write and organize documentation in CamelMind.
+title: Writing Content
+description: How to write and organize documentation pages in CamelMind using Markdown and MDX.
 ---
 
-# Writing Docs
+# Writing Content
 
-CamelMind uses MDX — Markdown with support for React components. Any `.mdx` file in `content/` can be referenced from `nav/nav.yml`.
+CamelMind uses **MDX** — Markdown extended with JSX. Any `.mdx` file in your `content/` directory can be registered in `nav/nav.yml` and served as a page.
 
-## Frontmatter
+## File format
 
-Every doc file starts with YAML frontmatter:
+Every content file is a plain `.mdx` file with optional YAML frontmatter at the top:
 
 ```mdx
 ---
 title: My Page
-description: A short description shown in search results.
+description: A short summary used in search results and meta tags.
 ---
+
+# My Page
+
+Body content goes here.
 ```
 
-## Headings and structure
+### Frontmatter fields
 
-Use standard Markdown headings. The right-side table of contents auto-generates from `##` and `###` headings.
+| Field | Required | Description |
+|---|---|---|
+| `title` | Yes | Page title shown in the browser tab and sidebar |
+| `description` | No | Short summary for search results and `<meta>` description |
+| `download_pdf` | No | Path to a PDF file offered as a download button |
 
-## MDX components
+## Markdown basics
 
-### Callout
+CamelMind supports full [CommonMark](https://commonmark.org/) Markdown plus [GitHub Flavored Markdown](https://github.github.com/gfm/) extensions via `remark-gfm`.
+
+### Headings
 
 ```mdx
-<Callout type="tip">This is a tip.</Callout>
-<Callout type="warning">Watch out!</Callout>
-<Callout type="note">Just a note.</Callout>
-<Callout type="danger">Critical warning.</Callout>
+# H1 — page title (one per page)
+## H2 — appears in the right-side table of contents
+### H3 — also in ToC
+#### H4 — not in ToC
 ```
 
-### Steps
+The right-side table of contents auto-generates from `##` and `###` headings. All headings get anchor links automatically.
+
+### Tables
 
 ```mdx
-<Steps>
-<Step n={1} title="First step">
-  Step content goes here.
-</Step>
-<Step n={2} title="Second step">
-  More content.
-</Step>
-</Steps>
+| Column A | Column B |
+|---|---|
+| Row 1 | Value |
+| Row 2 | Value |
 ```
 
-### Code blocks
+### Task lists
 
-Use standard fenced code blocks with a language identifier:
+```mdx
+- [x] Done
+- [ ] Not done
+```
+
+### Strikethrough
+
+```mdx
+~~removed text~~
+```
+
+## Code blocks
+
+Use fenced code blocks with a language identifier for syntax highlighting:
 
 ````mdx
 ```bash
 npm run dev
 ```
-````
 
-## Registering pages in nav.yml
-
-Every page must be listed in `nav/nav.yml` to appear in navigation:
+```typescript
+const greeting = "Hello, world!"
+```
 
 ```yaml
 nav:
-  - label: "My Section"
+  - label: "Getting Started"
     dropdown: true
-    items:
-      - label: "My Page"
-        slug: /my-section/my-page      # URL served at this path
-        file: content/my-section/my-page.mdx  # source file
-        roles: []                      # [] = public; ["admin"] = admin-only
 ```
+````
+
+<Callout type="tip">
+Supported languages include `bash`, `typescript`, `javascript`, `python`, `yaml`, `json`, `mdx`, `css`, `html`, `sql`, and many more.
+</Callout>
+
+## Inline elements
+
+```mdx
+**Bold text**
+*Italic text*
+`inline code`
+[Link text](https://example.com)
+![Alt text](image.png)
+```
+
+## Images
+
+Place images in `public/images/` and reference them with a root-relative path:
+
+```mdx
+![Diagram](/images/architecture.png)
+```
+
+Click any image to zoom in — CamelMind has built-in image zoom on all doc pages.
+
+## Organizing content
+
+Content files can live anywhere inside `content/`. A common pattern:
+
+```text
+content/
+├── getting-started/
+│   ├── introduction.mdx
+│   └── installation.mdx
+├── guides/
+│   ├── writing-content.mdx
+│   └── navigation.mdx
+└── reference/
+    └── configuration.mdx
+```
+
+The folder structure does **not** determine your URLs — URLs come from `nav/nav.yml`. You can organize files however you like.
+
+## MDX components
+
+Because content files are MDX, you can use any of the built-in components anywhere in a page without importing them:
+
+```mdx
+<Callout type="tip">
+This is a tip.
+</Callout>
+
+<Steps>
+<Step n={1} title="First step">Content</Step>
+</Steps>
+```
+
+See [MDX Components](/guides/mdx-components) for the full component reference.

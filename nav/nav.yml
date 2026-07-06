@@ -1,80 +1,18 @@
 nav:
-  - label: "Getting Started"
-    dropdown: true
+  - label: "Documentation"
+    dropdown: false
+    noDropdown: true
     items:
-      - label: "Introduction"
-        slug: /getting-started/introduction
-        file: content/getting-started/introduction.mdx
+      - label: "Getting Started"
+        slug: /getting-started/overview
+        file: content/getting-started/overview.mdx
         roles: []
-      - label: "Quick Start"
-        slug: /getting-started/quick-start
-        file: content/getting-started/quick-start.mdx
-        roles: []
-      - label: "Installation"
-        slug: /getting-started/installation
-        file: content/getting-started/installation.mdx
-        roles: []
-
-  - label: "Guides"
-    dropdown: true
-    items:
-      - label: "Writing Content"
-        slug: /guides/writing-content
-        file: content/guides/writing-content.mdx
-        roles: []
-      - label: "MDX Components"
-        slug: /guides/mdx-components
-        file: content/guides/mdx-components.mdx
-        roles: []
-      - label: "Navigation"
-        slug: /guides/navigation
-        file: content/guides/navigation.mdx
-        roles: []
-      - label: "Versioning"
-        slug: /guides/versioning
-        file: content/guides/versioning.mdx
-        roles: []
-      - label: "Authentication & RBAC"
-        slug: /guides/auth-rbac
-        file: content/guides/auth-rbac.mdx
-        roles: []
-      - label: "API Reference"
-        slug: /guides/api-reference
-        file: content/guides/api-reference.mdx
-        roles: []
-      - label: "LLMs.txt"
-        slug: /guides/llms-txt
-        file: content/guides/llms-txt.mdx
-        roles: []
-
-  - label: "Deployment"
-    dropdown: true
-    items:
-      - label: "Vercel"
-        slug: /deployment/vercel
-        file: content/deployment/vercel.mdx
-        roles: []
-      - label: "Static Export"
-        slug: /deployment/static-export
-        file: content/deployment/static-export.mdx
-        roles: []
-      - label: "Docker"
-        slug: /deployment/docker
-        file: content/deployment/docker.mdx
-        roles: []
-
-  - label: "Reference"
-    dropdown: true
-    items:
-      - label: "Configuration"
-        slug: /reference/configuration
-        file: content/reference/configuration.mdx
-        roles: []
-      - label: "CLI Commands"
-        slug: /reference/cli
-        file: content/reference/cli.mdx
-        roles: []
-      - label: "Environment Variables"
-        slug: /reference/env-vars
-        file: content/reference/env-vars.mdx
-        roles: []
+        section:
+          - label: "Installation"
+            slug: /getting-started/installation
+            file: content/getting-started/installation.mdx
+            roles: []
+          - label: "Project Structure"
+            slug: /getting-started/project-structure
+            file: content/getting-started/project-structure.mdx
+            roles: []

@@ -102,11 +102,14 @@ export function MobileDrawer({
         <nav className="flex-1 px-3 py-4 space-y-1">
           {nav.map((item) => {
             if (isNavGroup(item)) {
-              if ((item.noDropdown || !item.items) && item.slug) {
+              const visibleItems = (item.items ?? []).filter((i) => canSee(i.roles))
+              const directHref = item.slug ?? visibleItems[0]?.slug
+
+              if ((item.noDropdown || !item.items) && directHref) {
                 return (
                   <Link
                     key={item.label}
-                    href={item.slug}
+                    href={directHref}
                     className="block px-3 py-2.5 text-sm font-medium text-gray-200 hover:text-white hover:bg-gray-800 rounded-lg"
                   >
                     {item.label}
@@ -114,7 +117,6 @@ export function MobileDrawer({
                 )
               }
 
-              const visibleItems = (item.items ?? []).filter((i) => canSee(i.roles))
               if (visibleItems.length === 0) return null
               const isExpanded = expandedGroup === item.label
 

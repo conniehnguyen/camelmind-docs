@@ -60,15 +60,17 @@ export function TopNav({ nav, userRoles, userName, authEnabled = false, versions
         <div className="hidden md:flex items-center gap-6 flex-1">
           {nav.map((item) => {
             if (isNavGroup(item)) {
-              if ((item.noDropdown || !item.items) && item.slug) {
+              const visibleItems = (item.items ?? []).filter((i) => canSee(i.roles))
+              const directHref = item.slug ?? visibleItems[0]?.slug
+
+              if ((item.noDropdown || !item.items) && directHref) {
                 return (
-                  <Link key={item.label} href={item.slug} className="text-sm font-medium hover:text-gray-300">
+                  <Link key={item.label} href={directHref} className="text-sm font-medium hover:text-gray-300">
                     {item.label}
                   </Link>
                 )
               }
 
-              const visibleItems = (item.items ?? []).filter((i) => canSee(i.roles))
               if (visibleItems.length === 0) return null
 
               return (
