@@ -1,0 +1,210 @@
+---
+title: Project Structure
+description: A tour of the folders and files in a CamelMind site — what each one does and which ones you'll actually edit.
+---
+
+Every CamelMind project follows the same directory structure. Most of your work will happen in just a few folders, while the rest powers the framework behind the scenes.
+
+This guide explains what each folder is for and when you'll need to edit it.
+
+```text
+my-docs/
+├── app/                      # Next.js routes and rendering
+├── components/               # UI and MDX components
+├── content/                  # Documentation pages
+├── lib/                      # Internal utilities
+├── nav/
+│   └── nav.yml               # Sidebar navigation
+├── public/                   # Images and downloads
+├── scripts/                  # Build utilities
+├── camelmind.config.ts       # Site configuration
+├── versions.yml              # Documentation versions
+├── next.config.ts            # Next.js configuration
+├── .env.example              # Configuration template; duplicate to .env.local before running
+├── package.json
+└── tsconfig.json
+```
+
+<Callout type="tip">
+
+Most documentation work only involves these folders:
+
+| Want to... | Edit |
+|------------|------|
+| Write documentation | `content/` |
+| Organize the sidebar | `nav/nav.yml` |
+| Add images or assets | `public/` |
+| Change the site title | `camelmind.config.ts` |
+
+For other advanced configurations, we will cover in [Advanced Configurations](/guide/advanced-config).
+</Callout>
+
+---
+
+## The content/ folder
+
+Every documentation page is an MDX file stored under `content/`. Every page is a `.mdx` file — Markdown with optional JSX components — with YAML frontmatter at the top for `title` and `description`.
+
+```text
+content/
+├── getting-started/
+│   └── overview.mdx
+├── guides/
+│   └── writing-docs.mdx
+└── reference/
+    └── configuration.mdx
+```
+
+Unlike many documentation frameworks, CamelMind does not derive URLs from your folder structure. URLs are defined in `nav.yml`, giving you complete control over your site's navigation.
+
+---
+
+## The nav/nav.yml file
+
+`nav.yml` is the single source of truth for what appears in the sidebar and which URL each page is served at. Every entry maps a `slug` (the public URL) to a `file` (the MDX source):
+
+```yaml
+nav:
+  - label: "Getting Started"
+    dropdown: false
+    noDropdown: true
+    items:
+      - label: "Project Structure"
+        slug: /getting-started/project-structure
+        file: content/getting-started/project-structure.mdx
+        roles: []
+```
+
+A page in `content/` that isn't registered here won't be reachable — and a page can be registered at multiple slugs with different labels or `roles`. See [Navigation](/guides/navigation) and the [Nav Schema](/reference/nav-schema) reference for every field.
+
+---
+
+## The versions.yml file
+
+`versions.yml` defines the documentation versions your site publishes, such as `latest`, `v1`, or `v2`.
+
+```yaml
+versions:
+  - id: "latest"
+    label: "Latest"
+    stable: true
+    nav: nav/nav.yml
+```
+
+A fresh scaffold ships with a single `latest` version. Add entries here when you're ready to publish multiple versions side by side — see [Versioning](/guides/versioning).
+
+---
+
+## The camelmind.config.ts configuration file
+
+The root config file for site-wide behavior such as title, tagline, auth settings, GitHub link, API reference, and `llms.txt` output.
+
+```typescript
+const config: CamelMindConfig = {
+  title: "My Docs",
+  tagline: "Documentation made simple.",
+  url: process.env.CAMELMIND_URL ?? "http://localhost:3000",
+
+  contentDir: "content",
+  navFile: "nav/nav.yml",
+  versionsFile: "versions.yml",
+
+  auth: { enabled: false, requireLogin: false, provider: "dev-mock", /* ... */ },
+  links: { github: "https://github.com/you/your-repo" },
+  llms: { enabled: false, directive: "" },
+}
+```
+
+Most secrets and environment-specific values (auth toggles, the site URL) are read from environment variables defined in `.env.example` / `.env.local`, rather than hardcoded here. See the [Configuration Reference](/reference/configuration) for every field.
+
+---
+
+## The app/ folder
+
+The app directory contains the Next.js application that powers your documentation site.
+
+| Path | Purpose |
+|---|---|
+| `app/[...slug]/page.tsx` | The catch-all route that renders every doc page — resolves the slug against `nav.yml`, loads the MDX file, and applies auth checks |
+| `app/api-reference/` | Route for the OpenAPI-powered API reference |
+| `app/api/auth/` | Login, logout, and OIDC callback route handlers |
+| `app/api/search/` | Full-text search endpoint |
+| `app/api/llms/`, `app/llms.txt/` | AI-readable documentation output (`/llms.txt` and `/api/llms`) |
+| `app/home/page.tsx` | The homepage |
+| `app/layout.tsx` | Root layout — theming, fonts, global providers |
+| `app/globals.css` | Global styles (Tailwind) |
+
+<Callout type="warning">
+Customizing files in `app/` is an advanced use case. Changes here can be overwritten or need manual reconciliation when you run `camelmind update` — see the [CLI Reference](/reference/cli) for the `--ignore-file` flag if you need to protect a customized file.
+</Callout>
+
+---
+
+## The components/ folder
+
+React components split into two groups:
+
+- **Site chrome** — `Nav/`, `Sidebar/`, `Toc/`, `Breadcrumbs/`, `PageNav/`, `Search/`, `SectionCards/`, `ApiReference/`, and similar folders render the surrounding site UI (top nav, sidebar, table of contents, search modal, and so on).
+- **`components/mdx/`** — the components available directly inside your `.mdx` content: `Callout`, `Steps`, `Tabs`, `Details`, `Icon`, `LLMOnly`, and `LLMIgnore`.
+
+See [MDX Components](/guides/mdx-components) for how to use each one in your content.
+
+---
+
+## The lib/ folder
+
+The engine room: plain TypeScript modules that load and resolve content, with no JSX. You generally won't need to edit these, but they're the layer to look at if you're extending CamelMind's behavior.
+
+| File | Responsibility |
+|---|---|
+| `lib/mdx.ts` | Reads an MDX file, parses frontmatter, extracts the table of contents |
+| `lib/nav.ts`, `lib/nav-types.ts` | Parses `nav.yml`, resolves slugs to entries, builds breadcrumbs |
+| `lib/versions.ts` | Resolves which version's nav applies to a given URL |
+| `lib/config.ts`, `lib/config-types.ts` | Loads and types `camelmind.config.ts` |
+| `lib/auth.ts`, `lib/auth-roles.ts`, `lib/auth-providers/` | Session handling and role-based access control |
+| `lib/api-reference.ts`, `lib/api-types.ts`, `lib/api-utils.ts` | OpenAPI spec parsing for the API reference |
+
+---
+
+## The scripts/ folder
+
+Standalone automation tooling for producing specialized release artifacts outside of the normal web deployment pipeline:
+
+| Script | Purpose |
+|---|---|
+| `scripts/build-offline.sh` | Builds a static, ZIP-packaged offline version of the site |
+| `scripts/build-search-index.ts` | Pre-generates the search index used by offline builds |
+| `scripts/generate-pdfs.ts`, `scripts/generate-master-pdf.ts` | Generate per-page and combined PDF exports |
+| `scripts/build-pdf.sh` | Wraps the PDF generation scripts into a single build step |
+
+See [Offline Export](/guides/offline-export) for how these fit into a release workflow.
+
+---
+
+## Root config files
+
+| File | Purpose |
+|---|---|
+| `package.json` | Project dependencies and CLI script runners (`dev`, `build`, `start`, `lint`). |
+| `next.config.ts` | Next.js compilation options, security headers, and static export toggles. |
+| `tsconfig.json` | Global TypeScript compiler settings. |
+| `eslint.config.mjs` | Project code quality and linting rules. |
+| `.env.example` | Local environment configuration blueprint. Dplicate to `.env.local` to start. |
+| `vercel.json` | Optimized deployment configurations specific to Vercel. |
+
+<Callout type="note">
+After running `camelmind update`, you may see a `.camelmind-update-backup/` folder appear — it holds a timestamped copy of any files the updater overwrote. It's safe to delete once you've confirmed the update looks correct.
+</Callout>
+
+---
+
+## Next steps
+
+| Goal | Where to go |
+|---|---|
+| Write and organize pages | [Writing Content](/guides/writing-docs) |
+| Use Callout, Steps, Tabs, and more | [MDX Components](/guides/mdx-components) |
+| Change the sidebar and URLs | [Navigation](/guides/navigation) |
+| Publish multiple doc versions | [Versioning](/guides/versioning) |
+| Gate pages by user role | [Authentication & RBAC](/guides/auth-rbac) |
+| Every config option in detail | [Configuration Reference](/reference/configuration) |
