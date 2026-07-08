@@ -60,7 +60,7 @@ export function TopNav({ nav, userRoles, userName, authEnabled = false, versions
         <div className="hidden md:flex items-center gap-6 flex-1">
           {nav.map((item) => {
             if (isNavGroup(item)) {
-              const visibleItems = (item.items ?? []).filter((i) => canSee(i.roles) && !i.hidden_from_nav)
+              const visibleItems = (item.items ?? []).filter((i) => canSee(i.roles))
               const directHref = item.slug ?? visibleItems[0]?.slug
 
               if ((item.noDropdown || !item.items) && directHref) {

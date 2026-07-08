@@ -11,7 +11,6 @@ export type NavEntry = {
   slug: string
   file: string
   roles: string[]
-  hidden_from_nav?: boolean  // accessible by URL but excluded from dropdown and sidebar
   section?: NavChild[]   // renders as ALL CAPS category block with children below
   children?: NavChild[]  // renders as a plain collapsible row (no category label)
 }

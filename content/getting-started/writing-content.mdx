@@ -1,0 +1,163 @@
+---
+title: Writing Content
+description: How to write and organize content or documentation pages in CamelMind using Markdown and MDX.
+---
+
+CamelMind uses [MDX](https://mdxjs.com/) — Markdown extended with JSX. MDX combines standard Markdown with React components, giving you all the simplicity of Markdown plus interactive components such as callouts, tabs, and step-by-step guides.
+
+To publish a page, simply:
+
+1. Create an `.mdx` file inside the `content/` directory.
+2. Add the page to `nav/nav.yml`.
+3. Start writing.
+
+<Callout type="tip">
+Unlike many documentation frameworks, CamelMind does not generate URLs from your folder structure. Instead, every page is mapped to a URL in <code>nav/nav.yml</code>, giving you complete control over your site's navigation.
+</Callout>
+
+---
+
+## File format
+
+Every content file is a plain `.mdx` file with optional YAML frontmatter at the top:
+
+```mdx
+---
+title: My Page
+description: A short summary used in search results and meta tags.
+---
+
+Body content goes here.
+```
+
+### Frontmatter fields
+
+| Field | Required | Description |
+|---|---|---|
+| `title` | Yes | Page title shown in the browser tab and sidebar |
+| `description` | No | Short summary for search results and `<meta>` description |
+
+---
+
+## Markdown basics
+
+CamelMind supports full [CommonMark](https://commonmark.org/) Markdown plus [GitHub Flavored Markdown](https://github.github.com/gfm/), including tables, task lists, and strikethrough text. For basic formatting syntax, see [GitHub document](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+
+---
+
+## Code blocks
+
+Use fenced code blocks with a language identifier for syntax highlighting:
+
+````mdx
+```bash
+npm run dev
+```
+
+```typescript
+const greeting = "Hello, world!"
+```
+
+```yaml
+nav:
+  - label: "Getting Started"
+    dropdown: true
+```
+````
+
+<Callout type="tip">
+Supported languages include `bash`, `typescript`, `javascript`, `python`, `yaml`, `json`, `mdx`, `css`, `html`, `sql`, and many more.
+</Callout>
+
+---
+
+## Inline elements
+
+```mdx
+**Bold text**
+*Italic text*
+`inline code`
+[Link text](https://example.com)
+![Alt text](image.png)
+```
+
+---
+
+## Images
+
+Store images in `public/images/` and reference them with a root-relative path:
+
+```mdx
+![Diagram](/images/architecture.png)
+```
+
+Images automatically support click-to-zoom on documentation pages.
+
+---
+
+## MDX components
+
+Because CamelMind uses MDX, you can embed React components directly into your documentation without importing them.
+
+```mdx
+<Callout type="tip">
+This is a tip.
+</Callout>
+```
+rendered as:
+
+<Callout type="tip">
+This is a tip.
+</Callout>
+
+
+and this:
+
+```mdx
+<Steps>
+  <Step n={1} title="Install">
+    Run the installer.
+  </Step>
+
+  <Step n={2} title="Start">
+    Launch the development server.
+  </Step>
+</Steps>
+
+```
+rendered as:
+
+<Steps>
+  <Step n={1} title="Install">
+    Run the installer.
+  </Step>
+
+  <Step n={2} title="Start">
+    Launch the development server.
+  </Step>
+</Steps>
+
+
+See [MDX Components](/guides/mdx-components) for the full component reference.
+
+---
+
+## Organizing content
+
+A typical documentation project looks like this:
+
+```text
+content/
+├── getting-started/
+│   ├── introduction.mdx
+│   └── installation.mdx
+├── guides/
+│   ├── writing-content.mdx
+│   └── navigation.mdx
+└── reference/
+    └── configuration.mdx
+```
+
+These folders are only for organization.
+
+Unlike most documentation frameworks, CamelMind does not derive URLs from the file system. Instead, each page is mapped to a URL in `nav/nav.yml`, making it easy to reorganize your content without breaking links.

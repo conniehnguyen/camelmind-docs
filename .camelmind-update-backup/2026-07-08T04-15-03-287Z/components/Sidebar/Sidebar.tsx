@@ -16,83 +16,59 @@ function canSee(roles: string[], userRoles: string[], authEnabled: boolean) {
   return roles.length === 0 || roles.some((r) => userRoles.includes(r))
 }
 
-// Recursively check if any descendant matches the slug
-function subtreeContains(items: NavChild[], slug: string): boolean {
-  return items.some(
-    (c) => c.slug === slug || (c.children ? subtreeContains(c.children, slug) : false)
-  )
-}
-
 // Doc page link (leaf node inside a section)
-function DocLink({ item, currentSlug, depth = 0 }: { item: NavChild; currentSlug: string; depth?: number }) {
+function DocLink({ item, currentSlug }: { item: NavChild; currentSlug: string }) {
   const isActive = currentSlug === item.slug
-  const isNested = depth > 0
-  const wrapperIndent = isNested ? `${depth * 7}px` : undefined
-
   return (
-    <div style={wrapperIndent ? { paddingLeft: wrapperIndent } : {}}>
+    <li>
       <Link
         href={item.slug}
         style={isActive ? { borderColor: "var(--cm-active-border)", color: "var(--cm-active)" } : {}}
-        className={`block py-1.5 pr-3 text-sm transition-colors ${
-          isNested
-            ? "pl-4 border-l-2"
-            : "pl-2"
-        } ${
+        className={`block py-1.5 pl-4 pr-3 text-sm border-l-2 transition-colors ${
           isActive
             ? "font-medium bg-black/5 dark:bg-white/10"
-            : isNested
-              ? "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-600"
-              : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+            : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-600"
         }`}
       >
         {item.label}
       </Link>
-    </div>
+    </li>
   )
 }
 
-// Collapsible section row — renders children as DocLink or nested SectionRow
+// Collapsible section row (e.g. "DoW Deployment") — collapsed by default
 function SectionRow({
   section,
   currentSlug,
   userRoles,
   authEnabled = false,
-  depth = 0,
 }: {
   section: NavChild
   currentSlug: string
   userRoles: string[]
   authEnabled?: boolean
-  depth?: number
 }) {
   const docs = (section.children ?? []).filter((c) => canSee(c.roles, userRoles, authEnabled))
   const hasChildren = docs.length > 0
 
-  // Open if the current page is anywhere in the subtree
+  // Open only if the current page lives inside this section
   const containsCurrent =
-    currentSlug === section.slug || subtreeContains(docs, currentSlug)
+    currentSlug === section.slug ||
+    docs.some((d) => currentSlug === d.slug)
 
   const [open, setOpen] = useState(containsCurrent)
-
-  const isNested = depth > 0
-  const wrapperIndent = isNested ? `${depth * 7}px` : undefined
 
   // No children — render as a plain link, no arrow
   if (!hasChildren) {
     return (
-      <div className="mb-0.5" style={wrapperIndent ? { paddingLeft: wrapperIndent } : {}}>
+      <div className="mb-0.5">
         <Link
           href={section.slug}
           style={currentSlug === section.slug ? { borderColor: "var(--cm-active-border)", color: "var(--cm-active)" } : {}}
-          className={`block py-1.5 pr-2 text-sm transition-colors ${
-            isNested ? "pl-4 border-l-2" : "pl-2"
-          } ${
+        className={`block py-1.5 pl-4 pr-2 text-sm border-l-2 transition-colors ${
             currentSlug === section.slug
               ? "font-medium bg-black/5 dark:bg-white/10"
-              : isNested
-                ? "border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-600"
-                : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+              : "border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-600"
           }`}
         >
           {section.label}
@@ -102,61 +78,30 @@ function SectionRow({
   }
 
   return (
-    <div className="mb-0.5" style={wrapperIndent ? { paddingLeft: wrapperIndent } : {}}>
-      {/* Section header — link navigates, chevron toggles collapse */}
-      <div
-        style={isNested && currentSlug === section.slug ? { borderColor: "var(--cm-active-border)" } : {}}
-        className={`flex items-start rounded hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${
-          isNested ? `border-l-2 ${currentSlug === section.slug ? "" : "border-transparent"}` : ""
-        }`}
+    <div className="mb-0.5">
+      {/* Section header — full-width click area toggles collapse */}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between py-1.5 px-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors rounded"
       >
-        <Link
-          href={section.slug}
-          style={currentSlug === section.slug ? { color: "var(--cm-active)" } : {}}
-          className={`flex-1 min-w-0 py-1.5 text-sm leading-snug transition-colors ${
-            isNested ? "pl-4" : "pl-2"
-          } ${
-            currentSlug === section.slug
-              ? "font-medium"
-              : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-          }`}
+        <span>{section.label}</span>
+        <svg
+          className={`w-3.5 h-3.5 shrink-0 text-gray-400 transition-transform ${open ? "rotate-0" : "rotate-180"}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2.5}
         >
-          {section.label}
-        </Link>
-        <button
-          onClick={() => setOpen((o) => !o)}
-          className="shrink-0 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-          aria-label={open ? "Collapse" : "Expand"}
-        >
-          <svg
-            className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-0" : "rotate-180"}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-          </svg>
-        </button>
-      </div>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+      </button>
 
       {open && (
-        <div className="mt-0.5 mb-1">
-          {docs.map((doc) =>
-            (doc.children ?? []).filter((c) => canSee(c.roles, userRoles, authEnabled)).length > 0 ? (
-              <SectionRow
-                key={doc.slug}
-                section={doc}
-                currentSlug={currentSlug}
-                userRoles={userRoles}
-                authEnabled={authEnabled}
-                depth={depth + 1}
-              />
-            ) : (
-              <DocLink key={doc.slug} item={doc} currentSlug={currentSlug} depth={depth + 1} />
-            )
-          )}
-        </div>
+        <ul className="mt-0.5 mb-1">
+          {docs.map((doc) => (
+            <DocLink key={doc.slug} item={doc} currentSlug={currentSlug} />
+          ))}
+        </ul>
       )}
     </div>
   )

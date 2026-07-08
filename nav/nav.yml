@@ -16,3 +16,11 @@ nav:
             slug: /getting-started/project-structure
             file: content/getting-started/project-structure.mdx
             roles: []
+          - label: "Writing Content"
+            slug: /getting-started/writing-content
+            file: content/getting-started/writing-content.mdx
+            roles: []
+          - label: "Use MDX Components"
+            slug: /getting-started/mdx-components
+            file: content/getting-started/mdx-components.mdx
+            roles: [] 

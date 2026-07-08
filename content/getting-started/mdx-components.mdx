@@ -1,0 +1,245 @@
+---
+title: Use MDX Components
+description: Build richer documentation with CamelMind's built-in MDX components. No imports required.
+---
+
+CamelMind includes a library of built-in MDX components that help you create documentation that's easier to read and navigate. Every component is available in any `.mdx` file—no imports or setup required.
+
+---
+
+## Callout
+
+Use a `Callout` to emphasize important information, tips, warnings, or success messages.
+
+```mdx
+<Callout type="note">A general note.</Callout>
+
+<Callout type="tip">A helpful tip.</Callout>
+
+<Callout type="warning">
+Something to watch out for.
+</Callout>
+
+<Callout type="important">
+Pay close attention.
+</Callout>
+
+<Callout type="danger">
+A critical warning.
+</Callout>
+
+<Callout type="success">
+Configuration saved successfully.
+</Callout>
+```
+
+<Callout type="note">A general note.</Callout>
+
+<Callout type="tip">A helpful tip.</Callout>
+
+<Callout type="warning">Something to watch out for.</Callout>
+
+<Callout type="important">Pay close attention.</Callout>
+
+<Callout type="danger">A critical warning.</Callout>
+
+<Callout type="success">Configuration saved successfully.</Callout>
+
+### Custom title
+
+Override the default heading with the `title` prop.
+
+```mdx
+<Callout
+  type="warning"
+  title="Rate limits apply"
+>
+The API accepts up to 1,000 requests per minute.
+</Callout>
+```
+
+<Callout
+  type="warning"
+  title="Rate limits apply"
+>
+The API accepts up to 1,000 requests per minute.
+</Callout>
+
+### Custom icon
+
+Replace the default icon with any [Lucide](https://lucide.dev/icons/) icon.
+
+```mdx
+<Callout type="tip" icon="rocket">
+Ready to launch.
+</Callout>
+```
+
+<Callout type="tip" icon="rocket">
+Ready to launch.
+</Callout>
+
+---
+
+## Steps
+
+Use `Steps` for installation guides, tutorials, and sequential workflows to guide users through a process.
+
+```mdx
+<Steps>
+  <Step n={1} title="Install">
+    Run the installer.
+  </Step>
+
+  <Step n={2} title="Start">
+    Launch the development server.
+  </Step>
+</Steps>
+
+```
+rendered as:
+
+<Steps>
+  <Step n={1} title="Install">
+    Run the installer.
+  </Step>
+
+  <Step n={2} title="Start">
+    Launch the development server.
+  </Step>
+</Steps>
+
+---
+
+## Tabs
+
+Use tabs when readers can choose between multiple alternatives.
+
+Examples include:
+- npm / pnpm / yarn
+- JavaScript / TypeScript
+- Linux / macOS / Windows
+
+<Tabs>
+<Tab label="npm">
+
+```bash
+npm install camelmind
+```
+
+</Tab>
+
+<Tab label="pnpm">
+
+```bash
+pnpm add camelmind
+```
+
+</Tab>
+
+<Tab label="yarn">
+
+```bash
+yarn add camelmind
+```
+
+</Tab>
+</Tabs>
+
+---
+
+## Details (collapsible sections)
+
+Use `Details` to hide optional or advanced information behind a collapsible section.
+
+```mdx
+<Details summary="Advanced configuration">
+
+These settings are only needed for enterprise deployments.
+
+</Details>
+```
+rendered as:
+
+<Details summary="Advanced configuration">
+
+These settings are only needed for enterprise deployments.
+
+</Details>
+
+
+### Anchor-linkable details
+
+Give a `Details` component an `id` to create a shareable link.
+
+```mdx
+<Details
+  id="rate-limits"
+  summary="Rate limits"
+>
+
+Content...
+
+</Details>
+```
+
+rendered as:
+
+<Details
+  id="rate-limits"
+  summary="Rate limits"
+>
+
+Content...
+
+</Details>
+
+---
+
+## Display code
+
+Standard Markdown code fences automatically include:
+
+- Syntax highlighting
+- Copy button
+- Line wrapping
+- Dark mode support
+
+```typescript
+function greet(name: string) {
+  return `Hello ${name}`;
+}
+```
+
+---
+
+## Control AI-visible content
+
+<Tabs>
+<Tab label="LLMOnly">
+
+Content inside `LLMOnly` is included in `llms.txt` but hidden from the rendered documentation.
+
+```mdx
+<LLMIgnore>
+
+Internal implementation details.
+
+</LLMIgnore>
+```
+</Tab>
+<Tab label="LLMIgnore">
+
+Content inside `LLMIgnore` is visible to readers but omitted from `llms.txt`.
+
+```mdx
+<LLMIgnore>
+
+Internal implementation details.
+
+</LLMIgnore>
+```
+</Tab>
+</Tabs>
+
+See LLMs.txt for more information.

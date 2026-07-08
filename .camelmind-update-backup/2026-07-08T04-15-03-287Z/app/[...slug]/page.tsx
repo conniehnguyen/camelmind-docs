@@ -97,8 +97,7 @@ export default async function DocPage({ params }: Props) {
 
   const activeGroup = getGroupForSlugFromConfig(nav, fullSlug) as NavGroup | null
   const sectionEntry = getSectionForSlugFromConfig(nav, fullSlug) as NavEntry | null
-  const { frontmatter, source: rawSource, toc, lastUpdated, lastUpdatedAuthor } = loadMdxFile(navEntry.file)
-  const source = rawSource.replace(/\n+([ \t]*<\/Tab>)/g, "\n\n{' '}\n\n$1")
+  const { frontmatter, source, toc, lastUpdated, lastUpdatedAuthor } = loadMdxFile(navEntry.file)
   const isSectionRoot = sectionEntry?.slug === fullSlug
 
   return (

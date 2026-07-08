@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useId, Children, isValidElement } from "react"
+import { useState, Children, isValidElement } from "react"
 
 type TabProps = {
   label: string
@@ -19,43 +19,20 @@ export function Tabs({ children }: { children: React.ReactNode }) {
     )
   ) as React.ReactElement<TabProps>[]
 
-  // Stable per-instance group id — SSR-safe, unique across multiple Tabs on the same page
-  const uid = useId().replace(/[^a-z0-9]/g, "")
-
-  const getIndexFromHash = () => {
-    if (typeof window === "undefined") return 0
-    const match = window.location.hash.match(new RegExp(`^#__tabbed_${uid}_(\\d+)$`))
-    if (!match) return 0
-    const idx = parseInt(match[1], 10) - 1 // hash is 1-based
-    return idx >= 0 && idx < tabs.length ? idx : 0
-  }
-
   const [active, setActive] = useState(0)
-
-  useEffect(() => {
-    setActive(getIndexFromHash())
-    const onHashChange = () => setActive(getIndexFromHash())
-    window.addEventListener("hashchange", onHashChange)
-    return () => window.removeEventListener("hashchange", onHashChange)
-  }, [])
-
-  const handleClick = (i: number) => {
-    setActive(i)
-    history.replaceState(null, "", `#__tabbed_${uid}_${i + 1}`)
-  }
 
   if (tabs.length === 0) return null
 
   return (
-    <div className="my-4">
+    <div className="my-4 not-prose">
       {/* Screen: tabbed UI — hidden in PDF via data-print="hide" */}
       <div data-print="hide" className="rounded-lg border border-gray-200 overflow-hidden">
-        {/* Tab bar — not-prose scoped here so prose styles don't bleed into buttons */}
-        <div className="not-prose flex border-b border-gray-200 bg-gray-50">
+        {/* Tab bar */}
+        <div className="flex border-b border-gray-200 bg-gray-50">
           {tabs.map((tab, i) => (
             <button
               key={i}
-              onClick={() => handleClick(i)}
+              onClick={() => setActive(i)}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                 i === active
                   ? "border-gray-900 text-gray-900 bg-white"
