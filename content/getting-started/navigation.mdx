@@ -1,0 +1,543 @@
+---
+title: Configure Site Navigation
+description: Learn how to organize pages, define URLs, and control navigation with nav.yml.
+---
+
+CamelMind uses a single file—`nav/nav.yml`—to define your site's navigation.
+
+Unlike many documentation frameworks, CamelMind does **not** generate navigation or URLs from your folder structure. Instead, `nav.yml` is the source of truth for:
+
+- Which pages appear in the sidebar
+- The order they appear in
+- The URL of every page
+- Which users can access each page
+
+This gives you complete control over your documentation without having to move or rename files.
+
+---
+
+## How navigation works
+
+Each page in your site is defined by a navigation entry.
+
+```yaml
+nav:
+  - label: "Getting Started"
+    dropdown: true
+    items:
+      - label: "Overview"
+        slug: /getting-started/overview
+        file: content/getting-started/overview.mdx
+        roles: []
+
+      - label: "Installation"
+        slug: /getting-started/installation
+        file: content/getting-started/installation.mdx
+        roles: []
+```
+
+Each entry connects a public URL to an MDX file.
+
+```
+URL
+   ↓
+/getting-started/overview
+
+nav.yml
+   ↓
+content/getting-started/overview.mdx
+```
+
+---
+
+## Navigation entry
+
+Every page includes four fields.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `label` | Yes | Display name shown in the sidebar and navigation. |
+| `slug` | Yes | The public URL for the page. |
+| `file` | Yes | Path to the MDX file. |
+| `roles` | Yes | Roles allowed to access the page. Use `[]` for public pages. |
+
+---
+
+## Organize pages however you like
+
+The location of a file has **no effect** on its URL.
+
+For example:
+
+```yaml
+- label: Overview
+  slug: /overview
+  file: content/archive/v2/introduction.mdx
+  roles: []
+```
+
+The page is served at `/overview` even though the file lives deep inside your project.
+
+This makes it easy to reorganize your content without changing links.
+
+---
+
+## Reuse the same page
+
+A single MDX file can appear in multiple places throughout your documentation.
+
+```yaml
+- label: User Guide
+  slug: /guides/user-guide
+  file: content/shared/user-guide.mdx
+  roles: []
+
+- label: Administrator Guide
+  slug: /admin/user-guide
+  file: content/shared/user-guide.mdx
+  roles: [admin]
+```
+
+This is useful when different audiences need access to the same content through different navigation paths.
+
+---
+
+## Create navigation groups
+
+Top-level entries become navigation groups.
+
+```yaml
+nav:
+  - label: Platform
+    dropdown: true
+    items:
+      - label: Architecture
+        slug: /platform/architecture
+        file: content/platform/architecture.mdx
+        roles: []
+
+      - label: Security
+        slug: /platform/security
+        file: content/platform/security.mdx
+        roles: []
+```
+
+When a visitor opens any page in the group, the corresponding sidebar is displayed automatically.
+
+<Callout type="tip">
+
+Think of each top-level group as a section of your documentation, such as **Getting Started**, **Guides**, or **Reference**.
+
+</Callout>
+
+---
+
+## Add sidebar categories
+
+Large navigation groups can be divided into visual categories using `section`.
+
+```yaml
+items:
+  - label: "Getting Started"
+    slug: /getting-started/overview
+    file: content/getting-started/overview.mdx
+    roles: []
+    section:
+      - label: "Installation"
+        slug: /getting-started/installation
+        file: content/getting-started/installation.mdx
+        roles: []
+
+      - label: "Project Structure"
+        slug: /getting-started/project-structure
+        file: content/getting-started/project-structure.mdx
+        roles: []
+```
+
+The parent entry (`Getting Started`) is displayed as an all-caps section header in the sidebar, with its `section` items listed beneath it. Unlike a sidebar category (`category: true`), the parent entry is also a real documentation page. It must define its own `slug`, `file`, and `roles`, and typically serves as an overview or landing page for that section.
+
+---
+
+## Nest pages with children
+
+Any entry—whether it's a top-level item, a `section` item, or another `children` item—can have a `children` array to make it a collapsible row in the sidebar.
+
+```yaml
+- label: "Deployment"
+  slug: /guides/deployment
+  file: content/guides/deployment.mdx
+  roles: []
+  children:
+    - label: "Docker"
+      slug: /guides/deployment/docker
+      file: content/guides/deployment/docker.mdx
+      roles: []
+
+    - label: "Vercel"
+      slug: /guides/deployment/vercel
+      file: content/guides/deployment/vercel.mdx
+      roles: []
+```
+
+Unlike `section`, `children` doesn't add an all-caps category label—the parent entry itself becomes a clickable row with a chevron that expands to reveal its children. `children` can also nest inside `children` for additional levels of indentation.
+
+---
+
+## Full schema examples
+
+=== "Example: every field in one nav.yml"
+
+```yaml
+nav:
+  # ============================================================================
+  # Top-level navigation
+  # ============================================================================
+  # A top-level entry without `dropdown: true` renders as a direct link in the
+  # top navigation.
+  #
+  # Result:
+  # Top Nav
+  # ├── Home
+  #
+  - label: "Home"
+    slug: /home
+    file: content/home.mdx
+    roles: []
+
+  # ============================================================================
+  # Navigation group
+  # ============================================================================
+  # Setting `dropdown: true` creates a navigation group.
+  #
+  # Since `noDropdown` is not enabled, this renders as a dropdown menu in the
+  # top navigation. Each item below appears in the dropdown.
+  #
+  # Result:
+  # Top Nav
+  # ├── Guides ▼
+  # │    ├── Getting Started
+  # │    └── Deployment
+  #
+  - label: "Guides"
+    dropdown: true
+    items:
+
+      # ------------------------------------------------------------------------
+      # Section page
+      # ------------------------------------------------------------------------
+      # This is BOTH:
+      #
+      # • A page (users can visit it)
+      # • A section header in the sidebar
+      #
+      # Because it contains a `section`, CamelMind renders this entry as an
+      # ALL-CAPS section heading in the sidebar.
+      #
+      # Result:
+      #
+      # GETTING STARTED
+      #   Installation
+      #   Configuration
+      #
+      # Unlike a display-only category, this entry must define:
+      #
+      # • slug
+      # • file
+      # • roles
+      #
+      # It's typically used as an overview page for the section.
+      #
+      - label: "Getting Started"
+        slug: /guides/getting-started/overview
+        file: content/guides/getting-started/overview.mdx
+        roles: []
+
+        section:
+
+          # Standard page within the section.
+          # Renders as a normal sidebar link.
+          - label: "Installation"
+            slug: /guides/getting-started/installation
+            file: content/guides/getting-started/installation.mdx
+            roles: []
+
+          # Sidebar group
+          #
+          # Because this entry contains `children`, it becomes a collapsible
+          # group instead of a simple link.
+          #
+          # Result:
+          #
+          # Configuration ▼
+          #   Environment Variables
+          #   Feature Flags
+          #
+          - label: "Configuration"
+            slug: /guides/getting-started/configuration
+            file: content/guides/getting-started/configuration.mdx
+            roles: []
+
+            children:
+
+              # Child pages are nested beneath their parent.
+              - label: "Environment Variables"
+                slug: /guides/getting-started/configuration/env-vars
+                file: content/guides/getting-started/configuration/env-vars.mdx
+                roles: []
+
+              - label: "Feature Flags"
+                slug: /guides/getting-started/configuration/feature-flags
+                file: content/guides/getting-started/configuration/feature-flags.mdx
+                roles: []
+
+      # ------------------------------------------------------------------------
+      # Sidebar group (without a section)
+      # ------------------------------------------------------------------------
+      # This entry contains `children` but no `section`.
+      #
+      # Unlike "Getting Started", it does NOT create an ALL-CAPS section
+      # heading. Instead, this page itself becomes the collapsible sidebar row.
+      #
+      # Result:
+      #
+      # Deployment ▼
+      #   Docker
+      #   Vercel
+      #
+      - label: "Deployment"
+        slug: /guides/deployment
+        file: content/guides/deployment.mdx
+        roles: []
+
+        children:
+          - label: "Docker"
+            slug: /guides/deployment/docker
+            file: content/guides/deployment/docker.mdx
+            roles: []
+
+          - label: "Vercel"
+            slug: /guides/deployment/vercel
+            file: content/guides/deployment/vercel.mdx
+            roles: []
+
+  # ============================================================================
+  # Direct top-level link
+  # ============================================================================
+  # `dropdown: true` normally creates a dropdown menu.
+  #
+  # Setting `noDropdown: true` changes the behavior so this renders as a direct
+  # top navigation link instead.
+  #
+  # The link uses this entry's own `slug`, while the `items` are still available
+  # to build the sidebar for pages within this section.
+  #
+  # Result:
+  #
+  # Top Nav
+  # ├── Reference
+  #
+  - label: "Reference"
+    dropdown: true
+    noDropdown: true
+    slug: /reference/overview
+
+    items:
+      - label: "API"
+        slug: /reference/api
+        file: content/reference/api.mdx
+        roles: []
+```
+
+=== "Example: no dropdown menus, with sections and children"
+
+Setting `noDropdown: true` on every group means nothing ever opens as a dropdown button in the top nav—each group is a direct link, and all the grouping happens in the sidebar via `section` and `children`.
+
+```yaml
+nav:
+  # ============================================================================
+  # Single documentation section
+  # ============================================================================
+  # This configuration creates a single top-level documentation section.
+  #
+  # `noDropdown: true` renders "Documentation" as a direct link in the top
+  # navigation instead of a dropdown menu. The pages defined below build the
+  # sidebar for this section.
+  #
+  # Result:
+  #
+  # Top Nav
+  # ├── Documentation
+  #
+  - label: "Documentation"
+    dropdown: false
+    noDropdown: true
+
+    items:
+
+      # ------------------------------------------------------------------------
+      # Section landing page
+      # ------------------------------------------------------------------------
+      # This entry serves two purposes:
+      #
+      # • It's the landing page for the Documentation section.
+      # • It becomes the ALL-CAPS section heading in the sidebar.
+      #
+      # Because it contains a `section`, CamelMind renders this entry as a
+      # sidebar section header while still allowing users to visit the page.
+      #
+      # Result:
+      #
+      # OVERVIEW
+      #   Quick Start
+      #   Advanced
+      #
+      # Unlike a display-only category, this page must define:
+      #
+      # • slug
+      # • file
+      # • roles
+      #
+      # It's typically used as an introduction or overview of the section.
+      #
+      - label: "Overview"
+        slug: /docs/overview
+        file: content/docs/overview.mdx
+        roles: []
+
+        section:
+
+          # Standard documentation page.
+          # Appears as a normal sidebar link.
+          - label: "Quick Start"
+            slug: /docs/quick-start
+            file: content/docs/quick-start.mdx
+            roles: []
+
+          # Sidebar group
+          #
+          # Because this entry contains `children`, CamelMind renders it as a
+          # collapsible group in the sidebar.
+          #
+          # Result:
+          #
+          # Advanced ▼
+          #   Caching
+          #   Scaling
+          #
+          - label: "Advanced"
+            slug: /docs/advanced
+            file: content/docs/advanced.mdx
+            roles: []
+
+            children:
+
+              # Child pages appear nested beneath "Advanced".
+              - label: "Caching"
+                slug: /docs/advanced/caching
+                file: content/docs/advanced/caching.mdx
+                roles: []
+
+              - label: "Scaling"
+                slug: /docs/advanced/scaling
+                file: content/docs/advanced/scaling.mdx
+                roles: []
+```
+
+`Documentation` renders in the top nav as a direct link to `/docs/overview` (its first visible item's slug, since the group itself has no `slug`). Its sidebar still shows the `Overview` category with `Quick Start` as a plain link and `Advanced` as a collapsible row.
+
+=== "Example: only children, no sections"
+
+Without any `section` fields, the sidebar has no all-caps category headers—every item is either a plain link or a collapsible row.
+
+```yaml
+nav:
+  - label: "Guides"
+    dropdown: true
+    items:
+      - label: "Writing Content"
+        slug: /guides/writing-content
+        file: content/guides/writing-content.mdx
+        roles: []
+        children:
+          - label: "Markdown Basics"
+            slug: /guides/writing-content/markdown-basics
+            file: content/guides/writing-content/markdown-basics.mdx
+            roles: []
+
+          - label: "Frontmatter"
+            slug: /guides/writing-content/frontmatter
+            file: content/guides/writing-content/frontmatter.mdx
+            roles: []
+```
+
+In the top nav, `Guides` is a dropdown listing `Writing Content`. In the sidebar, `Writing Content` has no category header above it—it's simply a collapsible row that expands to show `Markdown Basics` and `Frontmatter`.
+
+===
+
+---
+
+## Restrict access with roles
+
+The `roles` field determines who can view and access a page.
+
+| Roles | Access |
+| --- | --- |
+| `[]` | Public |
+| `["admin"]` | Administrators only |
+| `["vendor","admin"]` | Vendors or administrators |
+
+Pages that users don't have permission to access are:
+
+- Hidden from navigation
+- Blocked from direct URL access
+
+See **Authentication & RBAC** for configuration details.
+
+---
+
+## Navigation and versioning
+
+Each documentation version has its own navigation file.
+
+```yaml
+versions:
+  - id: latest
+    nav: nav/nav.yml
+
+  - id: v1
+    nav: nav/nav-v1.yml
+```
+
+This allows every version to have its own page structure and sidebar.
+
+CamelMind automatically prefixes URLs with the version ID, so a slug like:
+
+```text
+/getting-started/overview
+```
+
+becomes:
+
+```text
+/v1/getting-started/overview
+```
+
+when rendered for version `v1`.
+
+---
+
+## Change the navigation file
+
+By default CamelMind looks for:
+
+```text
+nav/nav.yml
+```
+
+You can change this in `camelmind.config.ts`.
+
+```typescript
+const config: CamelMindConfig = {
+  navFile: "nav/nav.yml",
+}
+```

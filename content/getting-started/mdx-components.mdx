@@ -115,36 +115,27 @@ rendered as:
 
 Use tabs when readers can choose between multiple alternatives.
 
-Examples include:
-- npm / pnpm / yarn
-- JavaScript / TypeScript
-- Linux / macOS / Windows
+```mdx
+  === "Tab 1"
 
-<Tabs>
-<Tab label="npm">
+  Camels have remarkable desert adaptations. A hump stores up to 80 pounds of fat for energy rather than water.
 
-```bash
-npm install camelmind
+  === "Tab 2"
+  Camels are surprisingly fast, able to run up to 40 miles per hour. They can carry up to 900 pounds for 25 miles a day.
+
+  ===
 ```
+rendered as:
 
-</Tab>
+=== "Tab 1"
 
-<Tab label="pnpm">
+Camels have remarkable desert adaptations. A hump stores up to 80 pounds of fat for energy rather than water.
 
-```bash
-pnpm add camelmind
-```
+=== "Tab 2"
+Camels are surprisingly fast, able to run up to 40 miles per hour. They can carry up to 900 pounds for 25 miles a day.
 
-</Tab>
+===
 
-<Tab label="yarn">
-
-```bash
-yarn add camelmind
-```
-
-</Tab>
-</Tabs>
 
 ---
 

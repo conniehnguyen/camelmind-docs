@@ -24,3 +24,7 @@ nav:
             slug: /getting-started/mdx-components
             file: content/getting-started/mdx-components.mdx
             roles: [] 
+          - label: "Configure Navigation"
+            slug: /getting-started/navigation
+            file: content/getting-started/navigation.mdx
+            roles: [] 

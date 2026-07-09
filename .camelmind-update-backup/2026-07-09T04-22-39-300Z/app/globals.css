@@ -1,0 +1,558 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Tailwind v4 dark mode — toggled by .dark class on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── CamelMind design tokens (Sahara theme) ── */
+:root {
+  --cm-camel-gold: #D8A15B;
+  --cm-sandstone: #F4D6A7;
+  --cm-oasis-teal: #4BA8B7;
+  --cm-caravan-brown: #6A4B33;
+  --cm-night-dune: #1E2833;
+  --cm-parchment: #FFF6E9;
+  --cm-dune-beige: #E7D7BF;
+  --cm-palm-green: #8FA65C;
+  --cm-sunset-gold: #E8B34E;
+  --cm-shadow-brown: #4B3424;
+  --cm-border-sand: #E6DCCB;
+
+  --cm-primary: var(--cm-oasis-teal);
+  --cm-success: #5B9B62;
+  --cm-warning: #D9A441;
+  --cm-danger: #C76B56;
+
+  --cm-bg-primary: var(--cm-parchment);
+  --cm-bg-secondary: #FCF8F1;
+  --cm-bg-tertiary: #F7F1E7;
+  --cm-text-primary: var(--cm-caravan-brown);
+  --cm-text-secondary: #7A624F;
+  --cm-text-muted: #9B8876;
+  --cm-border: var(--cm-border-sand);
+  --cm-link: var(--cm-oasis-teal);
+  --cm-link-hover: #388A97;
+
+  --cm-btn-primary-bg: var(--cm-oasis-teal);
+  --cm-btn-primary-text: #FFFFFF;
+
+  --cm-note-bg: #EDF8FA;
+  --cm-note-border: #4BA8B7;
+  --cm-note-icon: #2E8391;
+  --cm-tip-bg: #F1F6EC;
+  --cm-tip-border: #7D9850;
+  --cm-tip-icon: #6A8741;
+  --cm-warning-bg: #FFF7E6;
+  --cm-warning-border: #D8A15B;
+  --cm-warning-icon: #B67D32;
+  --cm-important-bg: #F1EEF8;
+  --cm-important-border: #6B5B95;
+  --cm-important-icon: #56467C;
+  --cm-danger-bg: #FFF1ED;
+  --cm-danger-border: #BF6651;
+  --cm-danger-icon: #A54D39;
+  --cm-success-bg: #ECF7EF;
+  --cm-success-border: #5B9B62;
+  --cm-success-icon: #4D8453;
+
+  --cm-radius-md: 10px;
+  --cm-font-heading: var(--font-alegreya), Georgia, serif;
+  --cm-font-body: var(--font-inter), system-ui, sans-serif;
+  --cm-font-mono: var(--font-jetbrains-mono), monospace;
+
+  --cm-active: var(--cm-oasis-teal);
+  --cm-active-border: var(--cm-oasis-teal);
+}
+
+.dark {
+  --cm-bg-primary: #1E2833;
+  --cm-bg-secondary: #26323F;
+  --cm-bg-tertiary: #2D3B4A;
+  --cm-text-primary: #F8F2E8;
+  --cm-text-secondary: #D7C8B4;
+  --cm-text-muted: #B8A996;
+  --cm-border: #3B4A5A;
+  --cm-link: #63C1CF;
+  --cm-link-hover: #7AD2DE;
+  --cm-active: #63C1CF;
+  --cm-active-border: #63C1CF;
+
+  --cm-note-bg: #1F3E49;
+  --cm-note-border: #63C1CF;
+  --cm-note-icon: #8BDDE8;
+  --cm-tip-bg: #344329;
+  --cm-tip-border: #A7BC72;
+  --cm-tip-icon: #B8CC84;
+  --cm-warning-bg: #4A3518;
+  --cm-warning-border: #E8B34E;
+  --cm-warning-icon: #F0C46F;
+  --cm-important-bg: #48351F;
+  --cm-important-border: #D8A15B;
+  --cm-important-icon: #E3BA7A;
+  --cm-danger-bg: #4A241F;
+  --cm-danger-border: #D9826C;
+  --cm-danger-icon: #E99B87;
+  --cm-success-bg: #24402C;
+  --cm-success-border: #73B97B;
+  --cm-success-icon: #8ACD91;
+}
+
+.cm-primary-button {
+  background: var(--cm-btn-primary-bg);
+  color: var(--cm-btn-primary-text);
+  border-radius: var(--cm-radius-md);
+}
+
+/* ── Callout / Admonition styles ── */
+
+.callout {
+  margin-bottom: 1.25rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: var(--cm-bg-secondary);
+  border: 1.5px solid var(--cm-border);
+  overflow: hidden;
+}
+
+.callout-header {
+  border-radius: 8px 8px 0 0;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--cm-text-primary);
+}
+
+.callout-body {
+  padding: 0.5rem 0.75rem 0.75rem;
+  font-size: 0.95rem;
+  color: var(--cm-text-primary);
+}
+
+.callout.note  { border-color: var(--cm-note-border); }
+.callout.note  .callout-header { background-color: var(--cm-note-bg); color: var(--cm-text-primary); }
+.callout.note  .callout-header svg { color: var(--cm-note-icon); }
+
+.callout.tip   { border-color: var(--cm-tip-border); }
+.callout.tip   .callout-header { background-color: var(--cm-tip-bg); color: var(--cm-text-primary); }
+.callout.tip   .callout-header svg { color: var(--cm-tip-icon); }
+
+.callout.warning { border-color: var(--cm-warning-border); }
+.callout.warning .callout-header { background-color: var(--cm-warning-bg); color: var(--cm-text-primary); }
+.callout.warning .callout-header svg { color: var(--cm-warning-icon); }
+
+.callout.important { border-color: var(--cm-important-border); }
+.callout.important .callout-header { background-color: var(--cm-important-bg); color: var(--cm-text-primary); }
+.callout.important .callout-header svg { color: var(--cm-important-icon); }
+
+.callout.danger  { border-color: var(--cm-danger-border); }
+.callout.danger  .callout-header { background-color: var(--cm-danger-bg); color: var(--cm-text-primary); }
+.callout.danger  .callout-header svg { color: var(--cm-danger-icon); }
+
+.callout.success { border-color: var(--cm-success-border); }
+.callout.success .callout-header { background-color: var(--cm-success-bg); color: var(--cm-text-primary); }
+.callout.success .callout-header svg { color: var(--cm-success-icon); }
+
+body {
+  font-family: var(--cm-font-body);
+}
+
+/* ── Prose refinements ── */
+
+/* Tighter max-width for better line length */
+.prose {
+  max-width: 680px;
+}
+
+/* Alternating table rows — no cell borders */
+.prose table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.prose thead th {
+  background-color: #f4f4f4;
+  border-bottom: 2px solid #e0e0e0;
+  padding: 0.55rem 0.85rem;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+}
+.prose tbody td {
+  padding: 0.55rem 0.85rem;
+  border: none;
+  font-size: 0.9rem;
+  vertical-align: top;
+}
+.prose tbody tr:nth-child(even) td {
+  background-color: #f9f9f9;
+}
+.prose tbody tr:nth-child(odd) td {
+  background-color: #ffffff;
+}
+
+/* Remove underlines from heading anchor links */
+.prose h1 a,
+.prose h2 a,
+.prose h3 a,
+.prose h4 a,
+.prose h5 a,
+.prose h6 a {
+  text-decoration: none;
+}
+
+/* Strip background and restore color for code inside pre (code blocks) */
+.prose pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  color: #e2e8f0;
+}
+
+/* Inline code — covers both backtick syntax and raw <code> tags in MDX */
+.prose code {
+  background-color: #f3f4f6;
+  color: #1f2937;
+  padding: 0.15rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: normal;
+  font-family: ui-monospace, monospace;
+}
+
+/* Remove backtick pseudo-elements added by @tailwindcss/typography */
+@layer utilities {
+  .prose code::before,
+  .prose code::after {
+    content: none;
+  }
+}
+
+/* Softer code block background */
+.prose pre, pre {
+  background-color: #1a1d23 !important;
+  border-radius: 8px;
+}
+
+/* Timeline container */
+.timeline {
+  display: flex;
+  flex-direction: column; /* stack vertically for better responsiveness */
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-top: 1.5rem;
+}
+
+/* Wrapper for all timeline steps */
+.timeline-content {
+  width: 100%;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+/* Individual timeline item */
+.timeline-item {
+  margin-bottom: 2.5rem;
+  position: relative;
+  padding-left: 2rem;
+  max-width: 100%;
+}
+
+/* Numbered circle — used by raw HTML divs in MDX */
+.timeline-item::before {
+  content: attr(data-step);
+  position: absolute;
+  left: -2rem;
+  top: 0;
+  background-color: #636363;
+  color: white;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 16px;
+  z-index: 1;
+}
+
+/* When a real <a> renders the circle (Step component), suppress ::before */
+.timeline-item:has(.timeline-step-anchor:not(:empty))::before {
+  display: none;
+}
+
+/* Anchor link that IS the circle — same geometry as ::before */
+.timeline-step-anchor {
+  position: absolute;
+  left: -2rem;
+  top: 0;
+  background-color: #636363;
+  color: white;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 16px;
+  z-index: 1;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+.timeline-step-anchor:hover {
+  background-color: #444;
+}
+
+/* Dotted vertical line */
+.timeline-item:not(.last-item)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -1.25rem;
+  width: 2px;
+  height: calc(100% + 40px);
+  background-color: transparent;
+  border-left: 2px dotted #dadde1;
+}
+
+/* Timeline heading spacing */
+.timeline-item h3 {
+  margin-bottom: 0.5rem;
+}
+
+/* Timeline images */
+.timeline-image img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+
+/* Image zoom */
+.prose img {
+  cursor: zoom-in;
+  transition: transform 0.3s ease-in-out;
+  position: relative;
+  z-index: 1;
+  border-radius: 6px;
+}
+
+.prose img.zoomed {
+  transform: scale(1.7);
+  cursor: zoom-out;
+  z-index: 9999;
+  position: relative;
+}
+
+
+/* ── Dark mode overrides ── */
+
+.dark .callout {
+  background-color: var(--cm-bg-secondary);
+  border-color: var(--cm-border);
+}
+
+.dark .callout-header {
+  color: var(--cm-text-primary);
+}
+
+.dark .callout-body {
+  color: var(--cm-text-secondary);
+}
+
+.dark .callout.note  { border-color: var(--cm-note-border); }
+.dark .callout.note  .callout-header { background-color: var(--cm-note-bg); }
+
+.dark .callout.tip   { border-color: var(--cm-tip-border); }
+.dark .callout.tip   .callout-header { background-color: var(--cm-tip-bg); }
+
+.dark .callout.warning { border-color: var(--cm-warning-border); }
+.dark .callout.warning .callout-header { background-color: var(--cm-warning-bg); }
+
+.dark .callout.important { border-color: var(--cm-important-border); }
+.dark .callout.important .callout-header { background-color: var(--cm-important-bg); }
+
+.dark .callout.danger  { border-color: var(--cm-danger-border); }
+.dark .callout.danger  .callout-header { background-color: var(--cm-danger-bg); }
+
+.dark .callout.success { border-color: var(--cm-success-border); }
+.dark .callout.success .callout-header { background-color: var(--cm-success-bg); }
+
+/* Dark prose — tables, code, headings */
+.dark .prose {
+  color: #d1d5db;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4 {
+  color: #f3f4f6;
+}
+
+.dark .prose strong {
+  color: #f3f4f6;
+}
+
+.dark .prose a {
+  color: #93c5fd;
+}
+
+.dark .prose h1 a,
+.dark .prose h2 a,
+.dark .prose h3 a,
+.dark .prose h4 a,
+.dark .prose h5 a,
+.dark .prose h6 a {
+  color: inherit;
+}
+
+.dark .prose thead th {
+  background-color: #1f2937;
+  border-bottom-color: #374151;
+  color: #d1d5db;
+}
+
+.dark .prose tbody tr:nth-child(even) td {
+  background-color: #1a1f2e;
+}
+
+.dark .prose tbody tr:nth-child(odd) td {
+  background-color: #111827;
+}
+
+.dark .prose code:not(pre code) {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.dark .prose pre code {
+  background: none !important;
+  color: #e2e8f0;
+}
+
+/* Prose link styles override the circle's color — win specificity back */
+.prose .timeline-step-anchor,
+.dark .prose .timeline-step-anchor {
+  color: white;
+}
+
+/* Dark timeline */
+.dark .timeline-item::before {
+  background-color: #4b5563;
+}
+
+.dark .timeline-step-anchor {
+  background-color: #4b5563;
+  color: white;
+}
+
+.dark .timeline-step-anchor:hover {
+  background-color: #6b7280;
+}
+
+.dark .timeline-item:not(.last-item)::after {
+  border-left-color: #374151;
+}
+
+/* ── Print / PDF styles ── */
+@media print {
+  /* Hide all chrome — nav, sidebar, ToC, actions, footer */
+  nav,
+  aside,
+  footer,
+  [data-print="hide"],
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Break the h-screen / overflow layout so full content prints.
+     Target Tailwind utility classes directly — they map 1:1 to CSS selectors. */
+  html,
+  body,
+  .h-screen,
+  .h-full {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .overflow-hidden,
+  .overflow-y-auto,
+  .overflow-x-hidden {
+    overflow: visible !important;
+  }
+
+  /* flex-1 inside a fixed-height container would clip; release it */
+  .flex-1 {
+    flex: none !important;
+    height: auto !important;
+  }
+
+  /* Full-width article */
+  article {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Expand all <details> elements — also handled via JS in generate-pdfs.ts */
+  details,
+  details[open] {
+    display: block !important;
+  }
+  details > :not(summary) {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  /* Avoid breaking inside callouts, code blocks, tables, timeline steps */
+  .callout,
+  pre,
+  table,
+  figure,
+  .timeline-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Keep headings with the content below them */
+  h1, h2, h3, h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Remove link underlines and interactive cursor */
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+
+  /* Disable image zoom cursor */
+  .prose img {
+    cursor: default !important;
+    transform: none !important;
+    max-width: 100%;
+  }
+
+  /* Code blocks — keep dark background */
+  pre, code {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Callout backgrounds */
+  .callout {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 18mm 16mm 18mm 16mm;
+  }
+}
