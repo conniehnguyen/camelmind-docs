@@ -30,15 +30,23 @@ Each entry in `versions.yml` registers a documentation site.
 ```yaml
 versions:
   - id: docs
+    stable: true
     label: "Documentation"
     nav: nav/docs.yml
 
   - id: api
+    stable: true
     label: "API Reference"
     nav: nav/api.yml
 ```
 
-Each site references its own navigation file, allowing every documentation collection to have its own page structure, sidebar, and organization.
+Each site references its own navigation file, allowing every documentation collection to have its own page structure, sidebar, and organization.>
+
+<Callout type="tip" title="The `stable` field">
+
+Use the `stable` field to mark the recommended documentation site. CamelMind uses this flag to display UI indicators, such as a **Stable** badge in the version selector, helping readers identify the recommended documentation. It does not affect routing, URL generation, or navigation.
+
+</Callout>
 
 ---
 
