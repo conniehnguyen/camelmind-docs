@@ -1,0 +1,149 @@
+---
+title: Configure Multiple Documentation Sites
+description: Learn how to publish multiple documentation sites within a single CamelMind project using versions.yml.
+---
+
+CamelMind lets you publish multiple independent documentation sites from a single project.
+
+Each site has its own:
+
+- Navigation
+- URL namespace
+- Sidebar
+- Content structure
+
+This makes it easy to organize different types of documentation while managing everything in one repository. For example, you might publish:
+
+- Product Documentation
+- API Documentation
+- SDK Documentation
+- Internal Documentation
+
+Each documentation site is defined in `versions.yml`.
+
+---
+
+## Define your documentation sites
+
+Each entry in `versions.yml` registers a documentation site.
+
+```yaml
+versions:
+  - id: docs
+    label: "Documentation"
+    nav: nav/docs.yml
+
+  - id: api
+    label: "API Reference"
+    nav: nav/api.yml
+```
+
+Each site references its own navigation file, allowing every documentation collection to have its own page structure, sidebar, and organization.
+
+---
+
+## How URLs are generated
+
+Navigation entries always define their own page slugs without worrying about prefixes.
+
+For example:
+
+```yaml
+slug: /getting-started/overview
+```
+
+CamelMind determines the final URL based on the documentation site's position in `versions.yml`. The **first** documentation site is treated as the primary site and keeps its URLs unchanged. Every additional site is automatically prefixed with its `id`.
+
+For example:
+
+```yaml
+versions:
+  - id: docs
+    label: "Documentation"
+    nav: nav/docs.yml
+  - id: api
+    label: "API Reference"
+    nav: nav/api.yml
+  - id: sdk
+    label: "SDK"
+    nav: nav/sdk.yml
+```
+
+If each navigation file contains the same slug:
+
+```yaml
+slug: /getting-started/overview
+```
+
+CamelMind generates these URLs:
+
+| Documentation site | Final URL |
+| :--- | :--- |
+| docs (first site) | `/getting-started/overview` |
+| api | `/api/getting-started/overview` |
+| sdk | `/sdk/getting-started/overview` |
+
+---
+
+## Independent navigation
+
+Each documentation site can organize its pages differently.
+
+For example:
+
+```text
+nav/
+├── docs.yml
+├── api.yml
+└── sdk.yml
+```
+
+Each navigation file is completely independent, allowing you to organize pages differently for each documentation site. For example:
+
+- Product documentation can focus on tutorials and guides.
+- API documentation can organize endpoints by resource.
+- SDK documentation can group pages by programming language.
+
+See [Configure Navigation](/getting-started/navigation) to learn how to structure each navigation file.
+
+---
+
+## Default documentation site
+
+If your project only contains a single documentation site, you only need one entry:
+
+```yaml
+versions:
+  - id: docs
+    label: Documentation
+    nav: nav/nav.yml
+```
+
+Most projects only need a single navigation file. Add additional entries when you want to publish separate documentation collections.
+
+---
+
+## Configure the default navigation file
+
+CamelMind looks for `nav/nav.yml` by default.
+
+You can change this in `camelmind.config.ts`.
+
+```typescript
+const config: CamelMindConfig = {
+  navFile: "nav/nav.yml",
+}
+```
+This setting defines the default navigation file used by the primary documentation site.
+
+---
+
+## Common use cases
+
+| Scenario | Recommended setup |
+| :--- | :--- |
+| Product documentation | One documentation site |
+| Product documentation + API reference | Two documentation sites |
+| Public documentation + Internal documentation | Two documentation sites |
+| Product, API, and SDK documentation | Three documentation sites |
+| Multi-tenant or white-label documentation | One documentation site per tenant |

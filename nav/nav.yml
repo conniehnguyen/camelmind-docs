@@ -28,3 +28,7 @@ nav:
             slug: /getting-started/navigation
             file: content/getting-started/navigation.mdx
             roles: [] 
+          - label: "Multiple Documentation Sites"
+            slug: /getting-started/multiple-doc-sites
+            file: content/getting-started/multiple-doc-sites.mdx
+            roles: [] 
