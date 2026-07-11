@@ -32,3 +32,26 @@ nav:
             slug: /getting-started/multiple-doc-sites
             file: content/getting-started/multiple-doc-sites.mdx
             roles: [] 
+      - label: "Features"
+        slug: /getting-started/overview
+        file: content/getting-started/overview.mdx
+        roles: []
+        section:
+          - label: "Auth and RBAC"
+            slug: /features/auth-rbac
+            file: content/features/auth-rbac.mdx
+            roles: []
+          - label: "llms.text"
+            slug: /features/llms-txt
+            file: content/features/llms-docs.mdx
+            roles: []
+          - label: "Offline Export"
+            slug: /features/offline-export
+            file: content/features/offline.mdx
+            roles: []
+          - label: "API Reference"
+            slug: /features/api-reference
+            file: content/features/api-reference.mdx
+            roles: []
+
+

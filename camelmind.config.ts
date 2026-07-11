@@ -29,6 +29,10 @@ const config: CamelMindConfig = {
     github: "https://github.com/conniehnguyen/camelmind",
   },
 
+  site: {
+    showFeedbackWidget: true,
+  },
+
   llms: {
     enabled: true,
     directive:
