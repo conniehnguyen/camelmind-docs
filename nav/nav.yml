@@ -49,11 +49,11 @@ nav:
             roles: []
           - label: "Offline Export"
             slug: /features/offline-export
-            file: content/features/offline.mdx
+            file: content/features/offline-export.mdx
             roles: []
           - label: "PDF Export"
             slug: /features/pdf-export
-            file: content/features/offline.mdx
+            file: content/features/offline-export.mdx
             roles: []
           - label: "API Reference"
             slug: /features/api-reference
