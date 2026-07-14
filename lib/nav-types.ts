@@ -9,7 +9,7 @@ export type NavChild = {
 export type NavEntry = {
   label: string
   slug: string
-  file: string
+  file?: string  // omit to render a bare section-landing page (title + "In this section" only)
   roles: string[]
   hidden_from_nav?: boolean  // accessible by URL but excluded from dropdown and sidebar
   section?: NavChild[]   // renders as ALL CAPS category block with children below

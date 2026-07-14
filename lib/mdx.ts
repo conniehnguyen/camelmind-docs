@@ -3,6 +3,7 @@ import path from "path"
 import { execSync } from "child_process"
 import matter from "gray-matter"
 import yaml from "js-yaml"
+import GithubSlugger from "github-slugger"
 
 // gray-matter's bundled YAML engine calls the js-yaml v3 API (safeLoad/safeDump),
 // which js-yaml v4 removed — pass the current API explicitly.
@@ -41,15 +42,13 @@ export type DocContent = {
 function extractToc(source: string): TocEntry[] {
   const headingRegex = /^(#{2,3})\s+(.+)$/gm
   const entries: TocEntry[] = []
+  const slugger = new GithubSlugger()
   let match
 
   while ((match = headingRegex.exec(source)) !== null) {
     const level = match[1].length
     const text = match[2].trim()
-    const id = text
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-")
+    const id = slugger.slug(text)
     entries.push({ id, text, level })
   }
 

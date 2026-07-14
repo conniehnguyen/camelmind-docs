@@ -35,9 +35,13 @@ export type ApiReferenceConfig = {
   roles?: string[]
 }
 
-export type LlmsConfig = {
+export type LlmsTxtConfig = {
   enabled?: boolean
   directive?: string
+}
+
+export type AiConfig = {
+  llmsTxt?: LlmsTxtConfig
 }
 
 export type CamelMindConfig = {
@@ -53,5 +57,5 @@ export type CamelMindConfig = {
   }
   site?: SiteFeatures
   apiReference?: ApiReferenceConfig
-  llms?: LlmsConfig
+  ai?: AiConfig
 }

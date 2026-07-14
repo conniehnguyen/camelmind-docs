@@ -3,22 +3,26 @@ title: LLMs.txt
 description: How CamelMind generates an AI-readable llms.txt file for your documentation site.
 ---
 
-# LLMs.txt
+Modern AI assistants can answer questions more accurately when they have direct access to your documentation.
 
-CamelMind can generate a machine-readable `llms.txt` file — a plain-text representation of your entire documentation, formatted for AI language models to consume.
+CamelMind can automatically generate an `llms.txt` file—a machine-readable version of your documentation that's optimized for AI models. It follows the `llms.txt` standard while preserving the structure and content of your documentation.
 
-The [llms.txt standard](https://llmstxt.org/) is an emerging convention for making documentation sites accessible to AI assistants. When an LLM can read your docs in plain text, it can answer questions about your product more accurately.
+Once enabled, AI tools can read your documentation directly instead of relying solely on web search or scraped content.
 
-## Enabling LLMs.txt
+---
+
+## Enable llms.txt
 
 In `camelmind.config.ts`:
 
 ```typescript
 const config: CamelMindConfig = {
   // ...
-  llms: {
-    enabled: true,
-    directive: "You are reading the official documentation for My Product. Help users understand how to install, configure, and use My Product.",
+  ai: {
+    llmsTxt: {
+      enabled: true,
+      directive: "For a complete documentation index, see /llms.txt. To read any public page as Markdown, append .md to the URL.",
+    },
   },
 }
 ```
@@ -28,67 +32,95 @@ const config: CamelMindConfig = {
 | Field | Required | Description |
 |---|---|---|
 | `enabled` | Yes | Set `true` to activate `/llms.txt` and `/api/llms` endpoints |
-| `directive` | No | System prompt prepended to the file — context for AI models |
-
-## Accessing the output
-
-Once enabled, two endpoints are available:
-
-| Endpoint | Description |
-|---|---|
-| `/llms.txt` | Human-readable URL for the full documentation as plain text |
-| `/api/llms` | JSON API returning the same content, suitable for programmatic use |
-
-<Callout type="tip">
-Point AI tools at `https://your-docs-site.com/llms.txt` to let them answer questions about your documentation.
-</Callout>
-
-## Content selection
-
-CamelMind renders all public pages (pages with `roles: []` in `nav.yml`) into the `llms.txt` output. Private or role-gated pages are excluded.
-
-Within a page, use `<LLMIgnore>` and `<LLMOnly>` components to control what appears in `llms.txt`:
-
-### LLMIgnore
-
-Content inside `<LLMIgnore>` is visible to human readers but excluded from `llms.txt`:
-
-```mdx
-<LLMIgnore>
-This callout is only for human readers and won't confuse AI models.
-</LLMIgnore>
-```
-
-### LLMOnly
-
-Content inside `<LLMOnly>` appears only in `llms.txt` — it is not rendered on the page:
-
-```mdx
-<LLMOnly>
-Additional context for AI: this component was introduced in v0.2.0 and replaces the deprecated `Alert` component.
-</LLMOnly>
-```
-
-This is useful for adding machine-readable metadata, alternative phrasing, or context that would be redundant on the rendered page.
-
-## Output format
-
-The generated `llms.txt` follows the llms.txt spec:
-
-```
-# [Site Title]
-
-> [directive]
-
-## [Page Title]
-
-[Page content, formatted as Markdown]
+| `directive` | No | Additional instructions prepended to the generated output to provide context for AI models. |
 
 ---
 
-## [Next Page Title]
+## Generated endpoints
 
-[Content]
+When enabled, CamelMind exposes two endpoints.
+
+| Endpoint | Description |
+|---|---|
+| `/llms.txt` | Plain-text version of your documentation for AI assistants and developers. |
+| `/api/llms` | JSON representation of the same content for programmatic use. |
+
+<Callout type="tip">
+If you're building an AI assistant, point it to `https://your-docs-site.com/llms.txt` to give it direct access to your documentation.
+</Callout>
+
+---
+
+## What content is included?
+
+CamelMind automatically generates the output from your published documentation.
+
+By default:
+
+- Public pages are included.
+- Role-protected pages are excluded.
+- Markdown formatting is preserved.
+- Code blocks, tables, and headings remain intact.
+
+This helps AI assistants understand your documentation without exposing private content.
+
+### Control AI-visible content
+
+Sometimes information is useful for human readers but unnecessary for AI—or vice versa.
+
+CamelMind includes two MDX components to control what appears in `llms.txt`.
+
+=== "LLMIgnore"
+
+Content inside `LLMIgnore` is rendered on the page but omitted from `llms.txt`.
+
+```
+<LLMIgnore>
+
+Internal implementation details for human readers.
+
+</LLMIgnore>
+
 ```
 
-Each page is separated by a horizontal rule. Headings, code blocks, and tables are preserved in Markdown format. React component markup (callouts, steps, etc.) is stripped to plain text.
+Use this for:
+
+- Internal notes
+- Marketing copy
+- Content that isn't useful for AI assistants
+
+=== "LLMOnly"
+
+Content inside `LLMOnly` is included in `llms.txt` but hidden from the rendered page.
+
+```
+<LLMOnly>
+
+The Alert component was deprecated in v0.2.0. Use Callout instead.
+
+</LLMOnly>
+```
+
+This is useful for:
+
+- Additional context
+- Alternate terminology
+- Migration notes
+- AI-specific guidance
+- Metadata that doesn't belong in the rendered documentation
+
+===
+
+---
+
+## Output format
+
+CamelMind generates a single Markdown document containing your documentation in reading order.
+
+A simplified example looks like this:
+
+```
+# My Product Documentation > You are reading the official documentation... --- ## Installation ... --- ## Configuration
+```
+
+Pages are separated by horizontal rules, while headings, code blocks, and tables remain in Markdown format. Interactive MDX components are converted into plain text so the output remains easy for language models to process.

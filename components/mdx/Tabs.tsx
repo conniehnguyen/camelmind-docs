@@ -47,7 +47,7 @@ export function Tabs({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="my-4 border border-[var(--cm-border)] rounded-[var(--cm-radius-md)] overflow-hidden">
-      <div className="flex border-b border-[var(--cm-border)] px-2 pt-1" role="tablist">
+      <div className="flex overflow-x-auto scrollbar-thin border-b border-[var(--cm-border)] px-2 pt-1" role="tablist">
         {tabs.map((tab, i) => (
           <button
             key={i}
@@ -57,7 +57,7 @@ export function Tabs({ children }: { children: React.ReactNode }) {
             id={`tab-${uid}-${i}`}
             onClick={() => handleClick(i)}
             style={active === i ? { borderColor: "var(--cm-active-border)", color: "var(--cm-active)" } : {}}
-            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            className={`flex-shrink-0 whitespace-nowrap px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               active === i
                 ? "font-semibold"
                 : "border-transparent text-[var(--cm-text-muted)] hover:text-[var(--cm-text-secondary)] hover:border-[var(--cm-border)]"

@@ -52,9 +52,11 @@ const config: CamelMindConfig = {
     roles: [],
   },
 
-  llms: {
-    enabled: false,
-    directive: "",
+  ai: {
+    llmsTxt: {
+      enabled: false,
+      directive: "",
+    },
   },
 }
 
@@ -123,9 +125,15 @@ Controls the OpenAPI-powered API reference section.
 | `languages` | `string[]` | `["curl", "javascript", "python"]` | Code sample languages |
 | `roles` | `string[]` | `[]` | Roles required to access the API reference |
 
-## `llms`
+## `ai`
 
-Controls the LLMs.txt output.
+Controls AI-related output.
+
+| Field | Type | Description |
+|---|---|---|
+| `llmsTxt` | `LlmsTxtConfig` | Configuration for the `/llms.txt` and `/api/llms` endpoints |
+
+### `ai.llmsTxt`
 
 | Field | Type | Default | Description |
 |---|---|---|---|

@@ -33,10 +33,11 @@ const config: CamelMindConfig = {
     showFeedbackWidget: true,
   },
 
-  llms: {
-    enabled: true,
-    directive:
-      "You are reading the official CamelMind documentation. CamelMind is an open-source docs-as-code platform built on Next.js. Help users understand how to set up, configure, and deploy documentation sites using CamelMind.",
+  ai: {
+    llmsTxt: {
+      enabled: true,
+      directive: "For a complete documentation index, see /llms.txt. To read any public page as Markdown, append .md to the URL.",
+    },
   },
 }
 

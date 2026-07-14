@@ -4,10 +4,13 @@ nav:
     noDropdown: true
     items:
       - label: "Getting Started"
-        slug: /getting-started/overview
-        file: content/getting-started/overview.mdx
+        slug: /getting-started
         roles: []
         section:
+          - label: "Introduction"
+            slug: /getting-started/introduction
+            file: content/getting-started/overview.mdx
+            roles: []
           - label: "Installation"
             slug: /getting-started/installation
             file: content/getting-started/installation.mdx
@@ -33,8 +36,7 @@ nav:
             file: content/getting-started/multiple-doc-sites.mdx
             roles: [] 
       - label: "Features"
-        slug: /getting-started/overview
-        file: content/getting-started/overview.mdx
+        slug: /getting-started/features
         roles: []
         section:
           - label: "Auth and RBAC"
@@ -49,9 +51,21 @@ nav:
             slug: /features/offline-export
             file: content/features/offline.mdx
             roles: []
+          - label: "PDF Export"
+            slug: /features/pdf-export
+            file: content/features/offline.mdx
+            roles: []
           - label: "API Reference"
             slug: /features/api-reference
             file: content/features/api-reference.mdx
+            roles: []
+          - label: "Feedback Widget"
+            slug: /features/feedback-widget
+            file: content/features/feedback-widget.mdx
+            roles: []
+          - label: "Show Last Updated"
+            slug: /features/last-updated
+            file: content/features/last-updated.mdx
             roles: []
 
 

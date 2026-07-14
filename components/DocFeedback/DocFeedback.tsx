@@ -29,30 +29,37 @@ type Props = {
 export function DocFeedback({ pageTitle, pageSlug }: Props) {
   const [step, setStep] = useState<Step>("idle")
   const [reason, setReason] = useState("")
+  const [freeText, setFreeText] = useState("")
   const [allowFollowUp, setAllowFollowUp] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   function handleYes() {
-    if (step === "yes") { setStep("idle"); setReason(""); return }
+    if (step === "yes") { setStep("idle"); setReason(""); setFreeText(""); return }
     setStep("yes")
     setReason("")
+    setFreeText("")
   }
 
   function handleNo() {
-    if (step === "no") { setStep("idle"); setReason(""); return }
+    if (step === "no") { setStep("idle"); setReason(""); setFreeText(""); return }
     setStep("no")
     setReason("")
+    setFreeText("")
   }
 
   async function handleSubmit() {
     setSubmitting(true)
+    const selectedLabel = reasons.find((r) => r.value === reason)?.label ?? reason
+    const enrichedReason = freeText.trim()
+      ? `${selectedLabel}: ${freeText.trim()}`
+      : selectedLabel
     try {
       await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           rating: step === "yes" ? "positive" : "negative",
-          reason,
+          reason: enrichedReason,
           allowFollowUp,
           pageTitle,
           pageSlug,
@@ -97,6 +104,16 @@ export function DocFeedback({ pageTitle, pageSlug }: Props) {
               </label>
             ))}
           </div>
+          {step === "no" && (
+            <textarea
+              value={freeText}
+              onChange={(e) => setFreeText(e.target.value)}
+              placeholder="Tell us more (optional)"
+              rows={3}
+              className="mt-4 w-full resize-none rounded-md border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-400"
+            />
+          )}
+
           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <label className="flex items-start gap-2 cursor-pointer">
               <input

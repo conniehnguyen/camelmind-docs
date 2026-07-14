@@ -98,9 +98,42 @@ export default async function DocPage({ params }: Props) {
 
   const activeGroup = getGroupForSlugFromConfig(nav, fullSlug) as NavGroup | null
   const sectionEntry = getSectionForSlugFromConfig(nav, fullSlug) as NavEntry | null
+  const isSectionRoot = sectionEntry?.slug === fullSlug
+
+  // Section landing page: no `file` in nav.yml — just a title + "In this section" list,
+  // with none of the single-doc chrome (markdown actions, last updated, feedback, prev/next).
+  if (!navEntry.file) {
+    if (!isSectionRoot || !sectionEntry) return notFound()
+
+    return (
+      <div className="flex flex-col h-screen">
+        <TopNav nav={nav.nav} userRoles={session?.roles ?? []} userName={session?.name ?? null} authEnabled={authEnabled} versions={versions} currentVersionId={versionId} currentSlug={fullSlug} versionSlugs={versionSlugs} apiRef={apiRef} />
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar activeGroup={activeGroup} currentSlug={fullSlug} userRoles={session?.roles ?? []} authEnabled={authEnabled} />
+          <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-950">
+            <div className="flex max-w-5xl mx-auto">
+              <article className="flex-1 px-4 md:px-10 py-6 md:py-8 min-w-0">
+                <div data-print="hide">
+                  <Breadcrumbs
+                    activeGroup={activeGroup}
+                    sectionEntry={sectionEntry}
+                    currentEntry={navEntry as NavEntry}
+                  />
+                </div>
+                <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-50">{sectionEntry.label}</h1>
+                <div data-print="hide">
+                  <SectionCards entry={sectionEntry} bare />
+                </div>
+              </article>
+            </div>
+          </main>
+        </div>
+      </div>
+    )
+  }
+
   const { frontmatter, source: rawSource, toc, lastUpdated, lastUpdatedAuthor } = loadMdxFile(navEntry.file)
   const source = preprocessTabs(rawSource).replace(/\n+([ \t]*<\/Tab>)/g, "\n\n{' '}\n\n$1")
-  const isSectionRoot = sectionEntry?.slug === fullSlug
 
   return (
     <div className="flex flex-col h-screen">
@@ -117,12 +150,14 @@ export default async function DocPage({ params }: Props) {
                   currentEntry={navEntry as NavEntry}
                 />
               </div>
-              <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-50">{frontmatter.title}</h1>
-              {frontmatter.description && (
-                <p className="text-gray-500 dark:text-gray-400 text-lg mb-6 leading-relaxed">{frontmatter.description}</p>
-              )}
-              <div data-print="hide">
-                <DocActions file={navEntry.file} downloadPdf={frontmatter.download_pdf} offline={process.env.OFFLINE_MODE === "true"} />
+              <div className="max-w-[680px]">
+                <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-50">{frontmatter.title}</h1>
+                {frontmatter.description && (
+                  <p className="text-gray-500 dark:text-gray-400 text-lg mb-6 leading-relaxed">{frontmatter.description}</p>
+                )}
+                <div data-print="hide">
+                  <DocActions file={navEntry.file} downloadPdf={frontmatter.download_pdf} offline={process.env.OFFLINE_MODE === "true"} />
+                </div>
               </div>
               <ZoomImages />
               <div className="prose prose-gray mt-6">

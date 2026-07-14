@@ -7,7 +7,7 @@ export const revalidate = 3600
 export async function GET() {
   const config = getConfig()
 
-  if (!config.llms?.enabled) {
+  if (!config.ai?.llmsTxt?.enabled) {
     return new Response("Not Found", { status: 404 })
   }
 
@@ -15,8 +15,8 @@ export async function GET() {
   const entries = getAllPublicEntries(nav)
   const baseUrl = config.url.replace(/\/$/, "")
 
-  const lines = entries.map((entry) => {
-    const frontmatter = loadFrontmatterOnly(entry.file)
+  const lines = entries.filter((entry) => entry.file).map((entry) => {
+    const frontmatter = loadFrontmatterOnly(entry.file!)
     const desc = frontmatter.description ?? frontmatter.title
     return `- [${frontmatter.title}](${baseUrl}${entry.slug}): ${desc}`
   })

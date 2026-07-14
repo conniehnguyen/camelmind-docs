@@ -1,11 +1,11 @@
 import Link from "next/link"
 import type { NavEntry } from "@/lib/nav-types"
 
-export function SectionCards({ entry }: { entry: NavEntry }) {
+export function SectionCards({ entry, bare }: { entry: NavEntry; bare?: boolean }) {
   if (!entry.section || entry.section.length === 0) return null
 
   return (
-    <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+    <div className={bare ? "mt-6" : "mt-12 pt-8 border-t border-gray-200 dark:border-gray-800"}>
       <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-wide text-xs">In this section</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {entry.section.map((child) => (

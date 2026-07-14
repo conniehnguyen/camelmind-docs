@@ -196,7 +196,7 @@ export function getAllPublicEntries(nav: NavConfig): (NavEntry | NavChild)[] {
     if ("dropdown" in item) {
       const group = item as NavGroup
       for (const entry of (group.items ?? [])) {
-        if (entry.roles.length === 0) entries.push(entry)
+        if (entry.roles.length === 0 && entry.file) entries.push(entry)
         if (entry.section) {
           for (const child of flattenChildren(entry.section)) {
             if (child.roles.length === 0) entries.push(child)
@@ -210,7 +210,7 @@ export function getAllPublicEntries(nav: NavConfig): (NavEntry | NavChild)[] {
       }
     } else if ("slug" in item) {
       const entry = item as NavEntry
-      if (entry.roles.length === 0) entries.push(entry)
+      if (entry.roles.length === 0 && entry.file) entries.push(entry)
     }
   }
   return entries

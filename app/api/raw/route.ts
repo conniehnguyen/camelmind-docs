@@ -26,7 +26,10 @@ function getNavEntriesForFile(file: string): (NavEntry | NavChild)[] {
   const normalized = path.normalize(file)
   const configs: NavConfig[] = [loadNav()]
   for (const v of loadVersions().versions) configs.push(getNavForVersion(v.id))
-  return configs.flatMap(getAllNavEntries).filter((e) => path.normalize(e.file) === normalized)
+  return configs.flatMap(getAllNavEntries).filter((e) => {
+    if (!e.file) return false
+    return path.normalize(e.file) === normalized
+  })
 }
 
 export async function GET(req: NextRequest) {
