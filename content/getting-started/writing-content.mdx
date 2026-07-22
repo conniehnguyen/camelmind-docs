@@ -95,6 +95,24 @@ Images automatically support click-to-zoom on documentation pages.
 
 ---
 
+## Partial content
+
+If you need to reuse the same content across multiple pages, create it as a partial.
+
+Store reusable snippets as `.mdx` files in the `/content/_partials` directory, then include them anywhere in your documentation using the `<Partial>` component:
+
+```mdx
+<Partial file="_partials/your-snippet.mdx" />
+```
+
+Using partials helps you maintain shared content in a single place, making updates easier and ensuring consistency across your documentation.
+
+<Callout type="note">
+Partial files are intended for inclusion only and should **not** be referenced directly in any `nav/*.yml` file.
+</Callout>
+
+---
+
 ## MDX components
 
 Because CamelMind uses MDX, you can embed React components directly into your documentation without importing them.
@@ -141,6 +159,7 @@ rendered as:
 See [MDX Components](/guides/mdx-components) for the full component reference.
 
 ---
+
 
 ## Organizing content
 

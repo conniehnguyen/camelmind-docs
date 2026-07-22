@@ -47,13 +47,13 @@ nav:
             slug: /features/llms-txt
             file: content/features/llms-docs.mdx
             roles: []
-          - label: "Offline Export"
-            slug: /features/offline-export
-            file: content/features/offline-export.mdx
+          - label: "Offline Package and PDF Export"
+            slug: /features/offline-package-and-pdf-export
+            file: content/features/offline-package-and-pdf-export.mdx
             roles: []
-          - label: "PDF Export"
-            slug: /features/pdf-export
-            file: content/features/offline-export.mdx
+          - label: "Launch Offline Site"
+            slug: /features/use-doc-offline
+            file: content/features/use-doc-offline.mdx
             roles: []
           - label: "API Reference"
             slug: /features/api-reference

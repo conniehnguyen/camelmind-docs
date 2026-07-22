@@ -1,0 +1,96 @@
+---
+title: Prepare & Download Offline Package and PDF
+description: Generate downloadable offline packages and master PDFs for a documentation version.
+---
+
+CamelMind lets users take your documentation with them. Generate a self-contained offline website for interactive browsing without an internet connection, or export your entire documentation as a single PDF for printing, sharing, or compliance requirements. Both artifacts are generated ahead of time and made available as downloads directly from the version selector.
+
+---
+
+<Callout type="important" title="Before you begin">
+
+- The version must exist in `versions.yml` and is a stable version (`stable: true`)
+- Install all project dependencies.
+- Install Playwright if you plan to generate PDFs.
+- Stop any running development server (`npm run dev`) before building.
+
+</Callout>
+
+## Build the artifacts
+
+Run the build script and specify the version ID.
+
+```bash
+./scripts/build-offline.sh latest
+```
+
+Or generate artifacts for another version.
+
+```bash
+./scripts/build-offline.sh v2
+```
+
+CamelMind generates the following files in `offline-builds/`:
+
+```text
+offline-builds/
+  camelmind-<version>-offline.zip
+  camelmind-<version>.pdf
+```
+
+| Artifact | Description |
+|----------|-------------|
+| `*-offline.zip` | Self-contained offline documentation site. |
+| `*.pdf` | Single PDF containing the cover page, table of contents, and every documentation page. |
+
+---
+
+## Publish the artifacts
+
+Start the documentation site normally.
+
+```bash
+npm run dev
+```
+
+Or deploy your production build.
+
+If CamelMind detects matching files in `offline-builds/`, download icons automatically appear beside every stable version in the version selector.
+
+- **ZIP** downloads the offline documentation package.
+- **PDF** downloads the master PDF.
+
+No additional configuration is required.
+
+---
+
+## Keep artifacts up to date
+
+Offline packages are generated only when you run the build script.
+
+Rebuild the artifacts whenever your documentation changes.
+
+For production deployments, include the build script in your CI/CD pipeline and deploy the `offline-builds/` directory alongside your application.
+
+---
+
+## Security considerations
+
+During the build process, authentication is bypassed so the generated ZIP and PDF contain **all documentation pages**, including restricted content.
+
+Only distribute offline packages to users who are authorized to access your documentation.
+
+---
+
+## Troubleshooting
+
+<Details summary="Build fails while the development server is running" id="offline-pdf-faq1">
+
+The offline build performs a full production build and static export. Stop `npm run dev` before running the build script.
+
+</Details>
+
+<Details summary="PDF generation fails" id="offline-pdf-faq2">
+
+PDF generation requires Playwright. Install Playwright before generating offline artifacts.
+</Details>

@@ -1,137 +1,210 @@
 ---
 title: API Reference
-description: How to add an OpenAPI-powered API reference to your CamelMind documentation site.
+description: Add an interactive OpenAPI-powered API reference to your CamelMind documentation site.
 ---
 
-# API Reference
+CamelMind can generate a fully interactive API reference from an OpenAPI 3.x specification. Once enabled, your API reference is automatically added to the top navigation and stays in sync with your documentation.
 
-CamelMind can render a full interactive API reference from an OpenAPI 3.x spec file. Enable it in `camelmind.config.ts` and point it at your spec — CamelMind handles the rest.
+Features include:
 
-## Enabling the API reference
+- Interactive endpoint documentation
+- Built-in request and response examples
+- Multi-language code samples
+- Support for multiple OpenAPI specifications
+- Role-based access control
+- Version-specific API references
 
-In `camelmind.config.ts`:
+---
 
-```typescript
-const config: CamelMindConfig = {
-  // ... other config
+<Callout type="important" title="Before you begin">
 
-  apiReference: {
-    enabled: true,
-    navLabel: "API Reference",    // label shown in the top nav
-    specs: {
-      "v1": {
-        label: "API v1",
-        file: "openapi/v1.yaml",
-      },
-    },
-    languages: ["curl", "javascript", "python"],
-    roles: [],                    // [] = public; restrict with role names
-  },
-}
+You'll need an OpenAPI 3.x specification in either YAML or JSON format.
+
+For example:
+
+```text
+openapi/
+└── openapi.yaml
 ```
-
-### Configuration fields
-
-| Field | Required | Description |
-|---|---|---|
-| `enabled` | Yes | Set `true` to activate the API reference |
-| `navLabel` | No | Label for the top nav link (default: `"API Reference"`) |
-| `specs` | Yes | Map of spec entries. Key is the spec ID, value has `label` and `file`. |
-| `languages` | No | Code sample languages to show. Defaults to `["curl", "javascript", "python"]`. |
-| `roles` | No | Role names required to access the API reference. `[]` = public. |
-
-## Spec file format
-
-CamelMind accepts **OpenAPI 3.x** specs in YAML or JSON format. Place your spec file anywhere in the project and reference it with a path relative to the project root:
-
-```typescript
-specs: {
-  "main": {
-    label: "REST API",
-    file: "openapi/openapi.yaml",
-  },
-}
-```
-
-### Example spec structure
-
-```yaml
-# openapi/openapi.yaml
-openapi: "3.1.0"
-info:
-  title: My API
-  version: "1.0.0"
-paths:
-  /users:
-    get:
-      summary: List users
-      responses:
-        "200":
-          description: OK
-```
-
-## Multiple specs
-
-You can register multiple spec files under different IDs:
-
-```typescript
-specs: {
-  "rest": {
-    label: "REST API",
-    file: "openapi/rest.yaml",
-  },
-  "webhooks": {
-    label: "Webhooks",
-    file: "openapi/webhooks.yaml",
-  },
-},
-```
-
-Each spec gets its own section in the API reference sidebar.
-
-## Where the API reference lives
-
-The API reference is served at `/api-reference` (or `/api-reference/[version-id]` for versioned sites). The link appears in the top nav automatically when `apiReference.enabled` is `true`.
-
-<Callout type="note">
-The API reference URL is separate from your docs navigation — it does not appear in `nav.yml`. It's controlled entirely by the `apiReference` config block.
 </Callout>
 
-## Access control
+## Enable the API reference
 
-Use the `roles` field to restrict the API reference to specific user roles:
+Enabling the API Reference requires two steps:
 
-```typescript
-apiReference: {
-  enabled: true,
-  roles: ["developer", "admin"],
-  // ...
+1. Configure one or more OpenAPI specifications in `camelmind.config.ts`.
+2. Associate a specification with each documentation version in `versions.yml`.
+
+<Steps>
+  <Step n={1} title="Configure your API specifications">
+    Open `camelmind.config.ts` and enable the API Reference.
+
+```ts
+const config: CamelMindConfig = {
+  apiReference: {
+    enabled: true,
+
+    navLabel: "API Reference",
+
+    specs: {
+      main: {
+        label: "REST API",
+        file: "openapi/openapi.yaml",
+      },
+    },
+  },
 }
 ```
 
-This gates the entire API reference section. You cannot currently gate individual endpoints by role.
-
-## Versioned API reference
-
-When using [versioning](/guides/versioning), each version can reference a different spec:
+This registers the available OpenAPI specifications for your documentation site.
+  </Step>
+  <Step n={2} title="Associate a spec with a documentation version">
+    Open `versions.yml` and specify which API specification should be displayed for each version.
 
 ```yaml
-# versions.yml
 versions:
   - id: "v2"
-    label: "v2 (Latest)"
+    label: "Latest"
     stable: true
-    nav: nav/nav-v2.yml
-    apiSpec:
-      label: "API v2"
-      file: openapi/v2.yaml
+    nav: nav/nav.yml
+
+    api_reference:
+      spec: main
+```
+  </Step>
+</Steps>
+
+---
+
+## Add multiple API specifications
+
+If your documentation includes multiple APIs—for example, a public API and a partner API—you can publish multiple OpenAPI specifications as tabs within the same API Reference.
+
+Configure the tabs for each documentation version in `versions.yml`:
+
+```yaml
+versions:
   - id: "v1"
     label: "v1"
     stable: true
     nav: nav/nav-v1.yml
+
+    api_reference:
+      tabs:
+        - id: main
+          spec: main-api
+
+        - id: partner
+          spec: partner-api
+```
+
+Each tab references a spec defined in `apiReference.specs` in `camelmind.config.ts`.
+
+The `spec` value must match one of the configured specification IDs.
+
+When users open the API Reference, they can switch between the available API specifications using the tabs at the top of the page.
+
+---
+
+## Customize code samples
+
+Choose which languages appear in the generated examples.
+
+```ts
+apiReference: {
+  languages: [
+    "curl",
+    "javascript",
+    "python",
+  ],
+}
+```
+
+By default CamelMind displays:
+
+- curl
+- JavaScript
+- Python
+
+---
+
+## Restrict access
+
+To make the API reference available only to specific users, configure the required roles.
+
+```ts
+apiReference: {
+  roles: [
+    "developer",
+    "admin",
+  ],
+}
+```
+
+If `roles` is empty (`[]`), the API reference is publicly accessible.
+
+<Callout type="note">
+Role restrictions apply to the entire API reference. Individual endpoints cannot currently be restricted independently.
+</Callout>
+
+---
+
+## Use different API specs for each documentation version
+
+If your documentation uses versioning, each version can display its own OpenAPI specification.
+
+```yaml
+versions:
+  - id: v2
+    label: v2 (Latest)
+
     apiSpec:
-      label: "API v1"
+      label: API v2
+      file: openapi/v2.yaml
+
+  - id: v1
+    label: v1
+
+    apiSpec:
+      label: API v1
       file: openapi/v1.yaml
 ```
 
-The version selector in the top nav also switches the displayed API spec.
+When users switch documentation versions, CamelMind automatically loads the corresponding API specification.
+
+---
+
+## Configuration reference
+
+| Field | Description |
+|------|-------------|
+| `enabled` | Enables the API Reference. |
+| `navLabel` | Text displayed in the top navigation. Default: `API Reference`. |
+| `specs` | One or more OpenAPI specifications to publish. |
+| `languages` | Languages shown for generated code samples. |
+| `roles` | Roles required to access the API Reference. Empty (`[]`) makes it public. |
+
+---
+
+## Supported specification format
+
+CamelMind supports **OpenAPI 3.x** specifications in either YAML or JSON format.
+
+Example:
+
+```yaml
+openapi: "3.1.0"
+
+info:
+  title: My API
+  version: "1.0.0"
+
+paths:
+  /users:
+    get:
+      summary: List users
+```
+
+<Callout type="note">
+The offline package includes the fully rendered API Reference for the downloaded documentation version. Any API references that are accessible on the live site are included in the offline package, allowing you to browse endpoints, request and response schemas, and code samples without signing in or connecting to the internet.
+</Callout>

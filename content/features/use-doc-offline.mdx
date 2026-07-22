@@ -1,0 +1,75 @@
+---
+title: Download Documentation for Offline Use
+description: Download your documentation as either a self-contained offline website or a single PDF for offline access.
+---
+
+CamelMind lets you download a self-contained offline copy of your documentation to access it anytime, even without an internet connection.
+
+---
+
+<Callout type="important" title="Before you begin">
+
+If your documentation site requires authentication, sign in first. The download buttons are only visible to authenticated users.
+
+</Callout>
+
+## Download an offline package
+
+1. Open the version selector in the navigation bar.
+2. Select the documentation version.
+3. Click the download icon.
+    ![Download Icon](/images/download-offline-pdf.png)
+
+CamelMind downloads a ZIP file containing a complete offline copy of that documentation version.
+
+---
+
+## Run the offline documentation
+
+Extract the downloaded ZIP file.
+
+Launch the local server included in the package.
+
+| Platform | Command |
+|----------|---------|
+| macOS / Linux | `./launch.sh` |
+| Windows | `launch.bat` |
+
+The launcher automatically opens:
+
+```
+http://localhost:8765/home/
+```
+
+The documentation behaves exactly like the online site, including:
+
+- Full-text search
+- Navigation
+- Images
+- Internal links
+
+No internet connection is required after the package has been downloaded.
+
+To stop the local server, press **Ctrl+C** in the terminal window.
+
+---
+
+## Download a PDF
+
+To download the documentation as a PDF:
+
+1. Open the version selector.
+2. Click the **PDF** icon beside the version.
+    ![Download Icon](/images/download-offline-pdf.png)
+
+CamelMind downloads a single PDF containing:
+
+- Cover page
+- Table of contents
+- Every documentation page
+
+---
+
+## Access to restricted content
+
+If you successfully downloaded the ZIP or PDF from a protected documentation site, the downloaded files already contain the content you were authorized to access. You do not need to sign in again when viewing the offline package or PDF.
