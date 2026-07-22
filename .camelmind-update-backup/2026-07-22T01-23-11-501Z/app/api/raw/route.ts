@@ -5,7 +5,6 @@ import { getSession, hasAccess } from "@/lib/auth"
 import { isAuthEnabled } from "@/lib/config"
 import { loadNav, flattenChildren } from "@/lib/nav"
 import { loadVersions, getNavForVersion } from "@/lib/versions"
-import { resolvePartials } from "@/lib/partials"
 import type { NavConfig, NavEntry, NavChild } from "@/lib/nav-types"
 
 function getAllNavEntries(nav: NavConfig): (NavEntry | NavChild)[] {
@@ -65,8 +64,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse("Not found", { status: 404 })
   }
 
-  // Resolve <Partial> includes so the exported/downloaded doc is self-contained
-  const raw = resolvePartials(fs.readFileSync(resolved, "utf-8"))
+  const raw = fs.readFileSync(resolved, "utf-8")
   const filename = path.basename(resolved).replace(/\.mdx?$/, ".md")
 
   const headers: Record<string, string> = {
