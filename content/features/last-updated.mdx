@@ -1,0 +1,98 @@
+---
+title: Show Last Updated
+description: Display when a documentation page was last updated, and optionally who made the change.
+last_updated: "2026-06-01"
+---
+
+Help readers understand how current your documentation is by displaying the date a page was last updated. You can also show the name of the person who made the most recent change.
+
+## Enable the Last Updated footer
+
+CamelMind displays the **Last updated** footer by default.
+
+To explicitly enable or disable it, update `camelmind.config.ts`:
+
+```ts
+site: {
+  showLastUpdated: true,
+},
+```
+
+To hide the footer on all pages:
+
+```ts
+site: {
+  showLastUpdated: false,
+},
+```
+
+When enabled, CamelMind displays the last updated date at the bottom of every documentation page.
+
+---
+
+## Show the author
+
+To include the author of the most recent change, enable `showLastUpdateAuthor`:
+
+```ts
+site: {
+  showLastUpdated: true,
+  showLastUpdateAuthor: true,
+},
+```
+
+Example:
+
+```text
+🕐 Last updated by Jane Doe on July 22, 2026
+```
+
+If `showLastUpdateAuthor` is disabled, only the date is shown.
+
+```text
+🕐 July 22, 2026
+```
+
+<Callout type="note">
+`showLastUpdateAuthor` has no effect when `showLastUpdated` is disabled.
+</Callout>
+
+---
+
+## Override the last updated date
+
+By default, CamelMind determines the last updated date automatically. If you want to display a specific date instead, add the `last_updated` field to the page's frontmatter.
+
+```md
+---
+title: Getting started
+last_updated: "2026-06-01"
+---
+```
+
+CamelMind displays this value instead of the automatically detected date.
+
+---
+
+## How CamelMind determines the date
+
+CamelMind determines the last updated date in the following order:
+
+1. The page's `last_updated` frontmatter field, if present.
+2. Otherwise, the file's last modified timestamp.
+
+---
+
+## How CamelMind determines the author
+
+When `showLastUpdateAuthor` is enabled, CamelMind uses the author of the most recent Git commit that modified the page.
+
+If Git history isn't available—for example, when building from an exported archive—the author is omitted even if the feature is enabled.
+
+<Callout type="important" title="Limitations">
+
+- The **Last updated** footer is configured globally for the entire documentation site.
+- Individual pages cannot currently hide the footer.
+- The author name cannot be overridden in frontmatter.
+
+</Callout>

@@ -1,0 +1,91 @@
+---
+title: Feedback widget
+description: Collect content feedback from readers and route submissions to your team's notification service.
+---
+
+The Feedback widget lets readers quickly tell you whether a content page was helpful. Readers can rate the page, select a reason for negative feedback, and optionally leave additional comments.
+
+Every submission is sent to a single API endpoint, making it easy to integrate with Slack, Microsoft Teams, email, Jira, or your own internal notification system.
+
+---
+
+## Enable the Feedback widget
+
+Enable the widget in `camelmind.config.ts`:
+
+```ts
+site: {
+  showFeedbackWidget: true,
+},
+```
+
+When enabled, the widget appears at the bottom of every documentation page.
+
+---
+
+## What readers see
+
+Readers can:
+
+- Mark a page as **Helpful** or **Not helpful**
+- Select a reason when leaving negative feedback
+- Leave an optional comment
+- Indicate whether they're willing to be contacted for follow-up
+
+Each submission automatically includes the page title and URL.
+
+---
+
+## Route feedback to your notification service
+
+All feedback is submitted to:
+
+```text
+app/api/feedback/route.ts
+```
+
+Update this route to forward submissions to your preferred notification service. CamelMind includes a Slack implementation by default, but you can customize the route to integrate with any service, including:
+
+- Slack
+- Microsoft Teams
+- Discord
+- Email
+- Jira
+- Linear
+- GitHub Issues
+- Custom internal APIs
+
+Once you've configured your notification service, update `app/api/feedback/route.ts` to send the feedback payload to your destination.
+
+Because every submission passes through this single endpoint, you can also send feedback to multiple destinations—for example, posting to Slack while simultaneously creating a Jira issue.
+
+---
+
+## Feedback payload
+
+Each submission includes the following information.
+
+| Field | Description |
+|------|-------------|
+| `rating` | Whether the page was marked as helpful or not helpful. |
+| `reason` | The selected reason and any optional comment. |
+| `allowFollowUp` | Whether the reader agreed to be contacted. |
+| `pageTitle` | The title of the documentation page. |
+| `pageSlug` | The URL path of the documentation page. |
+
+These values are available in `app/api/feedback/route.ts` and can be used to format messages or populate tickets in your notification system.
+
+---
+
+## Example: Customize the notification
+
+The default implementation posts feedback to Slack. To use another service, replace the notification logic in `app/api/feedback/route.ts` while keeping the request handling and feedback payload unchanged.
+
+For example, you could:
+
+- Send an email using Resend, SendGrid, or Postmark.
+- Create an issue in Jira or GitHub.
+- Post a message to Microsoft Teams or Discord.
+- Forward the payload to an internal API for further processing.
+
+The Feedback widget doesn't depend on any specific notification provider—the API route gives you complete control over where feedback is delivered.
