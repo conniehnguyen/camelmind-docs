@@ -1,102 +1,134 @@
 ---
 title: Deploy to Vercel
-description: How to deploy a CamelMind documentation site to Vercel for free.
+description: Deploy your CamelMind documentation site to Vercel in minutes.
 ---
 
-# Deploy to Vercel
+Vercel makes it easy to deploy your CamelMind documentation site. It automatically builds and deploys your site on every Git push, provides HTTPS out of the box, and creates preview deployments for pull requests.
 
-Vercel is the recommended hosting platform for CamelMind. It deploys automatically on every push, handles HTTPS and CDN, and has a generous free tier.
+---
+
+<Callout type="important" title="Before you begin">
+
+You'll need:
+
+- A CamelMind documentation project
+- A GitHub repository containing your project
+- A Vercel account
+
+</Callout>
+
+---
+
+## Deploy your site
 
 <Steps>
-<Step n={1} title="Push your site to GitHub">
 
-Initialize a git repository in your project and push it to GitHub:
+<Step n={1} title="Push your project to GitHub">
+
+Commit your project and push it to a GitHub repository.
 
 ```bash
-git init
 git add .
 git commit -m "Initial commit"
-gh repo create my-docs --public --push --source .
+git push
 ```
 
-Or create the repo on [github.com](https://github.com) and follow the push instructions.
+<Callout type="note">
+If you haven't created a repository yet, create one on GitHub first, then push your project.
+</Callout>
 
 </Step>
-<Step n={2} title="Import the repo on Vercel">
 
-1. Go to [vercel.com](https://vercel.com) and sign in
-2. Click **Add New → Project**
-3. Select your GitHub repo
-4. Vercel auto-detects the Next.js framework — no build settings needed
+<Step n={2} title="Import the repository into Vercel">
 
-</Step>
-<Step n={3} title="Set environment variables">
+1. Sign in to Vercel.
+2. Select **Add New → Project**.
+3. Choose your GitHub repository.
+4. Click **Import**.
 
-In the Vercel project settings under **Environment Variables**, add:
-
-| Variable | Value |
-|---|---|
-| `CAMELMIND_URL` | Your Vercel URL, e.g. `https://my-docs.vercel.app` |
-| `SESSION_SECRET` | A random 32-character string (required if auth is enabled) |
-
-If using OIDC auth, also add: `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`.
+CamelMind is built on Next.js, so Vercel automatically detects the project and configures the build settings.
 
 </Step>
+
+<Step n={3} title="Configure environment variables">
+
+Before deploying, configure your project's environment variables.
+
+| Variable | Description |
+| --- | --- |
+| `CAMELMIND_URL` | The public URL of your documentation site. |
+| `SESSION_SECRET` | Required when authentication is enabled. |
+
+If you're using OpenID Connect (OIDC), also configure:
+
+- `OIDC_ISSUER`
+- `OIDC_CLIENT_ID`
+- `OIDC_CLIENT_SECRET`
+
+See [Environment Variables](/reference/environment-variables) for the complete list of supported variables.
+
+</Step>
+
 <Step n={4} title="Deploy">
 
-Click **Deploy**. Vercel builds and publishes your site. Every future push to `main` triggers a new deployment automatically.
+Click **Deploy**.
+
+Vercel builds and publishes your documentation site. Once deployment completes, your site is available at its public URL.
+
+Every future push to your default branch automatically triggers a new deployment.
 
 </Step>
+
 </Steps>
 
-## Custom domain
+---
 
-In the Vercel project settings under **Domains**, add your custom domain and follow the DNS instructions. Update `CAMELMIND_URL` to your custom domain after DNS propagates.
+## Use a custom domain
+
+To use your own domain:
+
+1. Open your Vercel project.
+2. Go to **Settings → Domains**.
+3. Add your domain and follow the DNS instructions.
+4. Update `CAMELMIND_URL` to match your new HTTPS URL.
+
+---
 
 ## Preview deployments
 
-Vercel creates a preview URL for every pull request automatically. This lets you review documentation changes before merging.
+Every pull request automatically receives its own preview deployment.
 
-## vercel.json (optional)
+This allows reviewers to browse documentation changes before they're merged into your main branch.
 
-For most CamelMind sites, no `vercel.json` is needed — Vercel detects Next.js automatically. If you need custom headers or redirects:
-
-```json
-{
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    }
-  ]
-}
-```
+---
 
 ## Troubleshooting
 
-<Details summary="Build fails with 'Module not found'">
+<Details summary="The build fails" id="build-failed">
 
-Make sure all dependencies are listed in `package.json` (not just installed locally). Run:
+Verify that all project dependencies are committed to your repository.
+
+If you've recently installed new packages:
 
 ```bash
 npm install
 git add package.json package-lock.json
-git commit -m "Fix dependencies"
+git commit -m "Update dependencies"
 git push
 ```
 
 </Details>
 
-<Details summary="Environment variables not working">
+<Details summary="Authentication redirects to the wrong URL" id="wrong-url-redirection">
 
-Vercel only injects environment variables that are explicitly set in the project dashboard. Double-check the variable names match exactly, including casing.
+Verify that `CAMELMIND_URL` exactly matches your site's public HTTPS URL, without a trailing slash.
 
 </Details>
 
-<Details summary="Auth redirects to the wrong URL">
+<Details summary="Environment variables aren't available" id="env-variables-unavailable">
 
-Set `CAMELMIND_URL` to your exact production URL (including `https://` and without a trailing slash). This is used to construct auth callback URLs.
+Environment variables must be configured in your Vercel project settings.
+
+After adding or updating variables, redeploy your project.
 
 </Details>

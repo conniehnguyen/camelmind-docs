@@ -31,17 +31,18 @@ export function DocFeedback({ pageTitle, pageSlug }: Props) {
   const [reason, setReason] = useState("")
   const [freeText, setFreeText] = useState("")
   const [allowFollowUp, setAllowFollowUp] = useState(false)
+  const [email, setEmail] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
   function handleYes() {
-    if (step === "yes") { setStep("idle"); setReason(""); setFreeText(""); return }
+    if (step === "yes") { setStep("idle"); setReason(""); setFreeText(""); setAllowFollowUp(false); setEmail(""); return }
     setStep("yes")
     setReason("")
     setFreeText("")
   }
 
   function handleNo() {
-    if (step === "no") { setStep("idle"); setReason(""); setFreeText(""); return }
+    if (step === "no") { setStep("idle"); setReason(""); setFreeText(""); setAllowFollowUp(false); setEmail(""); return }
     setStep("no")
     setReason("")
     setFreeText("")
@@ -61,6 +62,7 @@ export function DocFeedback({ pageTitle, pageSlug }: Props) {
           rating: step === "yes" ? "positive" : "negative",
           reason: enrichedReason,
           allowFollowUp,
+          email: allowFollowUp ? email.trim() : "",
           pageTitle,
           pageSlug,
         }),
@@ -126,10 +128,19 @@ export function DocFeedback({ pageTitle, pageSlug }: Props) {
                 Yes, it&apos;s okay to follow up by email.
               </span>
             </label>
+            {allowFollowUp && (
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="mt-2 w-full rounded-md border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              />
+            )}
           </div>
           <button
             onClick={handleSubmit}
-            disabled={!reason || submitting}
+            disabled={!reason || submitting || (allowFollowUp && !email.trim())}
             className="mt-4 w-full py-2 text-sm text-gray-600 bg-gray-100 rounded-md disabled:opacity-40 disabled:cursor-not-allowed hover:enabled:bg-gray-200 hover:enabled:text-gray-900 dark:text-gray-400 dark:bg-gray-800 dark:hover:enabled:bg-gray-700 dark:hover:enabled:text-white transition-colors"
           >
             {submitting ? "Sending…" : "Feedback"}

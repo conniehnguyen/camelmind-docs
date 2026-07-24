@@ -1,125 +1,92 @@
 ---
-title: Docker & Self-Hosting
-description: How to run a CamelMind documentation site in Docker for self-hosted deployments.
+title: Docker Self-Hosting
+description: Build and deploy your CamelMind documentation site using Docker.
 ---
 
-# Docker & Self-Hosting
+CamelMind includes a production-ready `Dockerfile` and `docker-compose.yml`, making it easy to deploy your documentation site on your own infrastructure.
 
-CamelMind can run as a Docker container for self-hosted deployments where you need full control over the infrastructure — air-gapped environments, on-prem servers, or private cloud setups.
+Docker deployments are ideal for on-premises environments, private clouds, Kubernetes clusters, and air-gapped networks.
 
-## Dockerfile
+## Build and run
 
-The starter template includes a `Dockerfile`. It uses a multi-stage build to produce a lean production image:
-
-```dockerfile
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./
-RUN npm install --production
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
-## Building the image
+From the root of your project, build the Docker image:
 
 ```bash
-docker build -t my-docs:latest .
+docker build -t my-docs .
 ```
 
-## Running the container
+Run the container:
 
 ```bash
-docker run -p 3000:3000 \
-  -e CAMELMIND_URL=https://docs.example.com \
-  -e CAMELMIND_AUTH_ENABLED=true \
-  -e CAMELMIND_AUTH_REQUIRE_LOGIN=true \
-  -e OIDC_ISSUER=https://auth.example.com/realms/my-realm \
-  -e OIDC_CLIENT_ID=my-docs \
-  -e OIDC_CLIENT_SECRET=secret \
-  -e SESSION_SECRET=a-random-32-character-string \
-  my-docs:latest
+docker run --rm \
+  --env-file .env \
+  -p 3000:3000 \
+  my-docs
 ```
 
-## docker-compose
+Open your documentation site at:
 
-For local testing or simple self-hosted setups, use `docker-compose.yml`:
-
-```yaml
-version: "3.9"
-services:
-  docs:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      CAMELMIND_URL: https://docs.example.com
-      CAMELMIND_AUTH_ENABLED: "true"
-      CAMELMIND_AUTH_REQUIRE_LOGIN: "true"
-      OIDC_ISSUER: https://auth.example.com/realms/my-realm
-      OIDC_CLIENT_ID: my-docs
-      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
-      SESSION_SECRET: ${SESSION_SECRET}
-```
-
-Start with:
-
-```bash
-docker compose up -d
-```
-
-## Nginx reverse proxy
-
-In production, run Nginx in front of the Next.js container to handle TLS termination:
-
-```nginx
-server {
-    listen 443 ssl;
-    server_name docs.example.com;
-
-    ssl_certificate     /etc/ssl/certs/docs.crt;
-    ssl_certificate_key /etc/ssl/private/docs.key;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
+```text
+http://localhost:3000
 ```
 
 <Callout type="tip">
-Use [Certbot](https://certbot.eff.org/) to obtain a free Let's Encrypt TLS certificate.
+Copy `.env.example` to `.env` and update it with your site's configuration before starting the container.
 </Callout>
 
-## Health check
+---
 
-The Next.js app responds to `GET /` with `200 OK`. Use this as your container health check:
+## Using Docker Compose
 
-```yaml
-healthcheck:
-  test: ["CMD", "curl", "-f", "http://localhost:3000/"]
-  interval: 30s
-  timeout: 10s
-  retries: 3
+Start the site with Docker Compose:
+
+```bash
+docker compose up --build
 ```
 
-## Environment variables in Docker
+CamelMind automatically reads environment variables from `.env`.
 
-Pass environment variables via:
-- `docker run -e VAR=value` for individual values
-- `docker run --env-file .env.production` for a file
-- `docker-compose.yml` `environment:` or `env_file:` blocks
+---
 
-See [Environment Variables](/reference/env-vars) for the full list of supported variables.
+## Configure your site
+
+Configure authentication, your public site URL, and other runtime settings in `.env`.
+
+For a complete list of supported variables, see **Environment Variables**.
+
+---
+
+## Update documentation without rebuilding
+
+During development, you can mount your documentation files into the container to see changes without rebuilding the image.
+
+```bash
+docker run --rm \
+  -p 3000:3000 \
+  --env-file .env \
+  -v "$(pwd)/content:/app/content" \
+  -v "$(pwd)/nav:/app/nav" \
+  my-docs
+```
+
+If you're using Docker Compose, uncomment the `volumes` section in `docker-compose.yml` to enable the same behavior.
+
+---
+
+## Deploy to production
+
+For production deployments, place a reverse proxy such as **Nginx**, **Caddy**, or **Traefik** in front of the CamelMind container to provide HTTPS and TLS termination.
+
+Also ensure that:
+
+- `CAMELMIND_URL` is set to your public HTTPS URL.
+- Your reverse proxy forwards requests to the CamelMind container.
+- Container health checks target `/home`.
+
+---
+
+## Next steps
+
+- Configure your site's [Environment Variables](/deployment/environment-variables).
+- Set up [Authentication](/features/auth-rbac) for protected documentation sites.
+- Deploy the container to your preferred hosting platform or Kubernetes cluster.

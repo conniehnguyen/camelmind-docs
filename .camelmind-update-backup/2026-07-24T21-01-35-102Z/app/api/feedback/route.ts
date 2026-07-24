@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Webhook not configured" }, { status: 503 })
   }
 
-  const { rating, reason, allowFollowUp, pageTitle, pageSlug } = await req.json()
+  const { rating, reason, allowFollowUp, email, pageTitle, pageSlug } = await req.json()
 
   const emoji = rating === "positive" ? "👍" : "👎"
   const ratingLabel = rating === "positive" ? "Helpful" : "Not helpful"
@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
             { type: "mrkdwn", text: `*Path:*\n\`${pageSlug}\`` },
             { type: "mrkdwn", text: `*Reason:*\n${reason || "—"}` },
             { type: "mrkdwn", text: `*Follow-up OK:*\n${allowFollowUp ? "Yes" : "No"}` },
+            ...(allowFollowUp && email ? [{ type: "mrkdwn", text: `*Email:*\n${email}` }] : []),
           ],
         },
       ],

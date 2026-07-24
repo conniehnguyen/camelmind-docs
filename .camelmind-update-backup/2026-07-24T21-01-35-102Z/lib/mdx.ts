@@ -4,10 +4,11 @@ import { execSync } from "child_process"
 import matter from "gray-matter"
 import yaml from "js-yaml"
 import GithubSlugger from "github-slugger"
+import { resolvePartials } from "./partials"
 
 // gray-matter's bundled YAML engine calls the js-yaml v3 API (safeLoad/safeDump),
 // which js-yaml v4 removed — pass the current API explicitly.
-const matterOptions = {
+export const matterOptions = {
   engines: {
     yaml: {
       parse: (s: string) => yaml.load(s) as object,
@@ -23,6 +24,7 @@ export type FrontMatter = {
   tags?: string[]
   download_pdf?: string
   last_updated?: string
+  hide_table_of_contents?: boolean
 }
 
 export type TocEntry = {
@@ -69,10 +71,17 @@ export function loadFrontmatterOnly(filePath: string): FrontMatter {
 }
 
 export function loadMdxFile(filePath: string): DocContent {
+  if (path.normalize(filePath).split(path.sep).includes("_partials")) {
+    throw new Error(
+      `"${filePath}" is under content/_partials and can't be loaded as a standalone page — it's meant to be embedded via <Partial file="..." /> instead.`
+    )
+  }
+
   const fullPath = path.join(process.cwd(), filePath)
   const raw = fs.readFileSync(fullPath, "utf-8")
   const { data, content } = matter(raw, matterOptions)
   const frontmatter = data as FrontMatter
+  const resolvedContent = resolvePartials(content)
 
   let lastUpdated: Date | null = null
   if (frontmatter.last_updated) {
@@ -95,8 +104,8 @@ export function loadMdxFile(filePath: string): DocContent {
 
   return {
     frontmatter,
-    source: content,
-    toc: extractToc(content),
+    source: resolvedContent,
+    toc: extractToc(resolvedContent),
     lastUpdated,
     lastUpdatedAuthor,
   }

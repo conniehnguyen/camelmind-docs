@@ -67,5 +67,20 @@ nav:
             slug: /features/last-updated
             file: content/features/last-updated.mdx
             roles: []
-
+      - label: "Deployment"
+        slug: /deployment
+        roles: []
+        section:
+          - label: "Docker & Self-Hosting"
+            slug: /deployment/docker-self-hosting
+            file: content/deployment/docker.mdx
+            roles: []
+          - label: "Deploy to Vercel"
+            slug: /deployment/deploy-to-vercel
+            file: content/deployment/vercel.mdx
+            roles: []
+          - label: "Environment Variables"
+            slug: /deployment/environment-variables
+            file: content/reference/env-vars.mdx
+            roles: []
 

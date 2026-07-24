@@ -3,8 +3,6 @@ title: Environment Variables
 description: Complete reference for all environment variables supported by CamelMind.
 ---
 
-# Environment Variables
-
 CamelMind is configured at runtime via environment variables. Set them in `.env.local` for local development, or in your hosting platform's environment settings for production.
 
 ```bash
@@ -47,6 +45,14 @@ Only needed when `CAMELMIND_AUTH_PROVIDER=oidc`.
 | Variable | Description |
 |---|---|
 | `OFFLINE_MODE` | Set `"true"` to enable static export mode (`output: export`). Bypasses auth and hides server-only UI. Used by `build-offline.sh`. |
+
+## Feedback
+
+| Variable | Default | Description |
+|---|---|---|
+| `RESEND_API_KEY` | — | API key for [Resend](https://resend.com). When set (along with `FEEDBACK_EMAIL_TO`), the feedback widget emails submissions. If unset, the feedback API returns a 503 and submissions are not recorded. |
+| `FEEDBACK_EMAIL_TO` | — | Address that receives feedback submissions. |
+| `FEEDBACK_EMAIL_FROM` | `Doc Feedback <onboarding@resend.dev>` | The `From` address used when sending feedback emails. Must be a verified domain/sender in your Resend account for anything other than the default `onboarding@resend.dev`. |
 
 ## Example .env.local
 

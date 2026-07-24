@@ -25,6 +25,8 @@ Every content file is a plain `.mdx` file with optional YAML frontmatter at the 
 ---
 title: My Page
 description: A short summary used in search results and meta tags.
+last_updated: "2026-06-01"
+hide_table_of_contents: true
 ---
 
 Body content goes here.
@@ -36,6 +38,8 @@ Body content goes here.
 |---|---|---|
 | `title` | Yes | Page title shown in the browser tab and sidebar |
 | `description` | No | Short summary for search results and `<meta>` description |
+| `last_updated` | No | Override the value determined by the `showLastUpdated` configuour specific date.|
+| `hide_table_of_contents` | No | Set to `true` if you want to hide the page's Table of Content. |
 
 ---
 
@@ -160,6 +164,21 @@ See [MDX Components](/guides/mdx-components) for the full component reference.
 
 ---
 
+## Hide content from rendering
+
+Sometimes you may want to keep notes or draft content in your documentation source without publishing it—for example, documentation for an upcoming feature, content that's still under review, or reminders for yourself.
+
+Wrap the content in an MDX comment to prevent it from being rendered.
+
+```mdx
+{/*
+This is the hidden cargo that my camel carries but my users don't know.
+*/}
+```
+
+Everything inside the comment block is ignored when CamelMind builds your documentation, so it won't appear on the published site. Once the information is ready, simply remove the comment markers to make it visible in your documentation.
+
+---
 
 ## Organizing content
 

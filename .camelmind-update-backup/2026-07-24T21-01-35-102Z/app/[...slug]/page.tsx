@@ -200,7 +200,7 @@ export default async function DocPage({ params }: Props) {
                 <PageNav activeGroup={activeGroup} currentSlug={fullSlug} />
               </div>
             </article>
-            <Toc entries={toc} />
+            {!frontmatter.hide_table_of_contents && <Toc entries={toc} />}
           </div>
         </main>
       </div>

@@ -25,7 +25,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   // Static export for offline builds — no server required
-  ...(isOffline ? { output: "export", trailingSlash: true } : {}),
+  ...(isOffline ? { output: "export", trailingSlash: true } : { output: "standalone" }),
   // Security headers are only meaningful when running as a server (not static export)
   ...(!isOffline ? {
     async headers() {

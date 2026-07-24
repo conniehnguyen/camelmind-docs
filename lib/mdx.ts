@@ -24,6 +24,7 @@ export type FrontMatter = {
   tags?: string[]
   download_pdf?: string
   last_updated?: string
+  hide_table_of_contents?: boolean
 }
 
 export type TocEntry = {

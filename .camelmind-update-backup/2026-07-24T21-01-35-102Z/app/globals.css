@@ -179,6 +179,14 @@ body {
   max-width: 680px;
 }
 
+/* Nested ordered lists: decimal → lower-alpha → lower-roman */
+.prose ol ol {
+  list-style-type: lower-alpha;
+}
+.prose ol ol ol {
+  list-style-type: lower-roman;
+}
+
 /* Alternating table rows — no cell borders */
 .prose table {
   border-collapse: collapse;
