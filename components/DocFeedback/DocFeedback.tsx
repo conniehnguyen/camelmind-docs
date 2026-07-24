@@ -33,6 +33,7 @@ export function DocFeedback({ pageTitle, pageSlug }: Props) {
   const [allowFollowUp, setAllowFollowUp] = useState(false)
   const [email, setEmail] = useState("")
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState(false)
 
   function handleYes() {
     if (step === "yes") { setStep("idle"); setReason(""); setFreeText(""); setAllowFollowUp(false); setEmail(""); return }
@@ -50,12 +51,13 @@ export function DocFeedback({ pageTitle, pageSlug }: Props) {
 
   async function handleSubmit() {
     setSubmitting(true)
+    setError(false)
     const selectedLabel = reasons.find((r) => r.value === reason)?.label ?? reason
     const enrichedReason = freeText.trim()
       ? `${selectedLabel}: ${freeText.trim()}`
       : selectedLabel
     try {
-      await fetch("/api/feedback", {
+      const res = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -67,8 +69,17 @@ export function DocFeedback({ pageTitle, pageSlug }: Props) {
           pageSlug,
         }),
       })
-    } finally {
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        console.error(`Feedback submission failed (${res.status}): ${body.error ?? "unknown error"}`)
+        setError(true)
+        return
+      }
       setStep(step === "yes" ? "yes-done" : "no-done")
+    } catch (err) {
+      console.error("Feedback submission failed:", err)
+      setError(true)
+    } finally {
       setSubmitting(false)
     }
   }
@@ -138,12 +149,17 @@ export function DocFeedback({ pageTitle, pageSlug }: Props) {
               />
             )}
           </div>
+          {error && (
+            <p className="mt-3 text-xs text-red-500 dark:text-red-400">
+              Something went wrong sending your feedback. Please try again.
+            </p>
+          )}
           <button
             onClick={handleSubmit}
             disabled={!reason || submitting || (allowFollowUp && !email.trim())}
             className="mt-4 w-full py-2 text-sm text-gray-600 bg-gray-100 rounded-md disabled:opacity-40 disabled:cursor-not-allowed hover:enabled:bg-gray-200 hover:enabled:text-gray-900 dark:text-gray-400 dark:bg-gray-800 dark:hover:enabled:bg-gray-700 dark:hover:enabled:text-white transition-colors"
           >
-            {submitting ? "Sending…" : "Feedback"}
+            {submitting ? "Sending…" : error ? "Retry" : "Feedback"}
           </button>
         </div>
       )}

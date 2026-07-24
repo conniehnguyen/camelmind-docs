@@ -13,6 +13,9 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.RESEND_API_KEY
   const to = process.env.FEEDBACK_EMAIL_TO
   if (!apiKey || !to) {
+    console.error(
+      `Feedback email not configured: ${!apiKey ? "RESEND_API_KEY missing" : ""} ${!to ? "FEEDBACK_EMAIL_TO missing" : ""}`.trim()
+    )
     return NextResponse.json({ error: "Email not configured" }, { status: 503 })
   }
 
@@ -43,6 +46,8 @@ export async function POST(req: NextRequest) {
   })
 
   if (!res.ok) {
+    const body = await res.text()
+    console.error(`Resend request failed (${res.status}): ${body}`)
     return NextResponse.json({ error: "Failed to send email" }, { status: 502 })
   }
 
