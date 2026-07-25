@@ -43,7 +43,7 @@ When enabled, CamelMind exposes two endpoints.
 | Endpoint | Description |
 |---|---|
 | `/llms.txt` | Plain-text version of your documentation for AI assistants and developers. |
-| `/api/llms` | JSON representation of the same content for programmatic use. |
+| `/api/llms/<page-slug>` | JSON representation of the same content for programmatic use. For example, [https://camelmind-docs.vercel.app/api/llms/features/llms-txt](https://camelmind-docs.vercel.app/api/llms/features/llms-txt) |
 
 <Callout type="tip">
 If you're building an AI assistant, point it to `https://your-docs-site.com/llms.txt` to give it direct access to your documentation.
