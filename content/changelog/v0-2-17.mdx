@@ -1,0 +1,33 @@
+---
+title: What's in v0.2.17
+description: Key features included in v0.2.17.
+---
+
+CamelMind v0.2.17 includes the core features needed to build, secure, search, and distribute a production documentation site:
+
+- `camelmind init` CLI for scaffolding a new site
+- Markdown and MDX content with built-in docs components
+- YAML navigation with dropdown groups and decoupled URL slugs
+- Multi-version docs via `versions.yml`
+- Built-in full-text search
+- OpenAPI 3.x API reference rendering from YAML or JSON specs
+- OIDC authentication and role-based access control
+- `llms.txt` and `/api/llms` output for AI-readable documentation
+- Static export for CDN, S3, GitHub Pages, and offline use
+- Offline ZIP builds with a prebuilt search index and local launcher scripts
+- Master PDF generation for versioned documentation packages
+- Vercel, Docker, and self-hosted deployment support
+
+<Callout type="tip" title="Updating to a new version">
+
+Use the `update` command to upgrade an existing CamelMind site to the latest platform version. Choose the option that best fits your workflow:
+
+| Option | Command |
+| --- | --- |
+| Update your project to the latest CamelMind version | `npx camelmind@latest update` |
+| Preview the files that would change without modifying your project | `npx camelmind@latest update --dry-run` |
+| Update project files without running `npm install` | `npx camelmind@latest update --no-install` |
+| Preserve a customized file during the update | `npx camelmind@latest update --ignore-file app/page.tsx` |
+
+</Callout>
+

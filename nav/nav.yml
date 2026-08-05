@@ -1,4 +1,16 @@
 nav:
+  - label: "What & Why"
+    dropdown: false
+    noDropdown: true
+    items:
+      - label: "What is CamelMind?"
+        slug: /what-is-camelmind
+        file: content/overview.mdx
+        roles: []
+      - label: "CamelMind versus Other Tools"
+        slug: /camelmind-vs-other-tools
+        file: content/why-camelmind.mdx
+        roles: []
   - label: "Documentation"
     dropdown: false
     noDropdown: true
@@ -7,10 +19,6 @@ nav:
         slug: /getting-started
         roles: []
         section:
-          - label: "Introduction"
-            slug: /getting-started/introduction
-            file: content/getting-started/overview.mdx
-            roles: []
           - label: "Installation"
             slug: /getting-started/installation
             file: content/getting-started/installation.mdx
@@ -84,3 +92,11 @@ nav:
             file: content/reference/env-vars.mdx
             roles: []
 
+  - label: "Changelog"
+    dropdown: false
+    noDropdown: true
+    items:
+      - label: "v0.2.17"
+        slug: /changelog/v0-2-17
+        file: content/changelog/v0-2-17.mdx
+        roles: []
