@@ -15,6 +15,31 @@ nav:
     dropdown: false
     noDropdown: true
     items:
+      - label: "Before You Begin"
+        slug: /before-you-begin
+        roles: []
+        section:
+
+          - label: "Install VS Code"
+            slug: /before-you-begin/install-vscode
+            file: content/before-you-begin/install-vscode.mdx
+            roles: []
+          - label: "Install Node.js"
+            slug: /before-you-begin/install-nodejs
+            file: content/before-you-begin/install-nodejs.mdx
+            roles: []
+          - label: "Install Git"
+            slug: /before-you-begin/install-git
+            file: content/before-you-begin/install-git.mdx
+            roles: []
+          - label: "Create a Git repository "
+            slug: /before-you-begin/git-repository
+            file: content/before-you-begin/git-repository.mdx
+            roles: []
+          - label: "Deploy without Git"
+            slug: /before-you-begin/deploy-without-git
+            file: content/before-you-begin/no-git-path.mdx
+            roles: []
       - label: "Getting Started"
         slug: /getting-started
         roles: []

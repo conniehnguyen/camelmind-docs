@@ -1,0 +1,81 @@
+---
+title: Create a Git repository (optional)
+description: Learn why hosting your project in a Git repository makes publishing, backing up, and collaborating much easier.
+---
+
+You don't need an online Git repository to use CamelMind. You can create, edit, and preview your documentation entirely on your own computer.
+
+However, once you're ready to back up your work, collaborate with others, or publish your site online, you'll usually store your project in a Git hosting service such as **GitHub**, **GitLab**, or **Bitbucket**.
+
+For this guide, we'll use **GitHub** because it's free, beginner-friendly, and supported by most deployment platforms.
+
+---
+
+## Why use a Git hosting service?
+
+Hosting your Git repository online gives you several benefits:
+
+- Back up your project
+- Access it from multiple computers
+- Collaborate with teammates
+- Connect your repository to deployment platforms such as Vercel
+
+If you're just exploring CamelMind, you can skip this guide and come back later.
+
+---
+
+## Git vs. GitHub
+
+These names are easy to confuse:
+
+| Tool | What it does |
+| --- | --- |
+| **Git** | Tracks changes to your files on your computer. |
+| **GitHub** | Stores your Git repository online. |
+| **GitLab** | Another popular Git hosting platform with similar capabilities. |
+| **Bitbucket** | Git hosting integrated with Atlassian products such as Jira. |
+
+CamelMind works with any Git hosting provider.
+
+---
+
+## Create a GitHub account
+
+If you're new to Git hosting, GitHub is a great place to start.
+
+1. Visit https://github.com/signup.
+2. Create a free account.
+3. Create a new repository for your CamelMind project.
+
+Once your repository is ready, push your project using Git:
+
+```bash
+git add .
+git commit -m "Initial commit"
+git push
+```
+
+---
+
+## Deploy your site
+
+Most hosting providers can automatically deploy your CamelMind site whenever you push changes to your repository.
+
+Popular options include:
+
+- **Vercel** (recommended for most users)
+- **Netlify**
+- **Cloudflare Pages**
+- Your own Node.js or Docker infrastructure
+
+See the deployment guides for detailed instructions.
+
+<Callout type="tip">
+You don't have to use GitHub to deploy CamelMind. Many deployment platforms also support GitLab, Bitbucket, or direct deployments using their CLI tools.
+</Callout>
+
+---
+
+## Next step
+
+You're ready to create your first CamelMind site. Continue to the [Installation](/getting-started/installation) guide.

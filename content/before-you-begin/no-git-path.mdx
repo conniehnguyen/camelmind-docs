@@ -1,0 +1,181 @@
+---
+title: Deploy without Git
+description: Create and publish your first CamelMind site without installing Git or creating a GitHub account.
+---
+
+This guide walks you through the fastest path—from an empty computer to a live website—without installing Git or creating a GitHub account.
+
+You'll build your site locally, preview it in your browser, and deploy it directly to Vercel using the Vercel CLI.
+
+<Callout type="tip">
+This is the easiest path if you're new to web development. You can always add Git later for automatic deployments, version history, and collaboration.
+</Callout>
+
+---
+
+## Estimated time
+
+Most users can complete this guide in **15–20 minutes**.
+
+You'll:
+
+- ✅ Install the required tools
+- ✅ Create your first CamelMind site
+- ✅ Customize your homepage
+- ✅ Preview your site locally
+- ✅ Publish it to the internet
+
+---
+
+## Step-by-step guide
+
+<Steps>
+
+<Step n={1} title="Install Node.js">
+
+CamelMind runs on Node.js. If you haven't installed it yet, start here:
+
+→ [Install Node.js](/before-you-begin/install-nodejs)
+
+</Step>
+
+<Step n={2} title="Install VS Code (recommended)">
+
+VS Code isn't required, but it's the easiest way to edit your documentation and run CamelMind commands.
+
+→ [Install VS Code](/before-you-begin/install-vscode)
+
+</Step>
+
+<Step n={3} title="Create your CamelMind site">
+
+Use the CamelMind CLI to create a new documentation site.
+
+→ [Installation](/getting-started/installation)
+
+Once you're finished, you should be able to start your local development server with:
+
+```bash
+npm run dev
+```
+
+</Step>
+
+<Step n={4} title="Customize your homepage">
+
+Open your project in VS Code and edit the homepage to make it your own.
+
+Try changing:
+
+- Site title
+- Homepage content
+- Navigation
+- Logo
+
+Visit [Writing Content](/getting-started/writing-content) to learn more.
+
+</Step>
+
+<Step n={5} title="Preview your site locally">
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Then open:
+
+```
+http://localhost:3000
+```
+
+Every time you save a file, your browser automatically refreshes so you can immediately see your changes.
+
+</Step>
+
+<Step n={6} title="Publish your site">
+
+Now it's time to put your site online.
+
+Install the Vercel CLI:
+
+```bash
+npm install -g vercel
+```
+
+Sign in to your Vercel account:
+
+```bash
+vercel login
+```
+
+From your project's root directory, deploy your site:
+
+```bash
+vercel
+```
+
+Vercel automatically detects CamelMind's Next.js project and asks a few setup questions before creating a preview deployment.
+
+When you're ready to make it publicly available, run:
+
+```bash
+vercel --prod
+```
+
+<Callout type="note">
+Before deploying to production, configure any required environment variables (such as `CAMELMIND_URL`) in your Vercel project settings or by using `vercel env add`.
+
+See [Environment Variables](/reference/environment-variables) for the complete list.
+</Callout>
+
+</Step>
+
+</Steps>
+
+---
+
+## When should I start using Git?
+
+Deploying without Git is a great option for getting started. As your project grows, Git becomes increasingly useful.
+
+| If you want to... | Deploy without Git | Use Git |
+| --- | :---: | :---: |
+| Learn CamelMind | ✅ | |
+| Build a personal website | ✅ | |
+| Publish a simple documentation site | ✅ | |
+| Keep a history of every change | | ✅ |
+| Collaborate with teammates | | ✅ |
+| Automatically deploy after every change | | ✅ |
+| Review changes before publishing | | ✅ |
+
+If you're happy manually running `vercel --prod` whenever you update your site, you can continue without Git indefinitely.
+
+---
+
+## Ready to add Git?
+
+Switching to a Git-based workflow only takes a few minutes.
+
+1. [Install Git](/before-you-begin/install-git)
+2. [Create a Git repository](/before-you-begin/git-repository)
+3. Follow [Deploy to Vercel](/deployment/vercel) to connect your repository and enable automatic deployments.
+
+<Callout type="tip">
+Connecting an existing Vercel project to a Git repository doesn't create a new website. Future deployments continue using the same Vercel project and live URL.
+</Callout>
+
+---
+
+## 🎉 Congratulations!
+
+Your CamelMind site is now live on the internet.
+
+From here, you can continue improving your site by:
+
+- Writing more documentation
+- Adding new pages
+- Customizing the theme and branding
+- Connecting a custom domain
+- Learning Git when you're ready

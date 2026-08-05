@@ -1,0 +1,139 @@
+---
+title: Install Node.js
+description: Install Node.js and npm, the only software you need before creating your first CamelMind site.
+---
+
+Before you create your first CamelMind site, you'll need to install **Node.js**.
+
+Don't worry if you've never used Node.js before—you don't need to learn JavaScript or understand how it works. Think of it as the engine that powers CamelMind behind the scenes.
+
+Once Node.js is installed, you'll have everything you need to create, preview, and publish your documentation site.
+
+---
+
+## What is Node.js?
+
+Node.js is software that lets your computer run JavaScript applications outside of a web browser.
+
+CamelMind is built on Next.js, which runs on Node.js. It uses Node.js to:
+
+- Create a new CamelMind site
+- Preview your documentation locally while you edit
+- Build your site for deployment
+
+You don't need to write JavaScript to use CamelMind—just install Node.js once and CamelMind takes care of the rest.
+
+---
+
+## What is npm?
+
+When you install Node.js, you automatically get **npm** (Node Package Manager).
+
+npm downloads and manages the packages that CamelMind needs to run. Throughout this documentation, you'll use npm commands such as:
+
+```bash
+npm install
+npm run dev
+```
+
+These commands install your project's dependencies and start the local development server.
+
+<Callout type="note">
+CamelMind also works with package managers such as **pnpm** and **Yarn**. If you're just getting started, stick with **npm**—it's included with Node.js and requires no additional setup.
+</Callout>
+
+---
+
+## Install Node.js
+
+Choose your operating system and install the latest **LTS (Long-Term Support)** version of Node.js.
+
+<Tabs>
+<Tab label="macOS">
+
+Download the **LTS** installer from [nodejs.org](https://nodejs.org/) and follow the installation wizard.
+
+If you use Homebrew, you can also install Node.js from the Terminal:
+
+```bash
+brew install node
+```
+
+</Tab>
+
+<Tab label="Windows">
+
+Download the **LTS** installer from [nodejs.org](https://nodejs.org/) and follow the installation wizard using the default settings.
+
+</Tab>
+
+<Tab label="Linux">
+
+Install Node.js using your distribution's package manager, or install it with **nvm** (recommended if you work on multiple JavaScript projects):
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+nvm install --lts
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="tip">
+Always install the **LTS (Long-Term Support)** version. It's the most stable release and the version CamelMind is tested against.
+</Callout>
+
+---
+
+## Verify the installation
+
+Open a terminal and run:
+
+```bash
+node --version
+npm --version
+```
+
+If both commands print a version number, you're ready to go.
+
+CamelMind requires **Node.js 20 or later**.
+
+<Callout type="tip">
+If you see a `command not found` error, restart your terminal and try again. If the problem persists, reinstall Node.js using the installer above.
+</Callout>
+
+---
+
+## Frequently asked questions
+
+<Details summary="Do I need to know JavaScript?" id="need-to-know-js">
+
+No. CamelMind is designed for writing documentation in Markdown and MDX. Node.js simply runs the tools that build and serve your site.
+
+</Details>
+
+<Details summary="Do I need to install npm separately?" id="need-npm">
+
+No. npm is included automatically when you install Node.js.
+
+</Details>
+
+<Details summary="Should I install pnpm or Yarn instead?" id="need-install-pnpm">
+
+Not unless you already use them. npm works perfectly and is the easiest option for new users.
+
+</Details>
+
+<Details summary="Can I install multiple versions of Node.js?" id="multiple-versions-node">
+
+Yes. If you work on multiple JavaScript projects, consider using a version manager such as **nvm** (macOS/Linux) or **fnm** (cross-platform). For most users, installing the latest LTS version is all you need.
+
+</Details>
+
+---
+
+## Next step
+
+Great! Your computer is now ready to run CamelMind.
+
+Continue to the [Installation](/getting-started/installation) guide to create your first documentation site.

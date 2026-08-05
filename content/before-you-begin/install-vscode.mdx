@@ -1,0 +1,79 @@
+---
+title: Install VS Code (recommended)
+description: Install Visual Studio Code, the recommended editor for writing and managing your CamelMind documentation.
+---
+
+While you can write CamelMind documentation in any text editor, we recommend **Visual Studio Code (VS Code)**. It's free, beginner-friendly, and works great with Markdown, MDX, and the other files used by CamelMind.
+
+You don't need any programming experience to use VS Code—it's simply a place to edit your documentation and run a few commands.
+
+---
+
+## Why use VS Code?
+
+VS Code makes writing documentation much easier by providing:
+
+- **Syntax highlighting** for Markdown, MDX, YAML, and TypeScript
+- **A built-in terminal** for running CamelMind commands without leaving the editor
+- **File Explorer** to browse your documentation files
+- **Search across your project** to quickly find and update content
+- **Thousands of extensions** to customize your editing experience
+
+If you already use another editor such as WebStorm, Zed, Sublime Text, or Vim, you're welcome to continue using it. CamelMind works with any editor because your documentation is just a collection of files.
+
+---
+
+## Install VS Code
+
+<Tabs>
+<Tab label="macOS">
+
+Download VS Code from [code.visualstudio.com](https://code.visualstudio.com/), or install it with Homebrew:
+
+```bash
+brew install --cask visual-studio-code
+```
+
+</Tab>
+
+<Tab label="Windows">
+
+Download VS Code from [code.visualstudio.com](https://code.visualstudio.com/) and run the installer using the default settings.
+
+</Tab>
+
+<Tab label="Linux">
+
+Download the appropriate package from [code.visualstudio.com](https://code.visualstudio.com/), or install it using your distribution's package manager.
+
+</Tab>
+</Tabs>
+
+---
+
+## Recommended extensions
+
+After installing VS Code, open the **Extensions** view (`Cmd+Shift+X` on macOS or `Ctrl+Shift+X` on Windows/Linux) and install these extensions:
+
+| Extension | Why |
+| --- | --- |
+| **MDX** | Syntax highlighting and formatting for `.mdx` files. |
+| **YAML** | Validation and autocomplete for `nav/nav.yml`. |
+
+<Callout type="tip">
+VS Code includes an integrated terminal. Press `` Ctrl+` `` (or `` Control+` `` on macOS) to open it and run commands such as `npm install` and `npm run dev` without leaving the editor.
+</Callout>
+
+---
+
+## New to Markdown?
+
+CamelMind pages are written in **MDX**, which is Markdown with support for interactive components such as `<Callout>` and `<Steps>`.
+
+If you've never used Markdown before, don't worry—it's easy to learn. Follow the **Learn Markdown** guide after setting up your first CamelMind site.
+
+---
+
+## Next step
+
+Now that your editor is ready, continue to [Install Node.js](/before-you-begin/install-nodejs) if you haven't already. Then you're ready to [create your first CamelMind site](/getting-started/installation).

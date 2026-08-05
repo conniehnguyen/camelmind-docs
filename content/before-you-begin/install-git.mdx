@@ -1,0 +1,131 @@
+---
+title: Install Git (optional)
+description: Learn what Git is, when you need it, and how to install it when you're ready to publish or collaborate.
+---
+
+Good news—you don't need Git to start using CamelMind.
+
+You can create a documentation site, edit pages, and preview your changes locally without installing Git. You'll only need it when you're ready to publish your site online, back up your work, or collaborate with others.
+
+If you're just exploring CamelMind, feel free to skip this guide for now.
+
+---
+
+## What is Git?
+
+Git is a tool that keeps track of changes to your files.
+
+Think of it as a **save history** for your entire project. Every time you reach a milestone, you can save a snapshot (called a **commit**) and return to it later if something goes wrong.
+
+Git lets you:
+
+- Save the history of your project
+- Undo mistakes
+- See what changed over time
+- Collaborate with other people
+
+---
+
+## Git vs. GitHub
+
+These names sound similar, but they're different:
+
+| Tool | What it does |
+| --- | --- |
+| **Git** | Tracks changes to your files on your computer. |
+| **GitHub** | Stores a copy of your Git repository online so you can back it up, collaborate with others, and deploy your site. |
+
+Think of Git as the notebook and GitHub as cloud storage for that notebook.
+
+---
+
+## Do I need Git?
+
+| If you want to...              |      Git required?     |
+| ------------------------------ | :--------------------: |
+| Create a CamelMind site        |          ❌ No          |
+| Edit documentation             |          ❌ No          |
+| Preview your site locally      |          ❌ No          |
+| Keep a history of your changes |      ✅ Recommended     |
+| Collaborate with teammates     |          ✅ Yes         |
+| Deploy with GitHub             |          ✅ Yes         |
+| Deploy to Vercel or Netlify    | ❌ No (but recommended) |
+
+For many new users, Git is something you'll learn after you've built your first documentation site.
+
+---
+
+## Install Git
+
+When you're ready, choose your operating system below.
+
+<Tabs>
+<Tab label="macOS">
+
+Git is usually already installed.
+
+To check, open a terminal and run:
+
+```bash
+git --version
+```
+
+If Git isn't installed, macOS will prompt you to install the Xcode Command Line Tools.
+
+You can also install Git with Homebrew:
+
+```bash
+brew install git
+```
+
+</Tab>
+
+<Tab label="Windows">
+
+Download Git from https://git-scm.com/ and run the installer using the default settings.
+
+</Tab>
+
+<Tab label="Linux">
+
+Install Git using your distribution's package manager, for example:
+
+```bash
+sudo apt install git
+```
+
+</Tab>
+</Tabs>
+
+---
+
+## Verify the installation
+
+Run:
+
+```bash
+git --version
+```
+
+If a version number appears, you're all set.
+
+---
+
+## First-time setup
+
+Tell Git your name and email address. Git uses this information to identify who made each change.
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
+
+<Callout type="tip">
+If you plan to use GitHub, use the same email address as your GitHub account so your commits are linked to your profile automatically.
+</Callout>
+
+---
+
+## Next step
+
+Ready to publish your documentation? Continue to [Create a Git repository](/before-you-begin/github-account).
