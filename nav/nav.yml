@@ -40,6 +40,10 @@ nav:
             slug: /before-you-begin/deploy-without-git
             file: content/before-you-begin/no-git-path.mdx
             roles: []
+          - label: "Markdown in 10 Minutes"
+            slug: /before-you-begin/markdown-in-10
+            file: content/before-you-begin/markdown-in-10.mdx
+            roles: []
       - label: "Getting Started"
         slug: /getting-started
         roles: []

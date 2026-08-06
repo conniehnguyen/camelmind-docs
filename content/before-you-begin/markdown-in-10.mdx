@@ -1,0 +1,354 @@
+---
+title: Markdown in 10 minutes
+description: Learn the Markdown syntax you need to start writing CamelMind documentation in just a few minutes.
+---
+
+Markdown is a simple way to write formatted documents using plain text. Instead of clicking toolbar buttons, you use a few easy-to-remember characters to create headings, lists, links, images, and more.
+
+The good news? You only need a handful of Markdown features to write great documentation.
+
+This guide covers everything you need to get started with CamelMind.
+
+<Callout type="tip">
+CamelMind pages are written in MDX—Markdown with support for React components. Start by learning Markdown, then explore CamelMind's built-in components such as [Callout](/getting-started/mdx-components#callout), [Steps](/getting-started/mdx-components#steps), [Tabs](/getting-started/mdx-components#tabs), and [Details](/getting-started/mdx-components#details-collapsible-sections) to create richer documentation.
+</Callout>
+
+---
+
+## Headings
+
+Unlike plain Markdown, **CamelMind uses the page's frontmatter for the page title.**
+
+Instead of writing:
+
+```md
+# Getting Started
+```
+
+define the page title in the frontmatter:
+
+```yaml
+---
+title: Getting Started
+description: Learn how to install and configure CamelMind.
+---
+```
+
+CamelMind automatically renders the page title from the `title` field.
+
+Your content should begin with a **level 2 heading (`##`)** for the first section.
+
+```md
+---
+title: Getting Started
+description: Learn how to install and configure CamelMind.
+---
+
+## Installation
+
+Install Node.js before creating your first CamelMind site.
+
+## Next steps
+
+Continue to the installation guide.
+```
+
+### Use heading levels consistently
+
+Use headings to organize your content into a clear hierarchy.
+
+| Heading | When to use |
+| --- | --- |
+| `##` | Main sections of the page. |
+| `###` | Subsections within a section. |
+| `####` | Details within a subsection. Use sparingly. |
+
+For example:
+
+```md
+## Configuration
+
+### Site settings
+
+Configure your site's title and navigation.
+
+#### Optional settings
+
+Customize analytics, search, and authentication.
+```
+
+displays as:
+
+## Configuration
+
+### Site settings
+
+Configure your site's title and navigation.
+
+#### Optional settings
+
+Customize analytics, search, and authentication.
+
+<Callout type="tip">
+Think of headings as an outline. Most CamelMind pages only need `##` and `###`. If you find yourself using many `####` headings, consider splitting the content into separate pages instead.
+</Callout>
+
+
+
+---
+
+## Paragraphs
+
+Simply leave a blank line between paragraphs.
+
+```md
+This is the first paragraph.
+
+This is the second paragraph.
+```
+
+---
+
+## Text formatting
+
+Use a few simple characters to emphasize text.
+
+| Markdown | Result |
+| --- | --- |
+| `**Bold**` | **Bold** |
+| `*Italic*` | *Italic* |
+| `***Bold italic***` | ***Bold italic*** |
+| `` `code` `` | `code` |
+| `~~Strikethrough~~` | ~~Strikethrough~~ |
+
+Example:
+
+```md
+Use **CamelMind** to build beautiful documentation.
+
+Run `npm run dev` to preview your site.
+```
+displays as:
+
+Use **CamelMind** to build beautiful documentation.
+
+Run `npm run dev` to preview your site.
+
+---
+
+## Lists
+
+### Unordered lists
+
+```md
+- Install Node.js
+- Create your site
+- Start writing
+```
+
+displays as:
+
+- Install Node.js
+- Create your site
+- Start writing
+
+### Ordered lists
+
+```md
+1. Install Node.js
+2. Run the CLI
+3. Preview your site
+```
+
+displays as:
+
+1. Install Node.js
+2. Run the CLI
+3. Preview your site
+
+---
+
+## Links
+
+Create links using square brackets and parentheses.
+
+```md
+[Installation](/getting-started/installation)
+
+[Writing Content](/getting-started/writing-content)
+
+https://camelmind.dev
+```
+
+---
+
+## Images
+
+Embed images with the following syntax:
+
+```md
+![Architecture Diagram](/images/architecture.svg)
+```
+
+---
+
+## Blockquotes
+
+Highlight quotes or important information.
+
+```md
+> Documentation is part of the product.
+```
+
+displays as:
+
+> Documentation is part of the product.
+
+---
+
+## Code blocks
+
+Wrap code in triple backticks.
+
+````md
+```bash
+npm install
+npm run dev
+```
+`````
+
+displays as:
+
+```bash
+npm install
+npm run dev
+```
+
+You can also specify the language for syntax highlighting.
+
+Common languages include:
+
+* `bash`
+* `typescript`
+* `tsx`
+* `json`
+* `yaml`
+* `html`
+* `css`
+
+Example:
+
+````md
+```yaml
+- label: Home
+  slug: /
+```
+````
+
+---
+
+## Tables
+
+Use pipes (`|`) to create tables.
+
+```md
+| Command | Description |
+| --- | --- |
+| `npm install` | Install project dependencies |
+| `npm run dev` | Start the development server |
+```
+
+displays as:
+
+| Command       | Description                  |
+| ------------- | ---------------------------- |
+| `npm install` | Install project dependencies |
+| `npm run dev` | Start the development server |
+
+---
+
+## Tooltips
+
+CamelMind supports tooltips using standard Markdown syntax.
+
+Add a title after the link URL in quotation marks:
+
+```md
+[Installation Guide](/getting-started/installation "Create your first CamelMind site")
+
+[Node.js](https://nodejs.org/ "JavaScript runtime used by CamelMind")
+```
+
+When users hover over the link, the title is displayed as a tooltip.
+
+[Installation Guide](/getting-started/installation "Create your first CamelMind site")
+
+[Node.js](https://nodejs.org/ "JavaScript runtime used by CamelMind")
+
+<Callout type="tip">
+Keep tooltips short and descriptive. Use them to provide additional context without interrupting the flow of the page.
+</Callout>
+
+---
+
+## Horizontal rules
+
+Separate sections with three dashes.
+
+```md
+---
+```
+
+displays as:
+
+---
+
+
+## Escaping characters
+
+Need to display Markdown characters literally?
+
+Add a backslash (`\`).
+
+```md
+\# This isn't a heading
+```
+
+displays as:
+
+# This isn't a heading
+
+---
+
+## Markdown vs. MDX
+
+Markdown is all you need for most documentation pages.
+
+When you need richer layouts, CamelMind lets you mix Markdown with React components using **MDX**.
+
+For example, instead of writing a plain note:
+
+```md
+> Remember to restart the server.
+```
+
+You can use a Callout component:
+
+```mdx
+<Callout type="tip">
+Restart the development server after changing your configuration.
+</Callout>
+```
+
+CamelMind includes many components that work out of the box—no imports required. See [Use MDX Components](/getting-started/mdx-components) for more details.
+
+---
+
+## That's all you need!
+
+Congratulations! 🎉
+
+You now know enough Markdown to write documentation with CamelMind.
+
+Most documentation pages only use the syntax covered in this guide. As your documentation grows, you can gradually incorporate CamelMind's built-in MDX components to create more engaging documentation.
+
