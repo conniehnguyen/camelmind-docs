@@ -24,6 +24,9 @@ SERVER_ROUTES=(
   "app/api/feedback/route.ts"
   "app/api/llms"
   "app/api/auth"
+  "app/ai-view"
+  "app/api/rag-check"
+  "app/rag-check"
 )
 
 stash_routes() {

@@ -84,6 +84,14 @@ nav:
             slug: /features/llms-txt
             file: content/features/llms-docs.mdx
             roles: []
+          - label: "AI View"
+            slug: /features/ai-view
+            file: content/features/ai-view.mdx
+            roles: []
+          - label: "Run RAG Check"
+            slug: /features/run-rag-check
+            file: content/features/run-rag-check.mdx
+            roles: []
           - label: "Offline Package and PDF Export"
             slug: /features/offline-package-and-pdf-export
             file: content/features/offline-package-and-pdf-export.mdx
@@ -125,6 +133,10 @@ nav:
     dropdown: false
     noDropdown: true
     items:
+      - label: "v0.3.1"
+        slug: /changelog/v0-3-1
+        file: content/changelog/v0-3-1.mdx
+        roles: []
       - label: "v0.2.17"
         slug: /changelog/v0-2-17
         file: content/changelog/v0-2-17.mdx

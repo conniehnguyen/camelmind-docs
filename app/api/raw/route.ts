@@ -14,7 +14,8 @@ function getAllNavEntries(nav: NavConfig): (NavEntry | NavChild)[] {
     if ("dropdown" in item) {
       for (const entry of (item.items ?? [])) {
         entries.push(entry)
-        if (entry.section) entries.push(...flattenChildren(entry.section))
+        const list = entry.section ?? entry.children
+        if (list) entries.push(...flattenChildren(list))
       }
     } else if ("file" in item) {
       entries.push(item as NavEntry)

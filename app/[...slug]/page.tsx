@@ -1,14 +1,10 @@
 import { notFound, redirect } from "next/navigation"
-import { MDXRemote } from "next-mdx-remote/rsc"
-import remarkGfm from "remark-gfm"
-import rehypeSlug from "rehype-slug"
-import rehypeAutolinkHeadings from "rehype-autolink-headings"
 import {
   getAllSlugs,
   getSlugsFromConfig,
   getEntryBySlugFromConfig,
   getGroupForSlugFromConfig,
-  getSectionForSlugFromConfig,
+  getAncestorsForSlugFromConfig,
 } from "@/lib/nav"
 import { loadMdxFile } from "@/lib/mdx"
 import { preprocessTabs } from "@/lib/remark-tabs"
@@ -24,9 +20,9 @@ import { SectionCards } from "@/components/SectionCards/SectionCards"
 import { DocActions } from "@/components/DocActions/DocActions"
 import { LastUpdated } from "@/components/LastUpdated/LastUpdated"
 import { DocFeedback } from "@/components/DocFeedback/DocFeedback"
-import { ZoomImages } from "@/components/ZoomImages/ZoomImages"
-import { mdxComponents } from "@/components/mdx"
-import type { NavGroup, NavEntry } from "@/lib/nav-types"
+import { DocBody } from "@/components/mdx/DocBody"
+import { canSeeRagCheck, ragCheckHref } from "@/lib/rag-check/access"
+import type { NavGroup } from "@/lib/nav-types"
 
 type Props = {
   params: Promise<{ slug: string[] }>
@@ -97,13 +93,14 @@ export default async function DocPage({ params }: Props) {
   }
 
   const activeGroup = getGroupForSlugFromConfig(nav, fullSlug) as NavGroup | null
-  const sectionEntry = getSectionForSlugFromConfig(nav, fullSlug) as NavEntry | null
-  const isSectionRoot = sectionEntry?.slug === fullSlug
+  const ancestors = getAncestorsForSlugFromConfig(nav, fullSlug)
 
-  // Section landing page: no `file` in nav.yml — just a title + "In this section" list,
-  // with none of the single-doc chrome (markdown actions, last updated, feedback, prev/next).
+  // Section landing page: no `file` in nav.yml — auto-generated title + category listing from
+  // navEntry's own section/children, at any nesting depth. An entry with a `file` always renders
+  // that file's own content instead (full author control, no auto-generated listing appended).
   if (!navEntry.file) {
-    if (!isSectionRoot || !sectionEntry) return notFound()
+    const landingChildren = ("section" in navEntry && navEntry.section?.length ? navEntry.section : navEntry.children) ?? []
+    if (landingChildren.length === 0) return notFound()
 
     return (
       <div className="flex flex-col h-screen">
@@ -116,13 +113,19 @@ export default async function DocPage({ params }: Props) {
                 <div data-print="hide">
                   <Breadcrumbs
                     activeGroup={activeGroup}
-                    sectionEntry={sectionEntry}
-                    currentEntry={navEntry as NavEntry}
+                    ancestors={ancestors}
+                    currentEntry={navEntry}
                   />
                 </div>
-                <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-50">{sectionEntry.label}</h1>
+                <h1 className="text-3xl font-bold mb-3 text-[var(--cm-text-primary)]">{navEntry.label}</h1>
+                {navEntry.description && (
+                  <p className="text-base text-[var(--cm-text-secondary)] max-w-2xl leading-relaxed mb-6">
+                    {navEntry.description}
+                  </p>
+                )}
+                <div className="border-t border-[var(--cm-border)]" />
                 <div data-print="hide">
-                  <SectionCards entry={sectionEntry} bare />
+                  <SectionCards entry={navEntry} />
                 </div>
               </article>
             </div>
@@ -134,6 +137,11 @@ export default async function DocPage({ params }: Props) {
 
   const { frontmatter, source: rawSource, toc, lastUpdated, lastUpdatedAuthor } = loadMdxFile(navEntry.file)
   const source = preprocessTabs(rawSource).replace(/\n+([ \t]*<\/Tab>)/g, "\n\n{' '}\n\n$1")
+  const aiViewConfig = getConfig().ai?.aiView
+  const aiViewRoles = aiViewConfig?.roles ?? []
+  const canSeeAiView = (aiViewConfig?.enabled ?? true)
+    && (!authEnabled || aiViewRoles.length === 0 || (session ? hasAccess(aiViewRoles, session.roles) : false))
+  const showRagCheck = await canSeeRagCheck(session)
 
   return (
     <div className="flex flex-col h-screen">
@@ -146,42 +154,26 @@ export default async function DocPage({ params }: Props) {
               <div data-print="hide">
                 <Breadcrumbs
                   activeGroup={activeGroup}
-                  sectionEntry={sectionEntry}
-                  currentEntry={navEntry as NavEntry}
+                  ancestors={ancestors}
+                  currentEntry={navEntry}
                 />
               </div>
-              <div className="max-w-[680px]">
-                <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-50">{frontmatter.title}</h1>
-                {frontmatter.description && (
-                  <p className="text-gray-500 dark:text-gray-400 text-lg mb-6 leading-relaxed">{frontmatter.description}</p>
-                )}
-                <div data-print="hide">
-                  <DocActions file={navEntry.file} downloadPdf={frontmatter.download_pdf} offline={process.env.OFFLINE_MODE === "true"} />
-                </div>
-              </div>
-              <ZoomImages />
-              <div className="prose prose-gray mt-6">
-                <MDXRemote
-                  source={source}
-                  components={mdxComponents}
-                  options={{
-                    // blockJS must be false so JSX prop expressions like n={1} are not stripped
-                    blockJS: false,
-                    mdxOptions: {
-                      remarkPlugins: [remarkGfm],
-                      rehypePlugins: [
-                        rehypeSlug,
-                        [rehypeAutolinkHeadings, { behavior: "wrap" }],
-                      ],
-                    },
-                  }}
-                />
-              </div>
-              {isSectionRoot && sectionEntry && (
-                <div data-print="hide">
-                  <SectionCards entry={sectionEntry} />
-                </div>
-              )}
+              <DocBody
+                title={frontmatter.title}
+                description={frontmatter.description}
+                source={source}
+                actions={
+                  <div data-print="hide">
+                    <DocActions
+                      file={navEntry.file}
+                      downloadPdf={frontmatter.download_pdf}
+                      offline={process.env.OFFLINE_MODE === "true"}
+                      aiViewHref={canSeeAiView ? `/ai-view${fullSlug}` : undefined}
+                      ragCheckHref={showRagCheck ? ragCheckHref(fullSlug) : undefined}
+                    />
+                  </div>
+                }
+              />
               <div data-print="hide" className="mt-12">
                 <div className="flex items-center justify-between mb-6">
                   {showLastUpdated() && lastUpdated ? (

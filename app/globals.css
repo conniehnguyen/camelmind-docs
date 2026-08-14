@@ -372,6 +372,24 @@ body {
   position: relative;
 }
 
+/* Mermaid diagram zoom */
+.mermaid-diagram svg {
+  cursor: zoom-in;
+  transition: transform 0.3s ease-in-out;
+  transform-origin: top left;
+}
+
+.mermaid-diagram.zoomed {
+  position: relative;
+  z-index: 9999;
+  justify-content: flex-start;
+}
+
+.mermaid-diagram.zoomed svg {
+  transform: scale(1.7);
+  cursor: zoom-out;
+}
+
 
 /* ── Dark mode overrides ── */
 
@@ -560,6 +578,12 @@ body {
     cursor: default !important;
     transform: none !important;
     max-width: 100%;
+  }
+
+  /* Disable mermaid diagram zoom cursor */
+  .mermaid-diagram svg {
+    cursor: default !important;
+    transform: none !important;
   }
 
   /* Code blocks — keep dark background */

@@ -190,6 +190,43 @@ export function getSectionForSlug(slug: string): NavEntry | null {
   return getSectionForSlugFromConfig(loadNav(), slug)
 }
 
+// Return the full ancestor chain for a slug — every NavEntry/NavChild strictly between the
+// group and the matched node, top-down, not including the matched node itself. Nesting can go
+// arbitrarily deep (e.g. entry > child > grandchild > ...), unlike getSectionForSlugFromConfig
+// which only ever returns the single top-level entry.
+export function getAncestorsForSlugFromConfig(nav: NavConfig, slug: string): (NavEntry | NavChild)[] {
+  const normalized = slug.startsWith("/") ? slug : `/${slug}`
+
+  function walk(nodes: NavChild[], trail: (NavEntry | NavChild)[]): (NavEntry | NavChild)[] | null {
+    for (const node of nodes) {
+      if (node.slug === normalized) return trail
+      if (node.children) {
+        const found = walk(node.children, [...trail, node])
+        if (found) return found
+      }
+    }
+    return null
+  }
+
+  for (const item of nav.nav) {
+    if (!("dropdown" in item)) continue
+    for (const entry of ((item as NavGroup).items ?? [])) {
+      if (entry.slug === normalized) return []
+      const list = entry.section ?? entry.children
+      if (list) {
+        const found = walk(list, [entry])
+        if (found) return found
+      }
+    }
+  }
+
+  return []
+}
+
+export function getAncestorsForSlug(slug: string): (NavEntry | NavChild)[] {
+  return getAncestorsForSlugFromConfig(loadNav(), slug)
+}
+
 export function getAllPublicEntries(nav: NavConfig): (NavEntry | NavChild)[] {
   const entries: (NavEntry | NavChild)[] = []
   for (const item of nav.nav) {

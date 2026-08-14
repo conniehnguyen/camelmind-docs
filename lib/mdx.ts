@@ -41,6 +41,9 @@ export type DocContent = {
   lastUpdatedAuthor: string | null
 }
 
+const TOC_EXCLUDE_MARKER = /\{\/\*\s*toc:exclude\s*\*\/\}/i
+const MDX_COMMENT = /\{\/\*.*?\*\/\}/g
+
 function extractToc(source: string): TocEntry[] {
   const headingRegex = /^(#{2,3})\s+(.+)$/gm
   const entries: TocEntry[] = []
@@ -49,9 +52,13 @@ function extractToc(source: string): TocEntry[] {
 
   while ((match = headingRegex.exec(source)) !== null) {
     const level = match[1].length
-    const text = match[2].trim()
+    const rawText = match[2].trim()
+    const excluded = TOC_EXCLUDE_MARKER.test(rawText)
+    const text = rawText.replace(MDX_COMMENT, "").trim()
+    // Always slug, even when excluded, so ids stay in sync with rehype-slug
+    // (which slugs every rendered heading regardless of TOC visibility).
     const id = slugger.slug(text)
-    entries.push({ id, text, level })
+    if (!excluded) entries.push({ id, text, level })
   }
 
   return entries

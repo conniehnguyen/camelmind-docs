@@ -5,6 +5,8 @@ import { Icon } from "./Icon"
 import { Details } from "./Details"
 import { LLMOnly } from "./LLMOnly"
 import { LLMIgnore } from "./LLMIgnore"
+import { Tooltip } from "./Tooltip"
+import { Mermaid } from "./Mermaid"
 import { CodeBlock } from "@/components/Code/CodeBlock"
 
 export const mdxComponents = {
@@ -17,6 +19,7 @@ export const mdxComponents = {
   Details,
   LLMOnly,
   LLMIgnore,
+  Tooltip,
   pre: ({ children }: { children: React.ReactNode }) => {
     // If the child code block has a language class, let CodeBlock handle it
     const child = children as React.ReactElement<{ className?: string }>
@@ -30,6 +33,9 @@ export const mdxComponents = {
     )
   },
   code: ({ className, children }: { className?: string; children: string }) => {
+    if (className === "language-mermaid") {
+      return <Mermaid chart={children} />
+    }
     if (className) {
       return <CodeBlock className={className}>{children}</CodeBlock>
     }

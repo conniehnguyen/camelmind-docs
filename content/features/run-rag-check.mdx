@@ -1,0 +1,148 @@
+---
+title: Run RAG Check
+description: Run a local, no-API-key RAG readiness check on a doc page and get chunk-level findings before it ever reaches a retrieval pipeline.
+---
+
+While **AI View** shows the exact raw text a RAG pipeline ingests, **Run RAG Check** goes a step further by simulating the full retrieval lifecycle. It splits your content into retrieval-sized chunks, runs a built-in keyword retriever against automatically generated test questions, and evaluates how well each chunk can be retrieved, stand alone on its own, and ground accurate responses.
+
+<Callout type="note">
+Run RAG Check is designed exclusively for documentation authors during local development. It runs locally and is automatically stripped from production builds and offline exports.
+</Callout>
+
+---
+
+## Enable Run RAG check
+
+Run RAG check is on by default for local development. To configure it explicitly, add a `ragCheck` block under `ai` in `camelmind.config.ts`:
+
+```typescript
+const config: CamelMindConfig = {
+  // ...
+  ai: {
+    ragCheck: {
+      enabled: true,
+      localOnly: true,
+      roles: [],
+      defaultChunkSize: 500,
+      defaultChunkOverlap: 80,
+      maxGeneratedQuestions: 12,
+    },
+  },
+}
+```
+
+### Configuration fields
+
+| Field | Required | Description |
+|---|---|---|
+| `enabled` | No | Set `false` to disable Run RAG check entirely and hide it from the toolbar. Defaults to `true`. |
+| `localOnly` | No | Must stay `true` (the default) for the tool to be reachable at all. Setting it to `false` doesn't open the tool up remotely — it disables it outright, since there's no supported story yet for exposing an author tool beyond localhost. |
+| `roles` | No | Restricts access to specific roles, e.g. `["editor", "admin"]`. Same pattern as [AI View](/features/ai-view). Leave empty to allow any authenticated local user. Has no effect if auth is disabled. |
+| `defaultChunkSize` | No | Pre-fills the **Chunk size** control, in characters. Defaults to `500`. Valid range is 100–4000. |
+| `defaultChunkOverlap` | No | Pre-fills the **Chunk overlap** control. Defaults to `80`. Must be smaller than the chunk size. |
+| `maxGeneratedQuestions` | No | Caps the number of test questions generated per run. Defaults to `12`. |
+| `allowUserApiKeys`, `defaultEvaluator`, `allowedEvaluators` | No | Reserved for optional Ragas/TruLens evaluators. The current release only runs the built-in heuristic evaluator, so these fields have no effect yet. |
+
+<Callout type="note">
+Run RAG check inherits your existing document access controls, the same way AI View does — a reader who can't open a page can't open its RAG check either.
+</Callout>
+
+---
+
+## Requirements to see it
+
+Run RAG check is hidden unless **all** of the following are true:
+
+* You're running the dev server (`NODE_ENV=development`), or the environment variable `CAMELMIND_AUTHOR_TOOLS=true` is set.
+* The request's `Host` header is `localhost`, `127.0.0.1`, or `[::1]` (any port).
+* `OFFLINE_MODE` is not `true` — offline exports never include this tool.
+* `ai.ragCheck.enabled` is not `false`.
+* If `roles` is set, your session has one of the listed roles.
+
+If any of these aren't met, both the toolbar link and the page itself behave as if the feature doesn't exist — the route returns a plain `404` rather than a permission error, so it doesn't advertise its own existence to a reader.
+
+<Callout type="warning">
+`CAMELMIND_AUTHOR_TOOLS=true` is a dev-only escape hatch for testing this tool in a non-`development` environment. Don't set it in a production Docker image or shared staging host — it removes the `NODE_ENV` guard, leaving only the host check.
+</Callout>
+
+---
+
+## Open Run RAG check
+
+* **Doc toolbar:** Click **Run RAG check** in the toolbar above the page content, next to **AI View**. It only appears when you meet the requirements above.
+* **Direct URL:** `/rag-check/<page-slug>`. For example, `/rag-check/features/llms-txt`.
+
+From either **AI View** or **Run RAG check**, a link in the header takes you to the other — the natural workflow is to spot a formatting issue in AI View, then confirm its retrieval impact here.
+
+---
+
+## Reading the Run RAG check screen
+
+The screen is split into three panes.
+
+=== "AI-readable text & chunks (left)"
+
+The same AI-readable text AI View shows, but sliced into the chunks a retrieval pipeline would actually index — the boundaries update live as you change chunk size/overlap and re-run.
+
+Click a line or a chunk card at the bottom to select it; selecting a finding or test question elsewhere on the screen jumps back to the matching chunk here. Line numbers refer to the AI-readable text, including the `llms.txt` directive prefix — they won't line up 1:1 with your MDX source.
+
+=== "Controls & summary (middle)"
+
+**Run controls:**
+
+| Control | Values |
+|---|---|
+| Chunk size | 300, 500, 800, or a custom value (100–4000) |
+| Chunk overlap | 0, 50, 80, 100, 150, or a custom value (must be less than chunk size) |
+
+Click **Run check** to chunk the page, generate test questions, run the built-in keyword retriever, and score the result. No API key is required — the current evaluator is entirely local and heuristic. **Export JSON** downloads the full result once a run completes.
+
+**Summary**, shown after a run:
+
+- **Overall RAG readiness** — a 0–100 weighted average of the five dimensions below (Retrievability 35%, Chunk independence 20%, Grounding readiness 15%, Format robustness 15%, Query coverage 5%, Cross-link quality 10%). If any finding is `blocking` severity, Overall is capped at 70 regardless of the weighted average — a dead link or a failed retrieval isn't a proportional deduction, it's a failure.
+- **Retrievability** — top-3 hit rate for generated test questions against the built-in keyword retriever, penalized when an irrelevant chunk outranks the right one.
+- **Chunk independence** — whether each chunk makes sense retrieved on its own, penalizing chunks that open with a vague pronoun, duplicate a neighbor, or sit under a generic heading.
+- **Grounding readiness** — a heuristic proxy only (no answer is actually generated or checked) for whether the page gives an LLM enough to answer confidently.
+- **Format robustness** — how well the page survives conversion to the plain text an LLM ingests, based on AI-friendliness issue density.
+- **Query coverage** — the share of test questions whose expected chunk showed up anywhere in the top 5 results, a looser check than Retrievability's top-3 cutoff.
+- **Cross-link quality** — whether the page connects to the rest of the doc set: links to slugs that no longer exist, or a page with no outbound links at all.
+
+Hover the info icon next to any score for its full description. Below the summary card, **test queries** lists each generated question with pass/warning/fail status — click one to see which chunks it retrieved.
+
+=== "Findings (right)"
+
+Grouped by severity, most to least urgent:
+
+- **Blocking** — outright failures: a dead link, a test question that failed to retrieve its expected chunk.
+- **Warning** — likely to cause a real retrieval or grounding problem.
+- **Note** — lower-confidence observations worth a look.
+
+Each finding shows the problem, a specific recommended edit, and — when applicable — the line or chunk it applies to. Click a finding to jump the left pane to that chunk.
+
+===
+
+<Callout type="tip">
+Every summary score is labeled "Heuristic estimate" with a note that the retriever is a **keyword-based proxy** — it approximates how likely a page is to survive real embedding-based RAG, but it isn't a substitute for testing against your production retrieval stack.
+</Callout>
+
+---
+
+## Fixing common findings
+
+| Finding category | Fix |
+|---|---|
+| `retrieval-miss` / `retrieval-noise` | Add the exact terms users are likely to search for; make the heading and opening sentence more specific. |
+| `weak-heading` / `weak-heading-context` | Restate the section's subject in the heading and opening line instead of a generic label or pronoun. |
+| `over-split-section` / `long-chunk` | Rebalance chunk size, or restructure the section so a natural break falls at a heading. |
+| `context-less-table` / `context-less-code` | Add a lead-in sentence before the table or code block explaining what it shows. |
+| `dead-link` | Fix or remove the link — an agent following it hits a dead end. |
+| `no-outbound-links` | Add at least one link to related docs so a multi-step task doesn't stall on this page. |
+
+Categories shared with AI View (`long-paragraph`, `context-less-code`, `context-less-table`, `weak-alt-text`, `positional-reference`, `opaque-jsx`, `weak-heading-context`) use the same fixes described on the [AI View](/features/ai-view#fixing-common-issues) page.
+
+---
+
+## Related tools
+
+- [AI View](/features/ai-view) — preview the raw text a RAG pipeline ingests, without running chunking or retrieval.
+- [LLMs.txt](/features/llms-txt) — the underlying AI-readable output both tools are built on.

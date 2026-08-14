@@ -1,15 +1,17 @@
 "use client"
 
-import { FileText, Download } from "lucide-react"
+import { FileText, Download, FlaskConical, Sparkles } from "lucide-react"
 
 type Props = {
   file: string
   downloadPdf?: string
   offline?: boolean
+  aiViewHref?: string
+  ragCheckHref?: string
 }
 
-export function DocActions({ file, downloadPdf, offline }: Props) {
-  // In offline builds, /api/raw doesn't exist — only show PDF download if present
+export function DocActions({ file, downloadPdf, offline, aiViewHref, ragCheckHref }: Props) {
+  // In offline builds, /api/raw doesn't exist; only show PDF download if present.
   if (offline) {
     if (!downloadPdf) return null
     return (
@@ -47,6 +49,24 @@ export function DocActions({ file, downloadPdf, offline }: Props) {
         <Download size={14} />
         Download Markdown
       </a>
+      {aiViewHref && (
+        <a
+          href={aiViewHref}
+          className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors"
+        >
+          <Sparkles size={14} />
+          AI View
+        </a>
+      )}
+      {ragCheckHref && (
+        <a
+          href={ragCheckHref}
+          className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors"
+        >
+          <FlaskConical size={14} />
+          Run RAG check
+        </a>
+      )}
       {downloadPdf && (
         <a
           href={downloadPdf}

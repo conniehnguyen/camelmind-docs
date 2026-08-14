@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { flattenChildren } from "@/lib/nav"
 import type { NavGroup } from "@/lib/nav-types"
 
 type PageEntry = { label: string; slug: string }
@@ -7,14 +8,10 @@ function flattenGroup(group: NavGroup): PageEntry[] {
   const pages: PageEntry[] = []
   for (const entry of group.items) {
     pages.push({ label: entry.label, slug: entry.slug })
-    if (entry.section) {
-      for (const child of entry.section) {
+    const list = entry.section ?? entry.children
+    if (list) {
+      for (const child of flattenChildren(list)) {
         pages.push({ label: child.label, slug: child.slug })
-        if (child.children) {
-          for (const grandchild of child.children) {
-            pages.push({ label: grandchild.label, slug: grandchild.slug })
-          }
-        }
       }
     }
   }

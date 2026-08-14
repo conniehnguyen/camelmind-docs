@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { loadNav, getEntryBySlugFromConfig } from "@/lib/nav"
-import { loadMdxFile, processForLLM } from "@/lib/mdx"
+import { loadMdxFile } from "@/lib/mdx"
 import { getConfig } from "@/lib/config"
+import { buildAiReadableText } from "@/lib/ai-text"
 
 export async function GET(
   _req: NextRequest,
@@ -22,15 +23,9 @@ export async function GET(
   if (!entry.file) return new NextResponse("Not Found", { status: 404 })
 
   const { source: rawSource } = loadMdxFile(entry.file)
-  const source = processForLLM(rawSource)
   const config = getConfig()
-  const baseUrl = config.url.replace(/\/$/, "")
 
-  const directive =
-    config.ai?.llmsTxt?.directive ??
-    `For a complete documentation index, see ${baseUrl}/llms.txt. To read any public page as Markdown, append .md to the URL.`
-
-  return new NextResponse(`> ${directive}\n\n${source}`, {
+  return new NextResponse(buildAiReadableText(rawSource, config), {
     headers: { "Content-Type": "text/plain; charset=utf-8" },
   })
 }

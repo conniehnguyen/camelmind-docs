@@ -98,7 +98,7 @@ export default async function HomePage() {
             <div className="order-1 md:order-none relative z-10 px-6 md:px-10 py-12 md:py-24 max-w-xl">
               <div className="inline-flex w-fit items-center rounded-full border border-[var(--cm-border)] bg-[var(--cm-bg-secondary)]/80 p-1 pr-4 text-sm mb-6">
                 <span className="flex items-center gap-1.5 rounded-full bg-[var(--cm-bg-tertiary)] px-3 py-1 text-[var(--cm-text-muted)] font-medium mr-3">
-                  <span aria-hidden="true">🐪</span> v0.2.17
+                  <span aria-hidden="true">🐪</span> v0.3.0
                 </span>
                 <span className="text-[var(--cm-link)] font-medium">Welcome to {config.title}</span>
               </div>

@@ -5,16 +5,18 @@ type Crumb = { label: string; slug?: string }
 
 type Props = {
   activeGroup?: NavGroup | null
-  sectionEntry?: NavEntry | null
+  ancestors?: (NavEntry | NavChild)[]
   currentEntry?: NavEntry | NavChild | null
 }
 
-export function Breadcrumbs({ activeGroup, sectionEntry, currentEntry }: Props) {
+export function Breadcrumbs({ activeGroup, ancestors = [], currentEntry }: Props) {
   const crumbs: Crumb[] = []
 
   if (activeGroup) crumbs.push({ label: activeGroup.label })
-  if (sectionEntry && sectionEntry.slug !== currentEntry?.slug) {
-    crumbs.push({ label: sectionEntry.label, slug: sectionEntry.slug })
+  for (const ancestor of ancestors) {
+    if (ancestor.slug !== currentEntry?.slug) {
+      crumbs.push({ label: ancestor.label, slug: ancestor.slug })
+    }
   }
   if (currentEntry) crumbs.push({ label: currentEntry.label })
 

@@ -4,6 +4,7 @@ export type NavChild = {
   file: string
   roles: string[]
   children?: NavChild[]
+  description?: string  // shown on the parent section-landing page when this child is a category (has its own children)
 }
 
 export type NavEntry = {
@@ -14,6 +15,7 @@ export type NavEntry = {
   hidden_from_nav?: boolean  // accessible by URL but excluded from dropdown and sidebar
   section?: NavChild[]   // renders as ALL CAPS category block with children below
   children?: NavChild[]  // renders as a plain collapsible row (no category label)
+  description?: string   // subtitle shown under the title on a section-landing page
 }
 
 export type NavGroup = {

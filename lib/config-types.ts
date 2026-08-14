@@ -40,8 +40,29 @@ export type LlmsTxtConfig = {
   directive?: string
 }
 
+export type AiViewConfig = {
+  enabled?: boolean
+  roles?: string[]
+}
+
+export type RagCheckEvaluator = "heuristic" | "ragas" | "trulens"
+
+export type RagCheckConfig = {
+  enabled?: boolean
+  localOnly?: boolean
+  roles?: string[]
+  allowUserApiKeys?: boolean
+  defaultEvaluator?: RagCheckEvaluator
+  allowedEvaluators?: RagCheckEvaluator[]
+  defaultChunkSize?: number
+  defaultChunkOverlap?: number
+  maxGeneratedQuestions?: number
+}
+
 export type AiConfig = {
   llmsTxt?: LlmsTxtConfig
+  aiView?: AiViewConfig
+  ragCheck?: RagCheckConfig
 }
 
 export type CamelMindConfig = {

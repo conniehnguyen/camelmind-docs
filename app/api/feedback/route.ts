@@ -1,22 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-}
-
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.RESEND_API_KEY
-  const to = process.env.FEEDBACK_EMAIL_TO
-  if (!apiKey || !to) {
-    console.error(
-      `Feedback email not configured: ${!apiKey ? "RESEND_API_KEY missing" : ""} ${!to ? "FEEDBACK_EMAIL_TO missing" : ""}`.trim()
-    )
-    return NextResponse.json({ error: "Email not configured" }, { status: 503 })
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL
+  if (!webhookUrl) {
+    return NextResponse.json({ error: "Webhook not configured" }, { status: 503 })
   }
 
   const { rating, reason, allowFollowUp, email, pageTitle, pageSlug } = await req.json()
@@ -24,32 +11,31 @@ export async function POST(req: NextRequest) {
   const emoji = rating === "positive" ? "👍" : "👎"
   const ratingLabel = rating === "positive" ? "Helpful" : "Not helpful"
 
-  const res = await fetch("https://api.resend.com/emails", {
+  await fetch(webhookUrl, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      from: process.env.FEEDBACK_EMAIL_FROM || "Doc Feedback <onboarding@resend.dev>",
-      to,
-      subject: `${emoji} Doc Feedback — ${ratingLabel}: ${pageTitle}`,
-      html: `
-        <p><strong>Page:</strong> ${escapeHtml(pageTitle)}</p>
-        <p><strong>Path:</strong> ${escapeHtml(pageSlug)}</p>
-        <p><strong>Rating:</strong> ${ratingLabel}</p>
-        <p><strong>Reason:</strong> ${escapeHtml(reason || "—")}</p>
-        <p><strong>Follow-up OK:</strong> ${allowFollowUp ? "Yes" : "No"}</p>
-        ${allowFollowUp && email ? `<p><strong>Email:</strong> ${escapeHtml(email)}</p>` : ""}
-      `,
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `${emoji} *Doc Feedback — ${ratingLabel}*`,
+          },
+        },
+        {
+          type: "section",
+          fields: [
+            { type: "mrkdwn", text: `*Page:*\n${pageTitle}` },
+            { type: "mrkdwn", text: `*Path:*\n\`${pageSlug}\`` },
+            { type: "mrkdwn", text: `*Reason:*\n${reason || "—"}` },
+            { type: "mrkdwn", text: `*Follow-up OK:*\n${allowFollowUp ? "Yes" : "No"}` },
+            ...(allowFollowUp && email ? [{ type: "mrkdwn", text: `*Email:*\n${email}` }] : []),
+          ],
+        },
+      ],
     }),
   })
-
-  if (!res.ok) {
-    const body = await res.text()
-    console.error(`Resend request failed (${res.status}): ${body}`)
-    return NextResponse.json({ error: "Failed to send email" }, { status: 502 })
-  }
 
   return NextResponse.json({ ok: true })
 }
