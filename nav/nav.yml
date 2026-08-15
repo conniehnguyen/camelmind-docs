@@ -136,6 +136,10 @@ nav:
     dropdown: false
     noDropdown: true
     items:
+      - label: "v0.3.2"
+        slug: /changelog/v0-3-2
+        file: content/changelog/v0-3-2.mdx
+        roles: []
       - label: "v0.3.1"
         slug: /changelog/v0-3-1
         file: content/changelog/v0-3-1.mdx

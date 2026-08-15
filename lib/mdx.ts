@@ -25,6 +25,7 @@ export type FrontMatter = {
   download_pdf?: string
   last_updated?: string
   hide_table_of_contents?: boolean
+  badge?: string  // short pill shown next to the page title and its sidebar/nav entry, e.g. "Coming Soon"
 }
 
 export type TocEntry = {
@@ -77,6 +78,32 @@ export function loadFrontmatterOnly(filePath: string): FrontMatter {
   return data as FrontMatter
 }
 
+// Local fallback only — reads from the on-disk .git repo, which is reliable
+// in local dev but not guaranteed to exist (or have full history) in a
+// deployed build environment. Prefer lib/git-history.ts's GitHub/GitLab API
+// lookup for production; this is the last resort before file mtime.
+const GIT_LOG_SEPARATOR = "\x1f"
+
+function getLocalGitInfo(fullPath: string): { date: Date | null; author: string | null } {
+  try {
+    const result = execSync(
+      `git log -1 --format="%aI${GIT_LOG_SEPARATOR}%an" -- "${fullPath}"`,
+      { encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] }
+    ).trim()
+    if (!result) return { date: null, author: null }
+
+    const [isoDate, author] = result.split(GIT_LOG_SEPARATOR)
+    const parsed = new Date(isoDate)
+    return {
+      date: isNaN(parsed.getTime()) ? null : parsed,
+      author: author || null,
+    }
+  } catch {
+    // not a git repo or git unavailable
+    return { date: null, author: null }
+  }
+}
+
 export function loadMdxFile(filePath: string): DocContent {
   if (path.normalize(filePath).split(path.sep).includes("_partials")) {
     throw new Error(
@@ -90,23 +117,15 @@ export function loadMdxFile(filePath: string): DocContent {
   const frontmatter = data as FrontMatter
   const resolvedContent = resolvePartials(content)
 
+  const localGit = getLocalGitInfo(fullPath)
+
   let lastUpdated: Date | null = null
   if (frontmatter.last_updated) {
     const parsed = new Date(frontmatter.last_updated)
     if (!isNaN(parsed.getTime())) lastUpdated = parsed
-  } else {
-    lastUpdated = fs.statSync(fullPath).mtime
   }
-
-  let lastUpdatedAuthor: string | null = null
-  try {
-    const result = execSync(`git log -1 --format="%an" -- "${fullPath}"`, {
-      encoding: "utf-8",
-      stdio: ["pipe", "pipe", "pipe"],
-    }).trim()
-    if (result) lastUpdatedAuthor = result
-  } catch {
-    // not a git repo or git unavailable
+  if (!lastUpdated) {
+    lastUpdated = localGit.date ?? fs.statSync(fullPath).mtime
   }
 
   return {
@@ -114,6 +133,6 @@ export function loadMdxFile(filePath: string): DocContent {
     source: resolvedContent,
     toc: extractToc(resolvedContent),
     lastUpdated,
-    lastUpdatedAuthor,
+    lastUpdatedAuthor: localGit.author,
   }
 }

@@ -1,0 +1,47 @@
+---
+title: What's in v0.3.2
+description: Key features included in v0.3.2.
+---
+
+## New features
+
+### Custom badges for pages
+
+Add a custom badge to a page's side navigation and title using the `badge` frontmatter field. For example:
+
+```
+---
+title: Installation
+description: Get a CamelMind documentation site running locally.
+badge: "Coming Soon"
+---
+```
+
+CamelMind displays the badge next to the page in the side navigation and alongside the page title.
+
+## Bug fixes
+
+### Last Updated timestamp
+
+CamelMind now displays the correct Last Updated date for a page using the timestamp recorded by GitHub or GitLab. You can override the repository timestamp by setting the `last_updated` frontmatter field. For example:
+
+```
+---
+title: Welcome to CamelMind
+description: Open-source docs-as-code platform for documentation sites and developer portals.
+last_updated: 2026-08-15
+---
+```
+
+<Callout type="tip" title="Updating to a new version">
+
+Use the `update` command to upgrade an existing CamelMind site to the latest platform version. Choose the option that best fits your workflow:
+
+| Option | Command |
+| --- | --- |
+| Update your project to the latest CamelMind version | `npx camelmind@latest update` |
+| Preview the files that would change without modifying your project | `npx camelmind@latest update --dry-run` |
+| Update project files without running `npm install` | `npx camelmind@latest update --no-install` |
+| Preserve a customized file during the update | `npx camelmind@latest update --ignore-file app/page.tsx` |
+
+</Callout>

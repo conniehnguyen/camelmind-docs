@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 import yaml from "js-yaml"
-import { loadNav } from "./nav"
+import { loadNav, injectBadges } from "./nav"
 import type { NavConfig } from "./nav-types"
 import type { ApiReferenceConfig } from "./config-types"
 
@@ -98,14 +98,22 @@ export function getVersionFromSlug(slug: string): string | null {
   return null
 }
 
+const _versionedNavCache = new Map<string, NavConfig>()
+
 export function getNavForVersion(versionId: string | null): NavConfig {
   if (!versionId) return loadNav()
+  if (process.env.NODE_ENV !== "development" && _versionedNavCache.has(versionId)) {
+    return _versionedNavCache.get(versionId)!
+  }
+
   const { versions } = loadVersions()
   const v = versions.find((v) => v.id === versionId)
   if (!v) return loadNav()
 
   const raw = fs.readFileSync(path.join(process.cwd(), v.nav), "utf-8")
-  return yaml.load(raw) as NavConfig
+  const nav = injectBadges(yaml.load(raw) as NavConfig)
+  _versionedNavCache.set(versionId, nav)
+  return nav
 }
 
 export function getLatestVersion(): Version {

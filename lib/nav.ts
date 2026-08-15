@@ -2,11 +2,52 @@ import fs from "fs"
 import path from "path"
 import yaml from "js-yaml"
 import type { NavConfig, NavEntry, NavGroup, NavChild } from "./nav-types"
+import { loadFrontmatterOnly } from "./mdx"
 
 export type { NavConfig, NavEntry, NavGroup, NavChild }
 export { isNavGroup } from "./nav-types"
 
 let _navCache: NavConfig | null = null
+
+// A nav.yml `badge` always wins; otherwise fall back to the linked file's frontmatter `badge`,
+// so authors can set it once (in the doc itself) without also touching nav.yml.
+function resolveBadge(node: { badge?: string; file?: string }): string | undefined {
+  if (node.badge) return node.badge
+  if (!node.file) return undefined
+  return loadFrontmatterOnly(node.file).badge
+}
+
+function injectBadgesIntoChildren(children: NavChild[]): NavChild[] {
+  return children.map((c) => ({
+    ...c,
+    badge: resolveBadge(c),
+    children: c.children ? injectBadgesIntoChildren(c.children) : undefined,
+  }))
+}
+
+function injectBadgesIntoEntries(entries: NavEntry[]): NavEntry[] {
+  return entries.map((e) => ({
+    ...e,
+    badge: resolveBadge(e),
+    section: e.section ? injectBadgesIntoChildren(e.section) : undefined,
+    children: e.children ? injectBadgesIntoChildren(e.children) : undefined,
+  }))
+}
+
+// Merge frontmatter `badge` values from linked MDX files into the nav tree, so the Sidebar
+// (which only ever sees nav objects, not file contents) can render the same badge shown on
+// the page title without a second copy of it in nav.yml.
+export function injectBadges(nav: NavConfig): NavConfig {
+  return {
+    nav: nav.nav.map((item) => {
+      if ("dropdown" in item) {
+        const group = item as NavGroup
+        return { ...group, items: group.items ? injectBadgesIntoEntries(group.items) : undefined }
+      }
+      return injectBadgesIntoEntries([item as NavEntry])[0]
+    }),
+  } as NavConfig
+}
 
 function stripPrefix(slug: string, prefix: string): string {
   if (slug.startsWith(prefix + "/")) return slug.slice(prefix.length)
@@ -61,7 +102,7 @@ export function loadNav(): NavConfig {
   const navPath = path.join(process.cwd(), latest.nav)
   const nav = yaml.load(fs.readFileSync(navPath, "utf-8")) as NavConfig
 
-  _navCache = stripNavPrefix(nav, `/${latest.id}`)
+  _navCache = injectBadges(stripNavPrefix(nav, `/${latest.id}`))
   return _navCache
 }
 

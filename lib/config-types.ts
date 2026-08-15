@@ -65,6 +65,12 @@ export type AiConfig = {
   ragCheck?: RagCheckConfig
 }
 
+export type RepoConfig = {
+  // Branch to read commit history from when looking up "last updated" info
+  // via the GitHub/GitLab API. Defaults to "main".
+  branch?: string
+}
+
 export type CamelMindConfig = {
   title: string
   tagline: string
@@ -74,8 +80,11 @@ export type CamelMindConfig = {
   versionsFile: string
   auth: AuthConfig
   links: {
+    // Also used to derive the GitHub/GitLab API repo (owner/name/provider)
+    // for "last updated" lookups — see lib/git-history.ts.
     github?: string
   }
+  repo?: RepoConfig
   site?: SiteFeatures
   apiReference?: ApiReferenceConfig
   ai?: AiConfig

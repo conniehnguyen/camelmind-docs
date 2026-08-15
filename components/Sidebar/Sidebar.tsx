@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { NavEntry, NavGroup, NavChild } from "@/lib/nav-types"
+import { Badge } from "@/components/Badge/Badge"
 
 type Props = {
   activeGroup?: NavGroup | null
@@ -34,7 +35,7 @@ function DocLink({ item, currentSlug, depth = 0 }: { item: NavChild; currentSlug
       <Link
         href={item.slug}
         style={isActive ? { borderColor: "var(--cm-active-border)", color: "var(--cm-active)" } : {}}
-        className={`block py-1.5 pr-3 text-sm transition-colors ${
+        className={`flex items-center gap-1.5 py-1.5 pr-3 text-sm transition-colors ${
           isNested
             ? "pl-4 border-l-2"
             : "pl-2"
@@ -46,7 +47,8 @@ function DocLink({ item, currentSlug, depth = 0 }: { item: NavChild; currentSlug
               : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
         }`}
       >
-        {item.label}
+        <span className="truncate">{item.label}</span>
+        {item.badge && <Badge>{item.badge}</Badge>}
       </Link>
     </div>
   )
@@ -85,7 +87,7 @@ function SectionRow({
         <Link
           href={section.slug}
           style={currentSlug === section.slug ? { borderColor: "var(--cm-active-border)", color: "var(--cm-active)" } : {}}
-          className={`block py-1.5 pr-2 text-sm transition-colors ${
+          className={`flex items-center gap-1.5 py-1.5 pr-2 text-sm transition-colors ${
             isNested ? "pl-4 border-l-2" : "pl-2"
           } ${
             currentSlug === section.slug
@@ -95,7 +97,8 @@ function SectionRow({
                 : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
           }`}
         >
-          {section.label}
+          <span className="truncate">{section.label}</span>
+          {section.badge && <Badge>{section.badge}</Badge>}
         </Link>
       </div>
     )
@@ -113,7 +116,7 @@ function SectionRow({
         <Link
           href={section.slug}
           style={currentSlug === section.slug ? { color: "var(--cm-active)" } : {}}
-          className={`flex-1 min-w-0 py-1.5 text-sm leading-snug transition-colors ${
+          className={`flex-1 min-w-0 flex items-center gap-1.5 py-1.5 text-sm leading-snug transition-colors ${
             isNested ? "pl-4" : "pl-2"
           } ${
             currentSlug === section.slug
@@ -121,7 +124,8 @@ function SectionRow({
               : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
           }`}
         >
-          {section.label}
+          <span className="truncate">{section.label}</span>
+          {section.badge && <Badge>{section.badge}</Badge>}
         </Link>
         <button
           onClick={() => setOpen((o) => !o)}
@@ -183,11 +187,12 @@ function CategoryBlock({
       <Link
         href={entry.slug}
         style={isCategoryActive ? { color: "var(--cm-active)" } : {}}
-        className={`block px-2 pb-1 text-xs font-semibold uppercase tracking-widest transition-colors select-none ${
+        className={`flex items-center gap-1.5 px-2 pb-1 text-xs font-semibold uppercase tracking-widest transition-colors select-none ${
           isCategoryActive ? "" : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
         }`}
       >
-        {entry.label}
+        <span>{entry.label}</span>
+        {entry.badge && <Badge>{entry.badge}</Badge>}
       </Link>
 
       {sections.map((section) => (

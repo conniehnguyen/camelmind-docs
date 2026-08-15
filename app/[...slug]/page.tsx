@@ -7,6 +7,7 @@ import {
   getAncestorsForSlugFromConfig,
 } from "@/lib/nav"
 import { loadMdxFile } from "@/lib/mdx"
+import { getRemoteLastUpdated } from "@/lib/git-history"
 import { preprocessTabs } from "@/lib/remark-tabs"
 import { getSession, hasAccess, pageRequiresAuth, shouldRedirectToLogin } from "@/lib/auth"
 import { getConfig, isAuthEnabled, showLastUpdated, showLastUpdateAuthor, showFeedbackWidget } from "@/lib/config"
@@ -21,6 +22,7 @@ import { DocActions } from "@/components/DocActions/DocActions"
 import { LastUpdated } from "@/components/LastUpdated/LastUpdated"
 import { DocFeedback } from "@/components/DocFeedback/DocFeedback"
 import { DocBody } from "@/components/mdx/DocBody"
+import { Badge } from "@/components/Badge/Badge"
 import { canSeeRagCheck, ragCheckHref } from "@/lib/rag-check/access"
 import type { NavGroup } from "@/lib/nav-types"
 
@@ -117,7 +119,10 @@ export default async function DocPage({ params }: Props) {
                     currentEntry={navEntry}
                   />
                 </div>
-                <h1 className="text-3xl font-bold mb-3 text-[var(--cm-text-primary)]">{navEntry.label}</h1>
+                <h1 className="flex items-center gap-2 text-3xl font-bold mb-3 text-[var(--cm-text-primary)]">
+                  <span>{navEntry.label}</span>
+                  {navEntry.badge && <Badge>{navEntry.badge}</Badge>}
+                </h1>
                 {navEntry.description && (
                   <p className="text-base text-[var(--cm-text-secondary)] max-w-2xl leading-relaxed mb-6">
                     {navEntry.description}
@@ -135,13 +140,21 @@ export default async function DocPage({ params }: Props) {
     )
   }
 
-  const { frontmatter, source: rawSource, toc, lastUpdated, lastUpdatedAuthor } = loadMdxFile(navEntry.file)
+  const { frontmatter, source: rawSource, toc, lastUpdated: localLastUpdated, lastUpdatedAuthor: localLastUpdatedAuthor } = loadMdxFile(navEntry.file)
   const source = preprocessTabs(rawSource).replace(/\n+([ \t]*<\/Tab>)/g, "\n\n{' '}\n\n$1")
   const aiViewConfig = getConfig().ai?.aiView
   const aiViewRoles = aiViewConfig?.roles ?? []
   const canSeeAiView = (aiViewConfig?.enabled ?? true)
     && (!authEnabled || aiViewRoles.length === 0 || (session ? hasAccess(aiViewRoles, session.roles) : false))
   const showRagCheck = await canSeeRagCheck(session)
+
+  // Frontmatter `last_updated` is an explicit author override — skip the
+  // remote lookup and trust it. Otherwise prefer the GitHub/GitLab API
+  // (accurate in deployed builds where filesystem mtime/local git history
+  // aren't reliable), falling back to local git/mtime if it's unavailable.
+  const remoteLastUpdated = frontmatter.last_updated ? null : await getRemoteLastUpdated(navEntry.file)
+  const lastUpdated = remoteLastUpdated?.date ?? localLastUpdated
+  const lastUpdatedAuthor = remoteLastUpdated?.author ?? localLastUpdatedAuthor
 
   return (
     <div className="flex flex-col h-screen">
@@ -160,6 +173,7 @@ export default async function DocPage({ params }: Props) {
               </div>
               <DocBody
                 title={frontmatter.title}
+                badge={frontmatter.badge ?? navEntry.badge}
                 description={frontmatter.description}
                 source={source}
                 actions={

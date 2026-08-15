@@ -10,6 +10,7 @@ export function LastUpdated({ date, author }: Props) {
     month: "long",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC",
   })
 
   return (

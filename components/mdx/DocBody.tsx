@@ -4,10 +4,12 @@ import rehypeSlug from "rehype-slug"
 import rehypeAutolinkHeadings from "rehype-autolink-headings"
 import { ZoomImages } from "@/components/ZoomImages/ZoomImages"
 import { mdxComponents } from "@/components/mdx"
+import { Badge } from "@/components/Badge/Badge"
 import type { ReactNode } from "react"
 
 type Props = {
   title: string
+  badge?: string
   description?: string
   source: string
   actions?: ReactNode
@@ -15,11 +17,14 @@ type Props = {
 
 // Shared MDX render block used by both the normal doc page and the AI view's
 // rendered-doc pane, so the two are guaranteed to stay visually in sync.
-export function DocBody({ title, description, source, actions }: Props) {
+export function DocBody({ title, badge, description, source, actions }: Props) {
   return (
     <>
       <div className="max-w-[680px]">
-        <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-50">{title}</h1>
+        <h1 className="flex items-center gap-2 text-3xl font-bold mb-2 text-gray-900 dark:text-gray-50">
+          <span>{title}</span>
+          {badge && <Badge>{badge}</Badge>}
+        </h1>
         {description && (
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 leading-relaxed">{description}</p>
         )}

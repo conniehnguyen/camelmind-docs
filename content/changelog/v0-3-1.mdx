@@ -3,14 +3,38 @@ title: What's in v0.3.1
 description: Key features included in v0.3.1.
 ---
 
-CamelMind v0.3.1 includes new features and improvements:
+## New features
 
-- **AI View** - AI View shows the exact text a RAG or LLM pipeline receives from your documentation page, helping you understand what AI systems actually see when they read your content. Use it to identify missing context, unexpected content, or formatting issues that could affect AI retrieval and responses. Check out the [document](/features/ai-view) for more details.
+### AI View
 
-- **Run RAG Check** - RAG Check analyzes the text that AI systems see and tests whether your content is likely to survive retrieval and answer generation. Use it to identify content that may be difficult for RAG pipelines to retrieve or use effectively—and improve your documentation before it becomes an AI answer. Check out the [document](/features/run-rag-check) for more details.
+AI View shows the exact text a RAG or LLM pipeline receives from your documentation page, helping you understand what AI systems actually see when they read your content. Use it to identify missing context, unexpected content, or formatting issues that could affect AI retrieval and responses. Check out the [document](/features/ai-view) for more details.
 
-- **Vale.sh integration and style guide** - CamelMind now integrates with Vale.sh to lint your documentation against a customizable style guide. Check your content for grammar, spelling, terminology, tone, and other writing issues directly in your documentation workflow. Define your own writing standards and terminology, or build on Vale's configuration to keep your documentation consistent across your site and team. Check out the [document](/features/vale-integration) for more details.
+### Run RAG Check
 
-- **Mermaid diagrams** - CamelMind supports Mermaid, letting you create flowcharts, sequence diagrams, architecture diagrams, and other visualizations using simple text-based syntax—without needing a separate diagramming tool.
+RAG Check analyzes the text that AI systems see and tests whether your content is likely to survive retrieval and answer generation. Use it to identify content that may be difficult for RAG pipelines to retrieve or use effectively—and improve your documentation before it becomes an AI answer. Check out the [document](/features/run-rag-check) for more details.
 
-- **Hide headings from the Table of Content** - CamelMind lets you hide individual headings from a page's Table of Contents when they don't need to appear in the navigation. To hide a heading, add `{/* toc:exclude */}` to the end of the heading. For example: `### Exclude this heading {/* toc:exclude */}`.
+### Vale.sh integration and style guide
+
+CamelMind now integrates with Vale.sh to lint your documentation against a customizable style guide. Check your content for grammar, spelling, terminology, tone, and other writing issues directly in your documentation workflow. Define your own writing standards and terminology, or build on Vale's configuration to keep your documentation consistent across your site and team. Check out the [document](/features/vale-integration) for more details.
+
+### Mermaid diagrams
+
+CamelMind supports Mermaid, letting you create flowcharts, sequence diagrams, architecture diagrams, and other visualizations using simple text-based syntax—without needing a separate diagramming tool.
+
+### Hide headings from the Table of Content
+
+CamelMind lets you hide individual headings from a page's Table of Contents when they don't need to appear in the navigation. To hide a heading, add `{/* toc:exclude */}` to the end of the heading. For example: `### Exclude this heading {/* toc:exclude */}`.
+
+
+<Callout type="tip" title="Updating to a new version">
+
+Use the `update` command to upgrade an existing CamelMind site to the latest platform version. Choose the option that best fits your workflow:
+
+| Option | Command |
+| --- | --- |
+| Update your project to the latest CamelMind version | `npx camelmind@latest update` |
+| Preview the files that would change without modifying your project | `npx camelmind@latest update --dry-run` |
+| Update project files without running `npm install` | `npx camelmind@latest update --no-install` |
+| Preserve a customized file during the update | `npx camelmind@latest update --ignore-file app/page.tsx` |
+
+</Callout>
