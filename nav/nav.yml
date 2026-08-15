@@ -12,8 +12,7 @@ nav:
         file: content/why-camelmind.mdx
         roles: []
   - label: "Documentation"
-    dropdown: false
-    noDropdown: true
+    dropdown: true
     items:
       - label: "Before You Begin"
         slug: /before-you-begin
@@ -91,6 +90,10 @@ nav:
           - label: "Run RAG Check"
             slug: /features/run-rag-check
             file: content/features/run-rag-check.mdx
+            roles: []
+          - label: "Vale Integration"
+            slug: /features/vale-integration
+            file: content/features/vale-integration.mdx
             roles: []
           - label: "Offline Package and PDF Export"
             slug: /features/offline-package-and-pdf-export

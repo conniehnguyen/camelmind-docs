@@ -1,0 +1,482 @@
+---
+title: Vale Integration
+description: Lint your documentation for spelling, terminology, clarity, tone, and AI-writing artifacts with Vale, then customize the built-in style guide or replace it with your own.
+---
+
+CamelMind integrates with [Vale](https://vale.sh), an open-source, configuration-driven prose linter that helps you catch writing issues before you publish your documentation.
+
+Vale checks your `.mdx` files against a collection of styles and rules. Depending on the rules you enable, it can flag:
+
+- Spelling and terminology issues
+- Passive voice and wordiness
+- Weasel words and clichés
+- Inconsistent headings, acronyms, and terminology
+- Jargon and corporate language
+- Common artifacts of unedited AI-generated prose
+
+CamelMind includes several styles out of the box and provides `cm-light`, a small built-in style that you can customize for your project's writing conventions.
+
+<Callout type="note">
+CamelMind vendors its style packages under `styles/vale/` instead of downloading them with `vale sync`. This keeps your linting rules in version control and ensures every author uses the same rules without depending on a network connection.
+</Callout>
+
+---
+
+## What's included
+
+CamelMind enables the following styles by default:
+
+| Style | What it checks |
+|---|---|
+| `Vale` | Spelling, using the project's [vocabulary](#manage-your-vocabulary). |
+| `write-good` | Common prose issues such as passive voice, weasel words, wordiness, and clichés. |
+| `Microsoft` | Rules based on the Microsoft Writing Style Guide, including headings, contractions, acronyms, and dates. |
+| `cm-light` | CamelMind's opinionated style for common documentation issues. Use it as a starting point and customize it for your project. |
+| `proselint` | Additional prose-quality issues such as jargon, hedging, corporate language, and hyperbole. |
+| `signs-of-ai-writing` | Common artifacts of unedited AI-generated prose, such as citation markers, knowledge-cutoff disclaimers, and formulaic phrasing. |
+
+These styles are configured in `.vale.ini` at the root of your project:
+
+```ini
+StylesPath = styles/vale
+MinAlertLevel = warning
+Vocab = CamelMind
+Packages = MDX
+
+[*.mdx]
+BasedOnStyles = Vale, write-good, Microsoft, cm-light, proselint, signs-of-ai-writing
+
+# This codebase uses a spaced em dash (" — "), which conflicts
+# with Microsoft's no-space convention.
+Microsoft.Dashes = NO
+```
+
+The `BasedOnStyles` setting determines which styles Vale applies to your `.mdx` files.
+
+You can also disable individual rules from a style without disabling the entire style. For example, `Microsoft.Dashes = NO` disables only the Microsoft `Dashes` rule.
+
+---
+
+## Set up Vale
+
+<Steps>
+  <Step n={1} title="Install Vale">
+
+    Vale is a standalone CLI, not an npm package. Install it with your preferred package manager.
+
+    For example, on macOS:
+
+    ```bash
+    brew install vale
+    ```
+
+    For Windows and Linux installation options, see the [Vale installation documentation](https://vale.sh/docs/vale-cli/installation/).
+
+  </Step>
+
+  <Step n={2} title="Sync the MDX package">
+
+    CamelMind vendors its style files, but the `MDX` package referenced by `Packages = MDX` is managed by Vale.
+
+    Run the following command once on your machine:
+
+    ```bash
+    vale sync
+    ```
+
+  </Step>
+</Steps>
+
+<Callout type="note">
+You only need to run `vale sync` when the Vale package configuration changes or when setting up a new development environment.
+</Callout>
+
+---
+
+## Run a Vale check
+
+Run the built-in linting script to check all documentation in the `/content` directory.
+
+```bash
+npm run lint:prose
+```
+
+To check an individual file, run:
+
+```bash
+vale content/[path-to-mdx-file]
+```
+
+Below is an example finding:
+
+```
+content/features/vale-integration.mdx
+ 24:1   warning  Do not use 'click' at the end of headings.  cm-light.HeadingsPunctuation
+ 41:12  error    Do not use 'here' as the content of a link.  cm-light.Link
+``` 
+
+To see all alerts, including suggestions, run:
+
+```bash
+vale --minAlertLevel=suggestion content/
+```
+
+---
+
+## Configure the built-in style
+
+`cm-light` is CamelMind's own lightweight, opinionated style. It is designed as a starting point rather than a fixed set of rules. The rules are stored in:
+
+```text
+styles/vale/cm-light/
+```
+
+Each rule is a YAML file. For example, `styles/vale/cm-light/Link.yml` contains:
+
+```yaml
+---
+message: "Don't use '%s' as the content of a link."
+extends: existence
+ignorecase: true
+scope: link
+level: error
+tokens:
+  - here
+```
+
+### Change an existing rule
+
+To change how strict a rule is, update its `level`:
+
+```yaml
+level: warning
+```
+
+Supported levels are:
+
+- `suggestion`
+- `warning`
+- `error`
+
+To change what a rule detects, update its `tokens` or raw expression.
+
+For example, you could change the link rule to flag additional vague link text:
+
+```yaml
+tokens:
+  - here
+  - this page
+  - click here
+```
+
+Run the linter again to verify your changes:
+
+```bash
+npm run lint:prose
+```
+
+### Add a new rule
+
+Create a new YAML file in `styles/vale/cm-light/`.
+
+For example, to flag unnecessary uses of "really," create `styles/vale/cm-light/Really.yml` with:
+
+```yaml
+---
+extends: existence
+message: "Consider removing 'really' — it rarely adds meaning."
+level: suggestion
+ignorecase: true
+tokens:
+  - really
+```
+
+Vale automatically discovers `.yml` rule files in the style directory. You don't need to register the new rule separately.
+
+Run the linter again:
+
+```bash
+npm run lint:prose
+```
+
+If the word "really" appears in your documentation, Vale reports it as a suggestion.
+
+---
+
+## Disable individual rules
+
+You don't have to remove an entire style when a particular rule doesn't fit your documentation.
+
+Disable an individual rule in `.vale.ini` using the style and rule name:
+
+```ini
+[*.mdx]
+BasedOnStyles = Vale, write-good, Microsoft, cm-light, proselint, signs-of-ai-writing
+
+Microsoft.Dashes = NO
+```
+
+The `Microsoft.Dashes = NO` setting disables only the `Dashes` rule from the `Microsoft` style.
+
+This approach is useful when you generally want a style's guidance but have a specific project convention that conflicts with one rule.
+
+---
+
+## Manage your vocabulary
+
+Vale uses a project vocabulary to recognize terms that are specific to your documentation.
+
+CamelMind configures the vocabulary with:
+
+```ini
+Vocab = CamelMind
+```
+
+The vocabulary is stored in:
+
+```text
+styles/vale/config/vocabularies/CamelMind/
+```
+
+It contains two files:
+
+=== "accept.txt"
+
+Use `accept.txt` for terms that Vale should recognize as valid and not flag as misspellings.
+
+CamelMind's vocabulary already includes project-specific terms such as:
+
+```text
+CamelMind
+Next\.js
+camelmind\.config\.ts
+```
+
+Regular expressions are supported, so escape literal periods when necessary. Add one term or pattern per line:
+
+```text
+# styles/vale/config/vocabularies/CamelMind/accept.txt
+MyProductName
+API-Gateway
+```
+
+=== "reject.txt"
+
+Use `reject.txt` for terms that you want Vale to flag wherever they appear. This is useful for:
+
+- Deprecated product names
+- Terms your team no longer uses
+- Words that should always be replaced with preferred terminology
+
+For example:
+
+```text
+# styles/vale/config/vocabularies/CamelMind/reject.txt
+old-product-name
+whitelist
+```
+
+The file is empty by default.
+
+===
+
+---
+
+## Replace the built-in style
+
+If `cm-light` doesn't match your team's writing conventions, you can replace it with your own style.
+
+<Steps>
+  <Step n={1} title="Create a style">
+
+    Create a directory under `styles/vale/`:
+
+    ```text
+    styles/vale/my-style/
+    ```
+
+    Add one YAML rule file for each rule you want to use.
+
+    You can write your own rules or vendor rules from an existing Vale style by copying their `.yml` files into your style directory.
+
+  </Step>
+
+  <Step n={2} title="Update .vale.ini">
+
+    Replace `cm-light` with your style in `BasedOnStyles`:
+
+    ```ini
+    [*.mdx]
+    BasedOnStyles = Vale, write-good, Microsoft, my-style, proselint, signs-of-ai-writing
+    ```
+
+    You can also keep `cm-light` and add your own style alongside it:
+
+    ```ini
+    [*.mdx]
+    BasedOnStyles = Vale, write-good, Microsoft, cm-light, my-style, proselint, signs-of-ai-writing
+    ```
+
+  </Step>
+
+  <Step n={3} title="Remove cm-light if you don't need it">
+
+    If you're fully replacing the built-in style, remove its directory:
+
+    ```text
+    styles/vale/cm-light/
+    ```
+
+    If you are keeping it alongside your custom style, no changes are needed.
+
+  </Step>
+
+  <Step n={4} title="Run the linter">
+
+    Run the check again:
+
+    ```bash
+    npm run lint:prose
+    ```
+
+    Confirm that your new rules are being applied and that `.vale.ini` contains no unintended references to the old style.
+
+  </Step>
+</Steps>
+
+---
+
+## Add an existing Vale style
+
+You can also extend CamelMind's configuration with an existing Vale style.
+
+If you vendor the style into your project, place its rule files under `styles/vale/` and add the style name to `BasedOnStyles`.
+
+For example:
+
+```ini
+[*.mdx]
+BasedOnStyles = Vale, write-good, Microsoft, cm-light, proselint, signs-of-ai-writing, my-style
+```
+
+Keeping the style files in your repository means the rules are versioned alongside your documentation and remain consistent across development environments.
+
+---
+
+## Use Vale in CI
+
+Running Vale locally catches writing issues before they reach your pull request. You can also run the same check in CI to enforce your documentation standards.
+
+Use:
+
+```bash
+npm run lint:prose
+```
+
+A typical workflow is:
+
+1. Authors run Vale locally while writing.
+2. Pull requests run the same linting command automatically.
+3. `error`-level findings block the merge.
+4. `warning`-level findings are reviewed but do not necessarily block the merge.
+5. The style configuration and vocabulary remain version-controlled with the documentation.
+
+This gives your documentation team a consistent writing quality gate without requiring an external service.
+
+---
+
+## Troubleshoot Vale
+
+<Details summary="Vale command not found" id="vale-not-found">
+
+If you see an error such as:
+
+```text
+vale: command not found
+```
+
+Vale is not installed or is not available on your `PATH`.
+
+Install Vale using your package manager and verify the installation:
+
+```bash
+vale --version
+```
+
+</Details>
+
+<Details summary="MDX package not found" id="mdx-not-found">
+
+If Vale reports that the MDX package cannot be found, run:
+
+```bash
+vale sync
+```
+
+The `Packages = MDX` setting in `.vale.ini` tells Vale which package to load for MDX-aware linting.
+
+</Details>
+
+<Details summary="A custom rule isn't being detected" id="no-custom-rule-found">
+
+Check that:
+
+- The rule is stored under the configured `StylesPath`.
+- The rule file has a `.yml` extension.
+- The style containing the rule appears in `BasedOnStyles`.
+- The rule's `level` isn't below the configured `MinAlertLevel`.
+
+For example:
+
+```ini
+StylesPath = styles/vale
+MinAlertLevel = warning
+
+[*.mdx]
+BasedOnStyles = cm-light
+```
+
+If your rule uses:
+
+```yaml
+level: suggestion
+```
+
+it won't appear with `MinAlertLevel = warning`.
+
+To test it explicitly:
+
+```bash
+vale --minAlertLevel=suggestion content/
+```
+</Details>
+
+---
+
+## How Vale fits into CamelMind
+
+Vale focuses on prose quality and writing consistency. CamelMind's other AI-focused tools address different parts of the documentation pipeline.
+
+| Tool | Purpose |
+|---|---|
+| Vale | Lint prose for spelling, terminology, style, clarity, and common AI-writing artifacts. |
+| AI View | Preview the AI-readable representation of a documentation page. |
+| Run RAG Check | Test chunking, retrieval, and AI-readiness using a local heuristic evaluation. |
+| LLMs.txt | Publish AI-readable documentation in the llms.txt format. |
+
+Together, these tools help you evaluate documentation from both sides:
+
+- **Vale** checks whether the content is well written.
+- **AI View** checks what an AI system actually receives.
+- **Run RAG Check** checks whether that content remains useful when it is chunked and retrieved.
+- **LLMs.txt** makes the resulting documentation available in an AI-friendly format.
+
+---
+
+## Related
+
+- [Writing Content](/getting-started/writing-content) — Learn the general MDX authoring conventions that your Vale configuration helps enforce.
+- [AI View](/features/ai-view) — Preview the AI-readable version of your documentation.
+- [Run RAG Check](/features/run-rag-check) — Check how your documentation performs when chunked and retrieved.
+- [LLMs.txt](/features/llms-txt) — Learn how CamelMind generates AI-readable documentation.
+- [Vale documentation](https://vale.sh) — See the complete reference for Vale rules, styles, and configuration.
