@@ -12,7 +12,6 @@ Compared with today's documentation platforms, CamelMind combines:
 - Private documentation
 - Offline documentation
 - LLM-ready documentation
-- AI-assisted authoring
 
 Unlike managed SaaS platforms, you own your documentation stack and can deploy it anywhere. Compared with traditional static site generators, CamelMind includes many developer portal capabilities out of the box.
 
@@ -43,17 +42,17 @@ Below is a detailed breakdown comparing the key developer portal, access control
 | Feature | CamelMind | MkDocs | Docusaurus  | Fern | Mintlify | Zensical |
 | --- | --- | --- | --- | --- | --- | --- |
 | Markdown | ✅ | ✅ | ✅  | ✅ | ✅ | ✅ |
-| MDX | ✅ | Plugin | ✅  | ✅ | ✅ | Limited |
-| OpenAPI Reference | ✅ | Plugin | Plugin  | ✅ | ✅ | Limited |
-| Multiple API References | ✅ | Custom | Custom | Limited | Limited | No |
-| OIDC Authentication | ✅ | No | No  | Paid | Paid | No |
-| RBAC | ✅ | No | No  | Paid | Paid | No |
-| Versioning | ✅ | Plugin | ✅  | ✅ | ✅ | Planned |
-| Full-text Search | ✅ | Plugin/Theme | Plugin | ✅ | ✅ | Planned |
-| Offline ZIP | ✅ | Custom | Plugin  | Limited | Limited | Roadmap |
-| Master PDF | ✅ | Plugin | Plugin | Limited | Limited | Roadmap |
-| llms.txt | ✅ | Custom | Custom  | ✅ | ✅ | Planned |
-| Per-page Markdown Export | ✅ | No | No  | ✅ | ✅ | Planned |
+| MDX | ✅ | No | ✅  | ✅ | ✅ | <abbr title="Zensical cannot run JavaScript/React components embedded directly in .mdx files natively out of the box.">Limited</abbr> |
+| OpenAPI Reference | ✅ | <abbr title="Third-party extension">Plugin</abbr> | <abbr title="Third-party extension">Plugin</abbr>  | ✅ | ✅ | <abbr title="The company plans to release this feature in a future release.">Planned</abbr> |
+| Multiple API References | ✅ | No | No | Paid Plan | Paid Plan | No |
+| OIDC Authentication | ✅ | No | No  | Paid Plan | Paid Plan | No |
+| RBAC | ✅ | No | No  | Paid Plan | Paid Plan | No |
+| Versioning | ✅ | No | ✅  | ✅ | ✅ | <abbr title="The company plans to release this feature in a future release.">Planned</abbr> |
+| Full-text Search | ✅ | <abbr title="Third-party extension">Plugin</abbr> | <abbr title="Third-party extension">Plugin</abbr> | ✅ | ✅ | <abbr title="The company plans to release this feature in a future release.">Planned</abbr> |
+| Offline ZIP | ✅ | <abbr title="You can configure the solution to run in your CI/CD pipeline.">Custom</abbr> | <abbr title="Third-party extension">Plugin</abbr>  | Paid Plan | Paid Plan | <abbr title="The company plans to release this feature in a future release.">Planned</abbr> |
+| Master PDF | ✅ | <abbr title="Third-party extension">Plugin</abbr> | <abbr title="Third-party extension">Plugin</abbr> | ✅ | ✅ | <abbr title="The company plans to release this feature in a future release.">Planned</abbr> |
+| llms.txt | ✅ | <abbr title="Third-party extension">Plugin</abbr> |  <abbr title="Third-party extension">Plugin</abbr> | ✅ | ✅ | <abbr title="The company plans to release this feature in a future release.">Planned</abbr> |
+| Per-page Markdown Export | ✅ | No | No  | ✅ | ✅ | <abbr title="The company plans to release this feature in a future release.">Planned</abbr> |
 | AI View | ✅ | — | — | — | — | — |
 | Run RAG Check | ✅ | — | — | — | — | — |
 
@@ -72,7 +71,7 @@ Choose CamelMind if your team wants to:
 - Render multiple API references from different OpenAPI specifications in a single documentation site.
 - Export documentation as offline ZIP packages or a complete PDF for customers in restricted environments.
 - Control access with built-in OIDC authentication and page-level RBAC.
-- Write documentation that's optimized for both humans and AI assistants with built-in `llms.txt`, Markdown exports, and upcoming AI authoring tools.
+- Write documentation optimized for both humans and AI assistants with built-in [llms.txt](/features/llms-txt), Markdown exports, and AI-ready features such as [AI View](/features/ai-view) and [Run RAG check](/features/run-rag-check).
 
 <Callout type="tip" title="CamelMind may not be the best fit if...">
 
