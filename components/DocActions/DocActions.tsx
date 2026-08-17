@@ -64,7 +64,7 @@ export function DocActions({ file, downloadPdf, offline, aiViewHref, ragCheckHre
           className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors"
         >
           <FlaskConical size={14} />
-          Run RAG check
+          Run RAG Check
         </a>
       )}
       {downloadPdf && (
