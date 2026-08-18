@@ -1,0 +1,192 @@
+---
+title: "Mintlify vs. CamelMind: RBAC and Access Control"
+description: "Compare how Mintlify and CamelMind handle documentation access control, including page-level RBAC, authentication, search, and AI-readable content—and what your team operates with each."
+---
+
+Mintlify provides two distinct permission layers that are easy to conflate when evaluating "access control":
+
+- **Roles** (`viewer`, `editor`, `admin`) control what members of your team can do in the Mintlify workspace, such as editing and managing the documentation site.
+- **Authentication & Personalization** controls which external readers can access published documentation.
+
+CamelMind separates these concerns differently: reader-facing access control—OIDC authentication and role-based page restrictions—is built into the documentation application itself. Publishing access remains a Git concern: whoever can push to the repository can publish to the site.
+
+This comparison focuses on **reader-facing access control**, since that is what most teams mean when evaluating RBAC for documentation.
+
+---
+
+## Quick comparison
+
+| Capability | Mintlify | CamelMind |
+| --- | --- | --- |
+| **Licensing** | Commercial SaaS subscription | MIT-licensed; you pay only for the infrastructure you operate |
+| **Reader authentication** | Password, private, OAuth, or JWT | Native OIDC integration |
+| **Page-level RBAC** | Available with OAuth or JWT | Included |
+| **Plan required for page-level RBAC** | Enterprise | None |
+| **Role configuration** | `groups` in page frontmatter | `roles: [...]` in `nav.yml` |
+| **Identity provider integration** | OAuth 2.0 or custom JWT flow | OIDC |
+| **Session model** | Managed through Mintlify's authentication flow | Application-managed session |
+| **Role-aware search** | Documented as respecting user groups | Filtered against the caller's roles before results are returned |
+| **AI / LLM content governance** | Partial Authentication varies visible content by authentication state | Role-restricted pages are excluded from CamelMind's machine-readable AI feed |
+| **Deployment model** | Managed by Mintlify | Self-hosted |
+| **Custom subpath deployment** | Not supported | Supported—you control the deployment |
+| **Publishing permissions** | Mintlify workspace Roles | Git repository access |
+| **Infrastructure ownership** | Mintlify | Your team |
+
+<Callout type="note">
+Mintlify claims in this comparison are based on Mintlify's publicly available documentation rather than source-code inspection, because Mintlify is closed-source. CamelMind implementation claims are verified against the CamelMind codebase.
+</Callout>
+
+---
+
+## How Mintlify handles reader-facing access control
+
+This section summarizes [Mintlify's authentication setup documentation](https://www.mintlify.com/docs/deploy/authentication-setup), [Partial Authentication documentation](https://mintlify.com/docs/settings/authentication-personalization/partial-authentication), and [JWT documentation](https://mintlify.com/docs/settings/authentication-personalization/personalization-setup/jwt).
+
+Mintlify supports several ways to protect documentation, each providing a different level of access control.
+
+### Site-wide authentication
+
+Mintlify supports four authentication approaches:
+
+- **Password** — protects the site with a shared password.
+- **Private** — restricts access to members of your Mintlify organization.
+- **OAuth 2.0** — integrates with an external identity provider.
+- **JWT** — allows your application to authenticate users and pass a signed JWT to Mintlify.
+
+Password and private authentication provide site-level protection. **Per-page group-based access control requires OAuth or JWT.**
+
+### Pages use groups for access control
+
+With OAuth or JWT configured, a page can declare which groups are allowed to access it:
+
+```yaml
+---
+title: Admin Dashboard
+groups: [admin]
+---
+```
+
+A user must belong to at least one of the specified groups to access the page.
+
+Mintlify also supports `public: true` for making individual pages or navigation groups publicly accessible when authentication is otherwise enabled.
+
+### OAuth and JWT are the page-level RBAC path
+
+For teams that need different documentation sections for different audiences, OAuth and JWT are the only path to that model: authenticate the reader, associate them with groups, and use those groups to gate page access.
+
+This is an important distinction from simply making an entire documentation site private.
+
+---
+
+## How CamelMind implements RBAC
+
+Authentication and RBAC are built into CamelMind rather than requiring teams to assemble their own authorization middleware.
+
+See [Authentication & RBAC](/features/auth-rbac) for the full configuration guide.
+
+### Authentication runs as part of the application
+
+CamelMind's authentication middleware validates the user's session and protects authenticated routes before the requested page is rendered. Unauthenticated users are redirected to `/login`.
+
+You configure the identity provider once; CamelMind handles the authentication flow and session enforcement.
+
+### Roles come from your existing identity provider
+
+CamelMind uses roles supplied by your OIDC identity provider. This means you can continue managing users and groups in the identity system your organization already uses.
+
+`roleMapping` lets you translate identity-provider role names into the role names used by your documentation site. For example, an enterprise IdP can expose `documentation-admin`, while the documentation site can simply use `admin`.
+
+### Access rules live in your repository
+
+You declare protected content in `nav.yml`:
+
+```yaml
+- label: Admin Dashboard
+  slug: /admin/dashboard
+  file: content/admin/dashboard.mdx
+  roles: [admin]
+```
+
+CamelMind uses this configuration for both navigation and authorization:
+
+- Users without the required role do not see the page in navigation.
+- The server independently checks authorization when the page is requested.
+
+The second check is important: hiding a link is not an access-control mechanism. A user who knows the URL still needs the required role to access the page.
+
+### Search respects the same access rules
+
+CamelMind applies role checks when returning search results. Protected content is filtered according to the user's session roles before results are returned.
+
+This keeps authorization consistent across the documentation experience instead of requiring a separate access-control implementation for search.
+
+### AI-readable content follows a deny-by-default model for protected pages
+
+CamelMind exposes documentation to AI assistants and RAG pipelines through its machine-readable endpoints, including `/api/llms/<slug>` and `llms.txt`.
+
+Because these endpoints do not have an authenticated user session, CamelMind does not attempt to determine which individual roles an AI consumer should have.
+
+Instead, the rule is simple: if a page has a roles restriction, it is excluded from the AI-readable feed.
+
+This prevents role-restricted documentation from accidentally becoming part of an unrestricted AI or RAG corpus.
+
+<Callout type="important">
+This is intentionally stricter than per-user filtering. CamelMind does not currently expose role-restricted documentation to an authenticated AI agent based on that agent's individual permissions. If your use case requires permission-aware AI retrieval, additional authorization logic is required.
+</Callout>
+
+---
+
+## The real trade-off
+
+Once you separate Mintlify's workspace permissions from its reader-facing authentication, the comparison becomes clear.
+
+**Both platforms can implement page-level access control. The bigger difference is where the access-control system lives and who operates the platform.**
+
+| | Mintlify | CamelMind |
+| --- | --- | --- |
+| Page-level RBAC | Enterprise with OAuth or JWT | Included |
+| Who operates the platform? | Mintlify | Your team |
+| Configuration source of truth | Page frontmatter plus Mintlify configuration | Git repository |
+| Authentication integration | OAuth or JWT through Mintlify | Native OIDC |
+| Authorization implementation | Managed by Mintlify | Part of the CamelMind application |
+| Infrastructure responsibility | Mintlify | Your team |
+| Upgrade responsibility | Mintlify | Your team |
+| Deployment flexibility | Mintlify's hosted environment | Any environment that can run CamelMind |
+| Custom subpath support | Not supported | Supported |
+| Publishing authorization | Mintlify workspace Roles | Git repository access |
+
+The trade-off is therefore not simply "RBAC vs. no RBAC." It is **managed access control vs. access control you own and operate.**
+
+This makes the decision relatively straightforward:
+
+### Choose CamelMind when you want
+
+- Page-level, role-based access control without an Enterprise-tier requirement
+- Access rules defined in Git alongside the documentation they protect
+- Native OIDC authentication without building the authentication middleware yourself
+- Search results filtered using the same roles that protect pages
+- Explicit protection for role-restricted content in AI-readable feeds
+- Full control over deployment and infrastructure, including custom subpaths
+- An open-source implementation that your team can inspect, modify, and operate
+
+### Choose Mintlify when you want
+
+- A fully managed documentation platform
+- Authentication and infrastructure operated for you
+- A polished workspace for non-technical documentation editors
+- Reader-facing access control without maintaining the documentation application's runtime
+- A hosted solution where operational responsibility remains with the vendor
+
+---
+
+## Bottom line
+
+Mintlify and CamelMind both support authenticated, role-based documentation access—but they make a different trade-off in where that system lives and who operates it.
+
+Mintlify provides a managed authentication and personalization layer on top of its hosted documentation platform. For page-level group restrictions, teams need Mintlify's OAuth or JWT authentication paths, which are available on Enterprise.
+
+CamelMind ships authentication and RBAC as part of the open-source documentation application. Access rules live in Git, authorization is enforced by the application, search respects the same roles, and role-restricted pages are excluded from the AI-readable feed.
+
+**Choose Mintlify if you want someone else to operate the documentation platform. Choose CamelMind if you want to own the documentation application and its access-control layer.**
+
+For the full configuration guide, see [Authentication & RBAC](/features/auth-rbac).

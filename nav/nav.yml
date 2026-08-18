@@ -11,6 +11,14 @@ nav:
         slug: /camelmind-vs-other-tools
         file: content/why-camelmind.mdx
         roles: []
+      - label: "Fern vs. CamelMind: RBAC"
+        slug: /comparisons/fern-vs-camelmind-rbac
+        file: content/comparisons/fern-vs-camelmind-rbac.mdx
+        roles: []
+      - label: "Mintlify vs. CamelMind: RBAC"
+        slug: /comparisons/mintlify-vs-camelmind-rbac
+        file: content/comparisons/mintlify-vs-camelmind-rbac.mdx
+        roles: []
   - label: "Documentation"
     dropdown: true
     items:

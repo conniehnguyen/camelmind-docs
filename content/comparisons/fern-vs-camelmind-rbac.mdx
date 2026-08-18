@@ -1,0 +1,148 @@
+---
+title: "Fern vs. CamelMind: RBAC and Access Control"
+description: "Compare how Fern and CamelMind handle authentication, role-based access control, and protected documentation—and what your team operates with each."
+---
+
+Both Fern and CamelMind can integrate with an existing identity provider such as Okta, Microsoft Entra ID, Auth0, or another OIDC-compliant provider. You do not need to build user management from scratch.
+
+The key difference is **where access control lives and who operates it**:
+
+- **Fern** provides authentication and access control as part of its managed documentation platform.
+- **CamelMind** provides authentication and RBAC as part of the application you deploy and operate yourself.
+
+In other words, CamelMind is not a "build your own authentication" solution. The authentication and authorization layer ships with the platform. Your team owns the infrastructure on which it runs.
+
+---
+
+## Quick comparison
+
+| Capability | Fern | CamelMind |
+| --- | --- | --- |
+| **Licensing** | Commercial SaaS subscription | MIT-licensed; you pay only for the infrastructure you operate |
+| **Deployment model** | Managed by Fern | Self-hosted |
+| **SSO / OIDC** | Integrates with supported identity providers through Fern | Native OIDC integration configured in `camelmind.config.ts` |
+| **Route / page protection** | Managed by the Fern platform | Enforced by CamelMind's application middleware |
+| **Role configuration** | Configured through Fern's platform and documentation configuration | Defined in Git through `nav.yml` and page-level `roles` |
+| **Role-aware navigation** | Supported | Supported |
+| **Role-aware search** | Supported | Built-in search filters results against the user's roles |
+| **AI / LLM content governance** | See Fern's documentation for current behavior | Role-restricted pages are excluded from CamelMind's machine-readable AI feed |
+| **API Reference** | Interactive API capabilities available depending on configuration | API Reference with schemas and code samples; no live "Try it" console yet |
+| **Infrastructure ownership** | Fern operates the platform | Your team operates the deployment |
+
+<Callout type="note">
+Fern is a proprietary hosted platform, so its internal implementation details are not publicly inspectable in the same way as CamelMind's source code. This comparison focuses on publicly documented Fern capabilities and implementation details that can be verified in CamelMind's codebase.
+</Callout>
+
+---
+
+## How CamelMind implements RBAC
+
+Authentication and RBAC are built into CamelMind rather than requiring teams to assemble their own authorization middleware.
+
+See [Authentication & RBAC](/features/auth-rbac) for the full configuration guide.
+
+### Authentication runs as part of the application
+
+CamelMind's authentication middleware validates the user's session and protects authenticated routes before the requested page is rendered. Unauthenticated users are redirected to `/login`.
+
+You configure the identity provider once; CamelMind handles the authentication flow and session enforcement.
+
+### Roles come from your existing identity provider
+
+CamelMind uses roles supplied by your OIDC identity provider. This means you can continue managing users and groups in the identity system your organization already uses.
+
+`roleMapping` lets you translate identity-provider role names into the role names used by your documentation site. For example, an enterprise IdP can expose `documentation-admin`, while the documentation site can simply use `admin`.
+
+### Access rules live in your repository
+
+You declare protected content in `nav.yml`:
+
+```yaml
+- label: Admin Dashboard
+  slug: /admin/dashboard
+  file: content/admin/dashboard.mdx
+  roles: [admin]
+```
+
+CamelMind uses this configuration for both navigation and authorization:
+
+- Users without the required role do not see the page in navigation.
+- The server independently checks authorization when the page is requested.
+
+The second check is important: hiding a link is not an access-control mechanism. A user who knows the URL still needs the required role to access the page.
+
+### Search respects the same access rules
+
+CamelMind applies role checks when returning search results. Protected content is filtered according to the user's session roles before results are returned.
+
+This keeps authorization consistent across the documentation experience instead of requiring a separate access-control implementation for search.
+
+### AI-readable content follows a deny-by-default model for protected pages
+
+CamelMind exposes documentation to AI assistants and RAG pipelines through its machine-readable endpoints, including `/api/llms/<slug>` and `llms.txt`.
+
+Because these endpoints do not have an authenticated user session, CamelMind does not attempt to determine which individual roles an AI consumer should have.
+
+Instead, the rule is simple: if a page has a roles restriction, it is excluded from the AI-readable feed.
+
+This prevents role-restricted documentation from accidentally becoming part of an unrestricted AI or RAG corpus.
+
+<Callout type="important">
+This is intentionally stricter than per-user filtering. CamelMind does not currently expose role-restricted documentation to an authenticated AI agent based on that agent's individual permissions. If your use case requires permission-aware AI retrieval, additional authorization logic is required.
+</Callout>
+
+### What CamelMind does not provide yet
+
+CamelMind's API Reference supports endpoint documentation, schemas, and multi-language code samples. It does not currently provide a live "Try it" console that executes requests with the user's authentication context.
+
+If your documentation workflow depends on interactive API testing directly from the docs, this is an area where a managed platform such as Fern may be a better fit.
+
+---
+
+## The real trade-off between managed and self-hosted
+
+The important distinction is not whether your team has to write authentication middleware. CamelMind provides that layer.
+
+The trade-off is who operates the resulting system.
+
+| | Fern | CamelMind |
+| --- | --- | --- |
+| Who operates the platform? | Fern | Your team |
+| Who operates the auth/RBAC infrastructure? | Fern | Your infrastructure team |
+| Configuration source of truth | Fern's platform and configuration | Git repository |
+| Infrastructure responsibility | Fern | Your team |
+| Upgrade responsibility | Fern | Your team |
+| Hosting cost | Included in the SaaS subscription | Your infrastructure costs |
+| Control over implementation | Managed by Fern | Full control over the deployed application |
+| Data location | Fern's hosted environment | Your chosen hosting environment |
+
+This makes the decision relatively straightforward:
+
+### Choose CamelMind when you want
+
+- Self-hosting and infrastructure control
+- Authentication and authorization implemented directly in the application
+- RBAC configuration managed in Git
+- No recurring documentation-platform license
+- The ability to inspect, modify, and extend the implementation
+- AI-readable documentation with explicit protection for role-restricted content
+
+### Choose Fern when you want
+
+- A fully managed documentation platform
+- Your documentation infrastructure operated for you
+- A commercial platform with managed integrations and features
+- Interactive API experiences such as a live API console
+- Less responsibility for hosting, upgrades, and operational maintenance
+
+---
+
+## Bottom line
+
+Fern and CamelMind solve the same fundamental problem—securely publishing documentation to the right users—but make a different infrastructure trade-off.
+
+Fern gives you a managed platform. CamelMind gives you the platform code and lets you own the environment it runs in.
+
+If your priority is minimizing operational responsibility, Fern's managed model may be the better choice. If your priority is control, portability, Git-based configuration, and keeping the documentation application inside your own infrastructure, CamelMind's self-hosted model may be a better fit.
+
+For the full configuration guide, see [Authentication & RBAC](/features/auth-rbac) and [API Reference](/features/api-reference).
