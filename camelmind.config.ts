@@ -26,7 +26,7 @@ const config: CamelMindConfig = {
   },
 
   links: {
-    github: "https://github.com/conniehnguyen/camelmind",
+    github: "https://github.com/conniehnguyen/camelmind-docs",
   },
 
   site: {
