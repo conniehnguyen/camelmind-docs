@@ -3,57 +3,57 @@ title: Install Node.js
 description: Install Node.js and npm, the only software you need before creating your first CamelMind site.
 ---
 
-Before you create your first CamelMind site, you'll need to install **Node.js**.
+Before you create your first CamelMind site, install **Node.js**.
 
-Don't worry if you've never used Node.js before—you don't need to learn JavaScript or understand how it works. Think of it as the engine that powers CamelMind behind the scenes.
+NO need to worry if you have never used Node.js before—you do not need to learn JavaScript or understand how it works. Think of it as the engine powering CamelMind behind the scenes.
 
-Once Node.js is installed, you'll have everything you need to create, preview, and publish your documentation site.
+Once you install Node.js, you have everything you need to create, preview, and publish your documentation site.
 
 ---
 
-## What is Node.js?
+## Understanding the role of Node.js in CamelMind
 
-Node.js is software that lets your computer run JavaScript applications outside of a web browser.
+Node.js serves as the core runtime environment that enables your local machine to execute JavaScript applications outside of a web browser.
 
-CamelMind is built on Next.js, which runs on Node.js. It uses Node.js to:
+Next.js powers CamelMind and relies on Node.js to:
 
 - Create a new CamelMind site
 - Preview your documentation locally while you edit
-- Build your site for deployment
+- Build your site for production deployment
 
-You don't need to write JavaScript to use CamelMind—just install Node.js once and CamelMind takes care of the rest.
+You do not need to write JavaScript to use CamelMind—just install Node.js once, and CamelMind handles the rest.
 
 ---
 
-## What is npm?
+## Understanding npm and package management
 
-When you install Node.js, you automatically get **npm** (Node Package Manager).
+When you install Node.js, your system automatically receives **npm** (Node Package Manager).
 
-npm downloads and manages the packages that CamelMind needs to run. Throughout this documentation, you'll use npm commands such as:
+npm downloads and manages the software packages that CamelMind requires. Throughout this documentation, you will run standard npm commands such as:
 
 ```bash
 npm install
 npm run dev
 ```
 
-These commands install your project's dependencies and start the local development server.
+These commands install your project dependencies and launch the local development server.
 
 <Callout type="note">
-CamelMind also works with package managers such as **pnpm** and **Yarn**. If you're just getting started, stick with **npm**—it's included with Node.js and requires no additional setup.
+CamelMind also supports package managers such as **pnpm** and **Yarn**. If you are just starting out, stick with **npm**—Node.js includes it by default, requiring no additional setup.
 </Callout>
 
 ---
 
-## Install Node.js
+## Installing Node.js on your operating system
 
-Choose your operating system and install the latest **LTS (Long-Term Support)** version of Node.js.
+Select your operating system below and install the latest **LTS (Long-Term Support)** version of Node.js:
 
 <Tabs>
 <Tab label="macOS">
 
 Download the **LTS** installer from [nodejs.org](https://nodejs.org/) and follow the installation wizard.
 
-If you use Homebrew, you can also install Node.js from the Terminal:
+If you use Homebrew, install Node.js directly from the Terminal:
 
 ```bash
 brew install node
@@ -63,16 +63,16 @@ brew install node
 
 <Tab label="Windows">
 
-Download the **LTS** installer from [nodejs.org](https://nodejs.org/) and follow the installation wizard using the default settings.
+Download the **LTS** installer from [nodejs.org](https://nodejs.org/) and run the setup wizard using default settings.
 
 </Tab>
 
 <Tab label="Linux">
 
-Install Node.js using your distribution's package manager, or install it with **nvm** (recommended if you work on multiple JavaScript projects):
+Install Node.js using your distribution's package manager, or set it up with **nvm** (recommended if you work on multiple JavaScript projects):
 
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+curl -o- [https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh](https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh) | bash
 nvm install --lts
 ```
 
@@ -80,60 +80,58 @@ nvm install --lts
 </Tabs>
 
 <Callout type="tip">
-Always install the **LTS (Long-Term Support)** version. It's the most stable release and the version CamelMind is tested against.
+Always select the **LTS (Long-Term Support)** release. It provides maximum stability, and the CamelMind team tests all releases against it.
 </Callout>
 
 ---
 
-## Verify the installation
+## Verifying your Node.js and npm installation
 
-Open a terminal and run:
+Confirm that your terminal recognizes Node.js and npm by running:
 
 ```bash
 node --version
 npm --version
 ```
 
-If both commands print a version number, you're ready to go.
+If both commands return a version number, your setup is complete.
 
 CamelMind requires **Node.js 20 or later**.
 
 <Callout type="tip">
-If you see a `command not found` error, restart your terminal and try again. If the problem persists, reinstall Node.js using the installer above.
+If your terminal returns a `command not found` error, restart your terminal and try again. If the issue continues, reinstall Node.js using the installer above.
 </Callout>
 
 ---
 
-## Frequently asked questions
+## Frequently asked questions about Node.js
 
 <Details summary="Do I need to know JavaScript?" id="need-to-know-js">
 
-No. CamelMind is designed for writing documentation in Markdown and MDX. Node.js simply runs the tools that build and serve your site.
+No. CamelMind uses Markdown and MDX for content creation. Node.js simply executes the underlying tools that build and serve your site.
 
 </Details>
 
 <Details summary="Do I need to install npm separately?" id="need-npm">
 
-No. npm is included automatically when you install Node.js.
+No. Node.js installs npm automatically during setup.
 
 </Details>
 
 <Details summary="Should I install pnpm or Yarn instead?" id="need-install-pnpm">
 
-Not unless you already use them. npm works perfectly and is the easiest option for new users.
+Not unless you already use them. npm works perfectly and offers the simplest path for new users.
 
 </Details>
 
 <Details summary="Can I install multiple versions of Node.js?" id="multiple-versions-node">
 
-Yes. If you work on multiple JavaScript projects, consider using a version manager such as **nvm** (macOS/Linux) or **fnm** (cross-platform). For most users, installing the latest LTS version is all you need.
+Yes. If you work on multiple JavaScript projects, consider a version manager such as **nvm** (macOS/Linux) or **fnm** (cross-platform). For most users, installing the latest LTS version satisfies all requirements.
 
 </Details>
 
 ---
 
-## Next step
+## Next step: Proceed to CamelMind Installation
 
-Great! Your computer is now ready to run CamelMind.
-
-Continue to the [Installation](/getting-started/installation) guide to create your first documentation site.
+Now that you have installed Node.js, your computer is ready to run CamelMind. Continue to the [Installation](/getting-started/installation) guide to create your first documentation site.
