@@ -3,7 +3,7 @@ title: Project Structure
 description: A tour of the folders and files in a CamelMind site — what each one does and which ones you'll actually edit.
 ---
 
-Every CamelMind project follows the same directory structure. Most of your work will happen in just a few folders, while the rest powers the framework behind the scenes.
+Every CamelMind project follows the same directory structure. Most of your work will happen in certain folders, while the rest powers the framework behind the scenes.
 
 This guide explains what each folder is for and when you'll need to edit it.
 
@@ -36,14 +36,13 @@ Most documentation work only involves these folders:
 | Add images or assets | `public/` |
 | Change the site title | `camelmind.config.ts` |
 
-For other advanced configurations, we will cover in [Advanced Configurations](/guide/advanced-config).
 </Callout>
 
 ---
 
-## The content/ folder
+## CamelMind content directory structure
 
-Every documentation page is an MDX file stored under `content/`. Every page is a `.mdx` file — Markdown with optional JSX components — with YAML frontmatter at the top for `title` and `description`.
+The CamelMind `content/` directory stores every MDX documentation page for your site structure and authoring workflow.
 
 ```text
 content/
@@ -55,13 +54,13 @@ content/
     └── configuration.mdx
 ```
 
-Unlike many documentation frameworks, CamelMind does not derive URLs from your folder structure. URLs are defined in `nav.yml`, giving you complete control over your site's navigation.
+Unlike other documentation frameworks, CamelMind does not derive URLs from your folder structure. Define your URLs directly in `nav.yml` to take complete control over your site's navigation.
 
 ---
 
 ## The nav/nav.yml file
 
-`nav.yml` is the single source of truth for what appears in the sidebar and which URL each page is served at. Every entry maps a `slug` (the public URL) to a `file` (the MDX source):
+`nav.yml` serves as the single source of truth for your sidebar menu and page URLs. Every entry maps a `slug` (the public URL) to a `file` (the MDX source):
 
 ```yaml
 nav:
@@ -75,13 +74,14 @@ nav:
         roles: []
 ```
 
-A page in `content/` that isn't registered here won't be reachable — and a page can be registered at multiple slugs with different labels or `roles`. See [Navigation](/guides/navigation) and the [Nav Schema](/reference/nav-schema) reference for every field.
+Register every `content/` page here to make it reachable; you can also assign a page to multiple slugs using distinct labels or roles. See [Configure Navigation](/getting-started/navigation) reference for every field.
 
 ---
 
-## The versions.yml file
+## CamelMind versions.yml file configuration
 
-`versions.yml` defines the documentation versions your site publishes, such as `latest`, `v1`, or `v2`.
+The CamelMind `versions.yml` configuration file defines all published documentation versions and multi-version site settings.
+
 
 ```yaml
 versions:
@@ -91,13 +91,14 @@ versions:
     nav: nav/nav.yml
 ```
 
-A fresh scaffold ships with a single `latest` version. Add entries here when you're ready to publish multiple versions side by side — see [Versioning](/guides/versioning).
+A fresh scaffold ships with a single `latest` version. Add entries here when you're ready to publish multiple versions side by side.
 
 ---
 
-## The camelmind.config.ts configuration file
+## CamelMind primary configuration file camelmind.config.ts
 
-The root config file for site-wide behavior such as title, tagline, auth settings, GitHub link, API reference, and `llms.txt` output.
+The `camelmind.config.ts` file acts as the primary configuration blueprint for CamelMind site settings, authentication options, and global properties.
+
 
 ```typescript
 const config: CamelMindConfig = {
@@ -115,13 +116,13 @@ const config: CamelMindConfig = {
 }
 ```
 
-Most secrets and environment-specific values (auth toggles, the site URL) are read from environment variables defined in `.env.example` / `.env.local`, rather than hardcoded here. See the [Configuration Reference](/reference/configuration) for every field.
+CamelMind reads most secrets and environment-specific values (auth toggles, the site URL) from environment variables in `.env.example` / `.env.local` rather than hardcoding them here.
 
 ---
 
-## The app/ folder
+## The CamelMind app/ application directory
 
-The app directory contains the Next.js application that powers your documentation site.
+The `app/` directory contains the Next.js application routes and logic that power your CamelMind documentation site.
 
 | Path | Purpose |
 |---|---|
@@ -135,25 +136,25 @@ The app directory contains the Next.js application that powers your documentatio
 | `app/globals.css` | Global styles (Tailwind) |
 
 <Callout type="warning">
-Customizing files in `app/` is an advanced use case. Changes here can be overwritten or need manual reconciliation when you run `camelmind update` — see the [CLI Reference](/reference/cli) for the `--ignore-file` flag if you need to protect a customized file.
+Customizing files in `app/` is an advanced use case. Changes here can be overwritten or need manual reconciliation when you run `camelmind update` — see [Update CamelMind](/getting-started/installation#update-camelmind) for the `--ignore-file` flag if you need to protect a customized file.
 </Callout>
 
 ---
 
-## The components/ folder
+## CamelMind components directory and React UI modules
 
-React components split into two groups:
+The `components/` directory contains all React UI components, layout elements, and custom MDX widgets used throughout your CamelMind site.
 
-- **Site chrome** — `Nav/`, `Sidebar/`, `Toc/`, `Breadcrumbs/`, `PageNav/`, `Search/`, `SectionCards/`, `ApiReference/`, and similar folders render the surrounding site UI (top nav, sidebar, table of contents, search modal, and so on).
+- **Site chrome** — `Nav/`, `Sidebar/`, `Toc/`, `Breadcrumbs/`, `PageNav/`, `Search/`, `SectionCards/`, `ApiReference/`, and similar folders render the surrounding site UI (top nav, sidebar, table of contents, search modal).
 - **`components/mdx/`** — the components available directly inside your `.mdx` content: `Callout`, `Steps`, `Tabs`, `Details`, `Icon`, `LLMOnly`, and `LLMIgnore`.
 
-See [MDX Components](/guides/mdx-components) for how to use each one in your content.
+See [Use MDX Components](/getting-started/mdx-components) for how to use each one in your content.
 
 ---
 
-## The lib/ folder
+## The CamelMind lib/ utility directory
 
-The engine room: plain TypeScript modules that load and resolve content, with no JSX. You generally won't need to edit these, but they're the layer to look at if you're extending CamelMind's behavior.
+The `lib/` directory contains core TypeScript modules responsible for parsing content and navigation in CamelMind.
 
 | File | Responsibility |
 |---|---|
@@ -166,9 +167,9 @@ The engine room: plain TypeScript modules that load and resolve content, with no
 
 ---
 
-## The scripts/ folder
+## CamelMind scripts/ build and export utilities
 
-Standalone automation tooling for producing specialized release artifacts outside of the normal web deployment pipeline:
+The `scripts/` directory houses standalone automation scripts for generating offline release artifacts in CamelMind.
 
 | Script | Purpose |
 |---|---|
@@ -177,11 +178,13 @@ Standalone automation tooling for producing specialized release artifacts outsid
 | `scripts/generate-pdfs.ts`, `scripts/generate-master-pdf.ts` | Generate per-page and combined PDF exports |
 | `scripts/build-pdf.sh` | Wraps the PDF generation scripts into a single build step |
 
-See [Offline Export](/guides/offline-export) for how these fit into a release workflow.
+See [Offline Package and PDF Export](/features/offline-package-and-pdf-export) for how these fit into a release workflow.
 
 ---
 
-## Root config files
+## CamelMind root configuration files
+
+The following table outlines the purpose of each root configuration file in your CamelMind project:
 
 | File | Purpose |
 |---|---|
@@ -189,7 +192,7 @@ See [Offline Export](/guides/offline-export) for how these fit into a release wo
 | `next.config.ts` | Next.js compilation options, security headers, and static export toggles. |
 | `tsconfig.json` | Global TypeScript compiler settings. |
 | `eslint.config.mjs` | Project code quality and linting rules. |
-| `.env.example` | Local environment configuration blueprint. Dplicate to `.env.local` to start. |
+| `.env.example` | Local environment configuration blueprint. Duplicate to `.env.local` to start. |
 | `vercel.json` | Optimized deployment configurations specific to Vercel. |
 
 <Callout type="note">
@@ -198,13 +201,14 @@ After running `camelmind update`, you may see a `.camelmind-update-backup/` fold
 
 ---
 
-## Next steps
+## CamelMind next steps and related resources
+
+Explore these resources to continue building and customizing your CamelMind documentation site.
 
 | Goal | Where to go |
 |---|---|
 | Write and organize pages | [Writing Content](/getting-started/writing-content) |
 | Use Callout, Steps, Tabs, and more | [MDX Components](/getting-started/mdx-components) |
-| Change the sidebar and URLs | [Navigation](/getting-started/navigation) |
-| Publish multiple doc versions | [Versioning](/guides/versioning) |
-| Gate pages by user role | [Authentication & RBAC](/guides/auth-rbac) |
-| Every config option in detail | [Configuration Reference](/reference/configuration) |
+| Change the sidebar and URLs | [Configure Navigation](/getting-started/navigation) |
+| Publish multiple doc versions | [Configure Multiple Documentation Sites](/getting-started/multiple-doc-sites) |
+| Gate pages by user role | [Auth and RBAC](/features/auth-rbac) |

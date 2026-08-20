@@ -5,7 +5,7 @@ description: System requirements and installation options for CamelMind. Follow 
 
 Before you begin, ensure your local machine meets the following requirements:
 
-| Requirement | Minimum version |
+| Requirement | Version |
 |---|---|
 | Node.js | 20 or higher |
 | Package manager | Any recent version of `npm`, `pnpm`, or `yarn` |
@@ -70,9 +70,9 @@ Before upgrading, review the changelog for any breaking changes or migration not
 
 ---
 
-## Environment variables
+## CamelMind environment variables setup
 
-CamelMind works out of the box with the default configuration. You only need to customize environment variables when enabling features such as authentication or deploying your site to a production domain.
+Configuring CamelMind environment variables allows you to customize authentication and production settings. CamelMind works out of the box with default settings, but advanced features such as authentication or deploying require you to configure environment variables.
 
 To get started, copy the example file:
 
@@ -87,13 +87,13 @@ Then update the values you need.
 | `CAMELMIND_URL` | `http://localhost:3000` | The public URL of your documentation site. Update this before deploying (for example, `https://docs.example.com`). |
 | `CAMELMIND_AUTH_ENABLED` | `false` | Enables built-in authentication. |
 | `CAMELMIND_AUTH_REQUIRE_LOGIN` | `false` | Requires users to sign in before accessing any page. |
-| `SESSION_SECRET` | — | A long, random secret used to encrypt user sessions. Required when authentication is enabled. |
+| `SESSION_SECRET` | — | A long, random secret used to encrypt user sessions. You must provide this when enabling authentication. |
 
 ---
 
-## Deploying to production
+## Deploying CamelMind to production
 
-Before making your site live, update `CAMELMIND_URL` to match your production domain. For example:
+When deploying your CamelMind site to production hosting environments like Vercel or Netlify, update `CAMELMIND_URL` to match your live production domain.
 
 ```env
 CAMELMIND_URL=https://docs.example.com
@@ -105,4 +105,4 @@ Then configure the same environment variables in your hosting provider (such as 
 If your site is publicly accessible, you can leave authentication disabled. Enable it only if you want to protect your documentation behind a login.
 </Callout>
 
-See the [Environment Variables](/reference/env-vars) reference for the complete list of available options.
+See the [Environment Variables](/deployment/environment-variables) reference for the complete list of available options.
