@@ -1,25 +1,25 @@
 ---
-title: Writing Content
-description: How to write and organize content or documentation pages in CamelMind using Markdown and MDX.
+title: Writing content
+description: Learn how to author and structure documentation pages in CamelMind using MDX.
 ---
 
-CamelMind uses [MDX](https://mdxjs.com/) — Markdown extended with JSX. MDX combines standard Markdown with React components, giving you all the simplicity of Markdown plus interactive components such as callouts, tabs, and step-by-step guides.
+CamelMind uses [MDX](https://mdxjs.com/) — Markdown extended with JSX. MDX combines standard Markdown with React components, giving you all the simplicity of Markdown plus interactive components such as Callouts, Tabs, and step-by-step guides.
 
-To publish a page, simply:
+To publish a page in CamelMind:
 
 1. Create an `.mdx` file inside the `content/` directory.
 2. Add the page to `nav/nav.yml`.
 3. Start writing.
 
 <Callout type="tip">
-Unlike many documentation frameworks, CamelMind does not generate URLs from your folder structure. Instead, every page is mapped to a URL in <code>nav/nav.yml</code>, giving you complete control over your site's navigation.
+Unlike other documentation frameworks, CamelMind does not generate URLs from your folder structure. Instead, every page is mapped to a URL in <code>nav/nav.yml</code>, giving you complete control over your site's navigation.
 </Callout>
 
 ---
 
-## File format
+## CamelMind MDX file format
 
-Every content file is a plain `.mdx` file with optional YAML frontmatter at the top:
+Every content file in CamelMind is a plain `.mdx` file with optional YAML frontmatter at the top:
 
 ```mdx
 ---
@@ -32,28 +32,29 @@ hide_table_of_contents: true
 Body content goes here.
 ```
 
-### Frontmatter fields
+### Frontmatter fields for CamelMind MDX pages
 
-| Field | Required | Description |
-|---|---|---|
-| `title` | Yes | Page title shown in the browser tab and sidebar |
-| `description` | No | Short summary for search results and `<meta>` description |
-| `last_updated` | No | Override the value determined by the `showLastUpdated` configuour specific date.|
-| `hide_table_of_contents` | No | Set to `true` if you want to hide the page's Table of Content. |
+Below are the frontmatter fields you can use at the top of CamelMind MDX pages, including page titles, descriptions, update dates, and table of contents settings.
 
----
-
-## Markdown basics
-
-CamelMind supports full [CommonMark](https://commonmark.org/) Markdown plus [GitHub Flavored Markdown](https://github.github.com/gfm/), including tables, task lists, and strikethrough text. For basic formatting syntax, see [GitHub document](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+| **Field**                | **Required** | **Description**                                                                            |
+| ------------------------ | ------------ | ------------------------------------------------------------------------------------------ |
+| `title`                  | Yes          | Page title shown in the browser tab and sidebar                                            |
+| `description`            | No           | Short summary for search results and `<meta>` description                                  |
+| `last_updated`           | No           | Override the value determined by the `showLastUpdated` configuration with a specific date. |
+| `hide_table_of_contents` | No           | Set to `true` if you want to hide the page's Table of Contents.                            |
 
 ---
 
-## Code blocks
+## Supported Markdown syntax in CamelMind
 
-Use fenced code blocks with a language identifier for syntax highlighting:
+CamelMind supports full [CommonMark](https://commonmark.org/) Markdown plus [GitHub Flavored Markdown](https://github.github.com/gfm/), including tables, task lists, and strikethrough text. For basic formatting syntax, see the [GitHub Markdown guide](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
 
-````mdx
+---
+
+## Code blocks and syntax highlighting
+
+CamelMind automatically applies syntax highlighting to code blocks written in your documentation files. Use fenced code blocks with a language identifier:
+
 ```bash
 npm run dev
 ```
@@ -67,15 +68,14 @@ nav:
   - label: "Getting Started"
     dropdown: true
 ```
-````
 
-<Callout type="tip">
-Supported languages include `bash`, `typescript`, `javascript`, `python`, `yaml`, `json`, `mdx`, `css`, `html`, `sql`, and many more.
-</Callout>
+Supported languages include `bash`, `typescript`, `javascript`, `python`, `yaml`, `json`, `mdx`, `css`, `html`, `sql`, and more.
 
 ---
 
-## Inline elements
+## Formatting inline elements
+
+You can format inline elements like bold text, italics, inline code, links, and embedded images within CamelMind MDX documents:
 
 ```mdx
 **Bold text**
@@ -85,11 +85,13 @@ Supported languages include `bash`, `typescript`, `javascript`, `python`, `yaml`
 ![Alt text](image.png)
 ```
 
+See [Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) for more information.
+
 ---
 
-## Images
+## Inserting images in documentation
 
-Store images in `public/images/` and reference them with a root-relative path:
+CamelMind makes it simple to embed image files into your documentation content. Store images in `public/images/` and reference them with a root-relative path:
 
 ```mdx
 ![Diagram](/images/architecture.png)
@@ -99,90 +101,83 @@ Images automatically support click-to-zoom on documentation pages.
 
 ---
 
-## Partial content
+## Reusing partial content across pages
 
-If you need to reuse the same content across multiple pages, create it as a partial.
+If you need to reuse the same content across several documentation pages in CamelMind, create it as a partial.
 
 Store reusable snippets as `.mdx` files in the `/content/_partials` directory, then include them anywhere in your documentation using the `<Partial>` component:
 
 ```mdx
-<Partial file="_partials/your-snippet.mdx" />
+<Partial file="_partials/your-snippet.mdx"/>
 ```
 
 Using partials helps you maintain shared content in a single place, making updates easier and ensuring consistency across your documentation.
 
-<Callout type="note">
-Partial files are intended for inclusion only and should **not** be referenced directly in any `nav/*.yml` file.
-</Callout>
+Use partial files only for inclusion; do not reference them directly in any `nav/*.yml` file.
 
 ---
 
-## MDX components
+## Using MDX React components
 
-Because CamelMind uses MDX, you can embed React components directly into your documentation without importing them.
+Because CamelMind uses MDX, you can embed React components directly into your documentation without importing them manually.
 
 ```mdx
 <Callout type="tip">
 This is a tip.
 </Callout>
 ```
-rendered as:
 
-<Callout type="tip">
-This is a tip.
-</Callout>
+Rendered as:
 
+> **Tip:** This is a tip.
 
-and this:
+And this:
 
 ```mdx
 <Steps>
-  <Step n={1} title="Install">
+  <Step n="{1}" title="Install">
     Run the installer.
   </Step>
 
-  <Step n={2} title="Start">
+  <Step n="{2}" title="Start">
     Launch the development server.
   </Step>
 </Steps>
-
 ```
-rendered as:
 
-<Steps>
-  <Step n={1} title="Install">
-    Run the installer.
-  </Step>
+Rendered as:
 
-  <Step n={2} title="Start">
-    Launch the development server.
-  </Step>
-</Steps>
+**1. Install**
 
+Run the installer.
 
-See [MDX Components](/guides/mdx-components) for the full component reference.
+**2. Start**
+
+Launch the development server.
+
+See [MDX Components](/getting-started/mdx-components) for the full component reference.
 
 ---
 
-## Hide content from rendering
+## Hiding content from rendering in CamelMind
 
-Sometimes you may want to keep notes or draft content in your documentation source without publishing it—for example, documentation for an upcoming feature, content that's still under review, or reminders for yourself.
+Sometimes you may want to keep notes or draft content in your documentation source without publishing it—for example, documentation for an upcoming feature, content that is still under review, or reminders for yourself.
 
-Wrap the content in an MDX comment to prevent it from being rendered.
+To prevent CamelMind from rendering the content, wrap it in an MDX comment.
 
 ```mdx
 {/*
-This is the hidden cargo that my camel carries but my users don't know.
+This is hidden content that will not show on the rendered site.
 */}
 ```
 
-Everything inside the comment block is ignored when CamelMind builds your documentation, so it won't appear on the published site. Once the information is ready, simply remove the comment markers to make it visible in your documentation.
+CamelMind ignores everything inside the comment block when building your documentation, preventing it from appearing on the published site. Once the information is ready, remove the comment markers to make it visible in your documentation.
 
 ---
 
-## Organizing content
+## Organizing content folders in CamelMind
 
-A typical documentation project looks like this:
+A typical CamelMind documentation project organizes source files into thematic directories within `content/`:
 
 ```text
 content/
@@ -196,6 +191,4 @@ content/
     └── configuration.mdx
 ```
 
-These folders are only for organization.
-
-Unlike most documentation frameworks, CamelMind does not derive URLs from the file system. Instead, each page is mapped to a URL in `nav/nav.yml`, making it easy to reorganize your content without breaking links.
+These folders are only for organization. Unlike most documentation frameworks, CamelMind does not derive URLs from the file system. Instead, `nav/nav.yml` maps each page to a URL, making it easy to reorganize your content without breaking links.

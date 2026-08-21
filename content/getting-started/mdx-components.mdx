@@ -3,13 +3,11 @@ title: Use MDX Components
 description: Build richer documentation with CamelMind's built-in MDX components. No imports required.
 ---
 
-CamelMind includes a library of built-in MDX components that help you create documentation that's easier to read and navigate. Every component is available in any `.mdx` file—no imports or setup required.
+CamelMind includes built-in MDX components to make your documentation easier to read and navigate. Every component is available in any `.mdx` file—no imports or setup required.
 
 ---
 
-## Callout
 
-Use a `Callout` to emphasize important information, tips, warnings, or success messages.
 
 ```mdx
 <Callout type="note">A general note.</Callout>
@@ -45,9 +43,9 @@ Configuration saved successfully.
 
 <Callout type="success">Configuration saved successfully.</Callout>
 
-### Custom title
+### Customize a Callout title
 
-Override the default heading with the `title` prop.
+Use the `title` prop to set a custom title for a Callout instead of its default heading.
 
 ```mdx
 <Callout
@@ -65,9 +63,9 @@ The API accepts up to 1,000 requests per minute.
 The API accepts up to 1,000 requests per minute.
 </Callout>
 
-### Custom icon
+### Customize a Callout icon
 
-Replace the default icon with any [Lucide](https://lucide.dev/icons/) icon.
+Use the `icon` prop to replace the default Callout icon with a [Lucide](https://lucide.dev/icons/) icon.
 
 ```mdx
 <Callout type="tip" icon="rocket">
@@ -113,7 +111,7 @@ rendered as:
 
 ## Tabs
 
-Use tabs when readers can choose between multiple alternatives.
+Use tabs when readers can choose between other alternatives.
 
 ```mdx
   === "Tab 1"
@@ -187,14 +185,9 @@ Content...
 
 ---
 
-## Display code
+## Display code blocks
 
-Standard Markdown code fences automatically include:
-
-- Syntax highlighting
-- Copy button
-- Line wrapping
-- Dark mode support
+Use standard Markdown code fences to display syntax-highlighted code with built-in copy, line-wrapping, and dark-mode support.
 
 ```typescript
 function greet(name: string) {
@@ -204,7 +197,10 @@ function greet(name: string) {
 
 ---
 
-## Control AI-visible content
+## Control AI-visible content with LLMOnly and LLMIgnore
+
+Use `LLMOnly` and `LLMIgnore` to control whether specific documentation content is visible to AI systems through `llms.txt`.
+
 
 <Tabs>
 <Tab label="LLMOnly">
