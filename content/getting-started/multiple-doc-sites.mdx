@@ -19,7 +19,7 @@ You define each documentation site in `versions.yml`. For example, a project can
 - SDK Documentation
 - Internal Documentation
 
-## How to define multiple documentation sites in `versions.yml`
+## How to define multiple documentation sites in versions.yml
 
 Define each documentation site as an entry in `versions.yml`. Each entry specifies a unique `id`, a display `label`, and the navigation file used by that documentation site.
 
@@ -38,7 +38,9 @@ versions:
 
 Each `versions.yml` entry registers one documentation site. The `nav` field connects the site to its navigation file, which defines the site's page structure and sidebar.
 
-## How the `stable` field identifies the recommended documentation site
+---
+
+## How the stable field identifies the recommended documentation site
 
 Set `stable: true` to mark a documentation site as the recommended site. CamelMind uses this flag for UI indicators, such as a **Stable** badge in the version selector.
 
@@ -52,7 +54,9 @@ versions:
     nav: nav/docs.yml
 ```
 
-## How `versions.yml` and navigation files work together
+---
+
+## How versions.yml and navigation files work together
 
 The file `versions.yml` defines the published documentation sites and their respective navigation files.
 
@@ -68,6 +72,8 @@ versions.yml
 ```
 
 This lets each documentation site have an independent page structure and sidebar while keeping all sites in the same project.
+
+---
 
 ## How CamelMind generates URLs for multiple documentation sites
 
@@ -112,6 +118,8 @@ CamelMind generates these final URLs:
 | `api`               | `/api/getting-started/overview` |
 | `sdk`               | `/sdk/getting-started/overview` |
 
+---
+
 ## How the primary documentation site determines URL prefixes
 
 The first documentation site listed in `versions.yml` is the primary documentation site.
@@ -129,8 +137,9 @@ the final URL is:
 ```text
 /getting-started/overview
 ```
+---
 
-## How additional documentation sites use their `id` as a URL prefix
+## How additional documentation sites use their id as a URL prefix
 
 Additional documentation sites use their `id` as the URL prefix.
 
@@ -147,6 +156,8 @@ CamelMind publishes a site with `id: sdk` and the same navigation slug at:
 ```
 
 You do not need to add these prefixes to the `slug` in the navigation file.
+
+---
 
 ## How each documentation site uses an independent navigation file
 
@@ -169,6 +180,8 @@ Each navigation file is independent:
 
 See [Configure Navigation](/getting-started/navigation) to learn how to structure each navigation file.
 
+---
+
 ## How to configure a single documentation site
 
 If your project publishes only one documentation site, define one entry in `versions.yml`.
@@ -184,7 +197,9 @@ CamelMind publishes the single primary documentation site without an `id` URL pr
 
 Most projects only need a single documentation site. Add additional entries when you want to publish separate documentation collections.
 
-## How to configure the default navigation file with `navFile`
+---
+
+## How to configure the default navigation file with navFile
 
 CamelMind uses `nav/nav.yml` as the default navigation file for the primary documentation site.
 
@@ -196,7 +211,7 @@ const config: CamelMindConfig = {
 }
 ```
 
-The `navFile` setting defines the default navigation file used by the primary documentation site.
+---
 
 ## Common multiple documentation site configurations
 
