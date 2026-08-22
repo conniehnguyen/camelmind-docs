@@ -1,11 +1,11 @@
 ---
 title: Configure Site Navigation
-description: Learn how to organize pages, define URLs, and control navigation with nav.yml.
+description: Configure site navigation in nav.yml using label, slug, file, roles, dropdown, noDropdown, section, and children.
 ---
 
 CamelMind uses a single file—`nav/nav.yml`—to define your site's navigation.
 
-Unlike many documentation frameworks, CamelMind does **not** generate navigation or URLs from your folder structure. Instead, `nav.yml` is the source of truth for:
+Unlike other documentation frameworks, CamelMind does **not** generate navigation or URLs from your folder structure. Instead, `nav.yml` is the source of truth for:
 
 - Which pages appear in the sidebar
 - The order they appear in
@@ -16,9 +16,9 @@ This gives you complete control over your documentation without having to move o
 
 ---
 
-## How navigation works
+## How nav.yml defines page navigation
 
-Each page in your site is defined by a navigation entry.
+A navigation entry defines each page in your site.
 
 ```yaml
 nav:
@@ -50,7 +50,7 @@ content/getting-started/overview.mdx
 
 ---
 
-## Navigation entry
+## Navigation entry fields: label, slug, file, and roles
 
 Every page includes four fields.
 
@@ -63,7 +63,7 @@ Every page includes four fields.
 
 ---
 
-## Organize pages however you like
+## How file location affects page URLs
 
 The location of a file has **no effect** on its URL.
 
@@ -76,13 +76,11 @@ For example:
   roles: []
 ```
 
-The page is served at `/overview` even though the file lives deep inside your project.
-
-This makes it easy to reorganize your content without changing links.
+Your server serves the page at `/overview` even though the file lives deep inside your project. This makes it easy to reorganize your content without changing links.
 
 ---
 
-## Reuse the same page
+## How to reuse one MDX page in multiple navigation paths
 
 A single MDX file can appear in multiple places throughout your documentation.
 
@@ -102,9 +100,9 @@ This is useful when different audiences need access to the same content through 
 
 ---
 
-## Create navigation groups
+## Create top-level navigation groups with dropdown
 
-Top-level entries become navigation groups.
+Use `dropdown: true` on a top-level `nav.yml` entry to create a navigation group in the top navigation.
 
 ```yaml
 nav:
@@ -122,7 +120,7 @@ nav:
         roles: []
 ```
 
-When a visitor opens any page in the group, the corresponding sidebar is displayed automatically.
+Opening any page in the group automatically displays the corresponding sidebar.
 
 <Callout type="tip">
 
@@ -132,9 +130,15 @@ Think of each top-level group as a section of your documentation, such as **Gett
 
 ---
 
-## Add sidebar categories
+## How `noDropdown` changes top navigation behavior
 
-Large navigation groups can be divided into visual categories using `section`.
+Set `noDropdown: true` on a navigation group to render the group as a direct top-navigation link instead of a dropdown menu. The group's `items` still define the sidebar navigation for pages in that section.
+
+---
+
+## How to create sidebar categories with section
+
+Use the `section` field to group navigation entries under an all-caps category heading in the sidebar.
 
 ```yaml
 items:
@@ -154,13 +158,13 @@ items:
         roles: []
 ```
 
-The parent entry (`Getting Started`) is displayed as an all-caps section header in the sidebar, with its `section` items listed beneath it. The parent entry is also a real documentation page. It must define its own `slug`, `file`, and `roles`, and typically serves as an overview or landing page for that section.
+The sidebar displays the parent entry (`Getting Started`) as an all-caps section header, listing its `section` items beneath it. The parent entry is also a real documentation page. It must define its own `slug`, `file`, and `roles`, and typically serves as an overview or landing page for that section.
 
 ---
 
-## Nest pages with children
+## How to create collapsible sidebar groups with children
 
-Any entry—whether it's a top-level item, a `section` item, or another `children` item—can have a `children` array to make it a collapsible row in the sidebar.
+Use `children` to create a collapsible sidebar row. Unlike section, `children` does not create an all-caps category heading.
 
 ```yaml
 - label: "Deployment"
@@ -179,11 +183,11 @@ Any entry—whether it's a top-level item, a `section` item, or another `childre
       roles: []
 ```
 
-Unlike `section`, `children` doesn't add an all-caps category label—the parent entry itself becomes a clickable row with a chevron that expands to reveal its children. `children` can also nest inside `children` for additional levels of indentation.
+Unlike `section`, `children` does not add an all-caps category label—the parent entry itself becomes a clickable row with a chevron that expands to reveal its children. `children` can also nest inside `children` for additional levels of indentation.
 
 ---
 
-## Full schema examples
+## Complete nav.yml schema examples
 
 === "Example: every field in one nav.yml"
 
@@ -245,7 +249,7 @@ nav:
       # • file
       # • roles
       #
-      # It's typically used as an overview page for the section.
+      # It is typically used as an overview page for the section.
       #
       - label: "Getting Started"
         slug: /guides/getting-started/overview
@@ -470,15 +474,17 @@ nav:
             roles: []
 ```
 
-In the top nav, `Guides` is a dropdown listing `Writing Content`. In the sidebar, `Writing Content` has no category header above it—it's simply a collapsible row that expands to show `Markdown Basics` and `Frontmatter`.
+In the top nav, `Guides` is a dropdown listing `Writing Content`. In the sidebar, `Writing Content` has no category header above it—it is a collapsible row that expands to show `Markdown Basics` and `Frontmatter`.
 
 ===
 
 ---
 
-## Restrict access with roles
+## How to restrict navigation pages with roles
 
-The `roles` field determines who can view and access a page.
+## How to restrict navigation pages with `roles`
+
+Use the `roles` field in a `nav.yml` entry to control which users can view and access a page. Use `roles: []` for a public page.
 
 | Roles | Access |
 | --- | --- |
@@ -486,7 +492,7 @@ The `roles` field determines who can view and access a page.
 | `["admin"]` | Administrators only |
 | `["vendor","admin"]` | Vendors or administrators |
 
-Pages that users don't have permission to access are:
+Pages that users do not have permission to access are:
 
 - Hidden from navigation
 - Blocked from direct URL access

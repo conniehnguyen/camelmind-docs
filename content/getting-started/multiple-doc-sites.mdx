@@ -1,31 +1,27 @@
 ---
 title: Configure Multiple Documentation Sites
-description: Learn how to publish multiple documentation sites within a single CamelMind project using versions.yml.
+description: Configure multiple documentation sites in a single CamelMind project with versions.yml, independent navigation files, URL prefixes, and a default navigation file.
 ---
 
 CamelMind lets you publish multiple independent documentation sites from a single project.
 
-Each site has its own:
+Each documentation site can have its own:
 
 - Navigation
 - URL namespace
 - Sidebar
 - Content structure
 
-This makes it easy to organize different types of documentation while managing everything in one repository. For example, you might publish:
+You define each documentation site in `versions.yml`. For example, a project can publish:
 
 - Product Documentation
 - API Documentation
 - SDK Documentation
 - Internal Documentation
 
-Each documentation site is defined in `versions.yml`.
+## How to define multiple documentation sites in `versions.yml`
 
----
-
-## Define your documentation sites
-
-Each entry in `versions.yml` registers a documentation site.
+Define each documentation site as an entry in `versions.yml`. Each entry specifies a unique `id`, a display `label`, and the navigation file used by that documentation site.
 
 ```yaml
 versions:
@@ -40,27 +36,50 @@ versions:
     nav: nav/api.yml
 ```
 
-Each site references its own navigation file, allowing every documentation collection to have its own page structure, sidebar, and organization.>
+Each `versions.yml` entry registers one documentation site. The `nav` field connects the site to its navigation file, which defines the site's page structure and sidebar.
 
-<Callout type="tip" title="The `stable` field">
+## How the `stable` field identifies the recommended documentation site
 
-Use the `stable` field to mark the recommended documentation site. CamelMind uses this flag to display UI indicators, such as a **Stable** badge in the version selector, helping readers identify the recommended documentation. It does not affect routing, URL generation, or navigation.
+Set `stable: true` to mark a documentation site as the recommended site. CamelMind uses this flag for UI indicators, such as a **Stable** badge in the version selector.
 
-</Callout>
+The `stable` field does not affect routing, URL generation, or navigation.
 
----
+```yaml
+versions:
+  - id: docs
+    stable: true
+    label: "Documentation"
+    nav: nav/docs.yml
+```
 
-## How URLs are generated
+## How `versions.yml` and navigation files work together
 
-Navigation entries always define their own page slugs without worrying about prefixes.
+The file `versions.yml` defines the published documentation sites and their respective navigation files.
+
+Each navigation file defines the pages, URLs, and sidebar structure for its documentation site.
 
 For example:
+
+```text
+versions.yml
+    ├── docs → nav/docs.yml
+    ├── api  → nav/api.yml
+    └── sdk  → nav/sdk.yml
+```
+
+This lets each documentation site have an independent page structure and sidebar while keeping all sites in the same project.
+
+## How CamelMind generates URLs for multiple documentation sites
+
+CamelMind generates the final URL for each documentation site from its position and `id` in `versions.yml`.
+
+Navigation entries define page slugs without URL prefixes. For example:
 
 ```yaml
 slug: /getting-started/overview
 ```
 
-CamelMind determines the final URL based on the documentation site's position in `versions.yml`. The **first** documentation site is treated as the primary site and keeps its URLs unchanged. Every additional site is automatically prefixed with its `id`.
+The first documentation site in `versions.yml` is the primary documentation site and keeps its navigation slugs unchanged. Additional documentation sites receive their `id` as a URL prefix.
 
 For example:
 
@@ -69,9 +88,11 @@ versions:
   - id: docs
     label: "Documentation"
     nav: nav/docs.yml
+
   - id: api
     label: "API Reference"
     nav: nav/api.yml
+
   - id: sdk
     label: "SDK"
     nav: nav/sdk.yml
@@ -83,19 +104,53 @@ If each navigation file contains the same slug:
 slug: /getting-started/overview
 ```
 
-CamelMind generates these URLs:
+CamelMind generates these final URLs:
 
-| Documentation site | Final URL |
-| :--- | :--- |
-| docs (first site) | `/getting-started/overview` |
-| api | `/api/getting-started/overview` |
-| sdk | `/sdk/getting-started/overview` |
+| Documentation site  | Final URL                       |
+| ------------------- | ------------------------------- |
+| `docs` (first site) | `/getting-started/overview`     |
+| `api`               | `/api/getting-started/overview` |
+| `sdk`               | `/sdk/getting-started/overview` |
 
----
+## How the primary documentation site determines URL prefixes
 
-## Independent navigation
+The first documentation site listed in `versions.yml` is the primary documentation site.
 
-Each documentation site can organize its pages differently.
+The primary site uses its navigation slugs as-is and does not receive an `id` URL prefix.
+
+For example, if the primary site's navigation contains:
+
+```yaml
+slug: /getting-started/overview
+```
+
+the final URL is:
+
+```text
+/getting-started/overview
+```
+
+## How additional documentation sites use their `id` as a URL prefix
+
+Additional documentation sites use their `id` as the URL prefix.
+
+CamelMind publishes a documentation site with `id: api` and a navigation slug of `/getting-started/overview` at:
+
+```text
+/api/getting-started/overview
+```
+
+CamelMind publishes a site with `id: sdk` and the same navigation slug at:
+
+```text
+/sdk/getting-started/overview
+```
+
+You do not need to add these prefixes to the `slug` in the navigation file.
+
+## How each documentation site uses an independent navigation file
+
+Each documentation site references its own navigation file in `versions.yml`. This lets each site organize its pages differently.
 
 For example:
 
@@ -106,19 +161,17 @@ nav/
 └── sdk.yml
 ```
 
-Each navigation file is completely independent, allowing you to organize pages differently for each documentation site. For example:
+Each navigation file is independent:
 
-- Product documentation can focus on tutorials and guides.
-- API documentation can organize endpoints by resource.
-- SDK documentation can group pages by programming language.
+* Product documentation can focus on tutorials and guides.
+* API documentation can organize endpoints by resource.
+* SDK documentation can group pages by programming language.
 
 See [Configure Navigation](/getting-started/navigation) to learn how to structure each navigation file.
 
----
+## How to configure a single documentation site
 
-## Default documentation site
-
-If your project only contains a single documentation site, you only need one entry:
+If your project publishes only one documentation site, define one entry in `versions.yml`.
 
 ```yaml
 versions:
@@ -127,31 +180,32 @@ versions:
     nav: nav/nav.yml
 ```
 
-Most projects only need a single navigation file. Add additional entries when you want to publish separate documentation collections.
+CamelMind publishes the single primary documentation site without an `id` URL prefix for its navigation slugs.
 
----
+Most projects only need a single documentation site. Add additional entries when you want to publish separate documentation collections.
 
-## Configure the default navigation file
+## How to configure the default navigation file with `navFile`
 
-CamelMind looks for `nav/nav.yml` by default.
+CamelMind uses `nav/nav.yml` as the default navigation file for the primary documentation site.
 
-You can change this in `camelmind.config.ts`.
+You can change the default navigation file in `camelmind.config.ts` with the `navFile` setting.
 
 ```typescript
 const config: CamelMindConfig = {
   navFile: "nav/nav.yml",
 }
 ```
-This setting defines the default navigation file used by the primary documentation site.
 
----
+The `navFile` setting defines the default navigation file used by the primary documentation site.
 
-## Common use cases
+## Common multiple documentation site configurations
 
-| Scenario | Recommended setup |
-| :--- | :--- |
-| Product documentation | One documentation site |
-| Product documentation + API reference | Two documentation sites |
-| Public documentation + Internal documentation | Two documentation sites |
-| Product, API, and SDK documentation | Three documentation sites |
-| Multi-tenant or white-label documentation | One documentation site per tenant |
+Choose the documentation site structure that matches how you want to organize and publish your content.
+
+| Scenario                                      | Recommended setup                 |
+| --------------------------------------------- | --------------------------------- |
+| Product documentation                         | One documentation site            |
+| Product documentation + API reference         | Two documentation sites           |
+| Public documentation + Internal documentation | Two documentation sites           |
+| Product, API, and SDK documentation           | Three documentation sites         |
+| Multi-tenant or white-label documentation     | One documentation site per tenant |
