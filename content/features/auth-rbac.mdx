@@ -1,35 +1,35 @@
 ---
 title: Authentication & RBAC
-description: Protect your documentation with authentication and control page access using role-based permissions.
+description: Configure authentication and role-based access control (RBAC) to protect documentation pages and control access by user role.
 ---
 
 CamelMind includes built-in support for authentication and role-based access control (RBAC).
 
-Authentication identifies who a user is, while RBAC determines which pages they're allowed to access.
+Authentication identifies who a user is, while RBAC determines which documentation pages they are allowed to access.
 
-Authentication is **disabled by default**, so a new CamelMind site is completely public until you enable it.
-
----
-
-## Choose an authentication mode
-
-CamelMind supports three authentication modes.
-
-| Mode | Description |
-| --- | --- |
-| **Public** (default) | Anyone can access every page. |
-| **Partial login** | Public pages remain accessible, but users can sign in to access protected pages. |
-| **Required login** | All pages require authentication. |
-
-Protected documentation pages automatically restrict access to related features, such as viewing the page or downloading its Markdown source.
-
-Offline and PDF downloads follow your site's authentication settings automatically. If authentication is enabled, only authenticated users can download these artifacts. If authentication is disabled, the downloads are publicly accessible.
+Authentication is **disabled by default**, so a new CamelMind site is public until you enable authentication.
 
 ---
 
-## Enable authentication
+## Choose an authentication mode with enabled and requireLogin
 
-Authentication is configured in `camelmind.config.ts`.
+CamelMind determines the authentication mode from the `auth.enabled` and `auth.requireLogin` settings.
+
+| `enabled` | `requireLogin` | Behavior |
+| --- | --- | --- |
+| `false` | — | Public. Anyone can access every page. |
+| `true` | `false` | Partial login. Public pages remain accessible, but users can sign in to access protected pages. |
+| `true` | `true` | Required login. Users must sign in to access pages unless you list the page in `publicPaths`. |
+
+Protected documentation pages automatically restrict related features, such as viewing the page or downloading its Markdown source.
+
+Offline and PDF downloads follow your site's authentication settings automatically. When you enable authentication, only authenticated users can download these artifacts. When you disable authentication, any user can publicly access the downloads.
+
+---
+
+## How to enable authentication in camelmind.config.ts
+
+Enable authentication by setting `auth.enabled: true` in `camelmind.config.ts`. Set `auth.requireLogin: true` when users must sign in to access protected documentation pages.
 
 ```typescript
 auth: {
@@ -54,25 +54,26 @@ auth: {
 }
 ```
 
-Most authentication settings are supplied through environment variables.
+You supply most authentication settings through environment variables.
 
 ```bash
 CAMELMIND_AUTH_ENABLED=true
 CAMELMIND_AUTH_REQUIRE_LOGIN=true
 CAMELMIND_AUTH_PROVIDER=oidc
 
-OIDC_ISSUER=https://auth.example.com/realms/my-realm
+OIDC_ISSUER=[https://auth.example.com/realms/my-realm](https://auth.example.com/realms/my-realm)
 OIDC_CLIENT_ID=my-docs
 OIDC_CLIENT_SECRET=super-secret
 
 SESSION_SECRET=your-random-session-secret
 ```
-
 ---
 
-## Configure your identity provider
+## How to configure an OIDC identity provider
 
-CamelMind works with any OpenID Connect (OIDC) compatible identity provider, including:
+Configure an OpenID Connect (OIDC) identity provider to authenticate CamelMind users.
+
+CamelMind works with any OIDC-compatible identity provider, including:
 
 - Auth0
 - Okta
@@ -80,18 +81,24 @@ CamelMind works with any OpenID Connect (OIDC) compatible identity provider, inc
 - Amazon Cognito
 - Any standards-compliant OIDC provider
 
-Your identity provider should be configured to:
+Configure your identity provider to:
 
 1. Register CamelMind as an application.
 2. Set the redirect URI to:
 
-```
-https://your-site.example.com/api/auth/callback
+```text
+[https://your-site.example.com/api/auth/callback](https://your-site.example.com/api/auth/callback)
 ```
 
 3. Include user roles in the ID token or access token.
 
-CamelMind reads user roles from the claim specified by `rolesClaim`.
+CamelMind reads user roles from the token claim specified by `rolesClaim`.
+
+---
+
+## How to configure rolesClaim for provider roles
+
+Set `rolesClaim` to the token claim that contains the user's roles. CamelMind reads roles from this claim before applying `roleMapping`.
 
 For example, Keycloak stores realm roles in:
 
@@ -99,13 +106,24 @@ For example, Keycloak stores realm roles in:
 rolesClaim: "realm_access.roles"
 ```
 
+The complete OIDC configuration can look like this:
+
+```typescript
+oidc: {
+  issuer: process.env.OIDC_ISSUER ?? "",
+  clientId: process.env.OIDC_CLIENT_ID ?? "",
+  clientSecret: process.env.OIDC_CLIENT_SECRET ?? "",
+  rolesClaim: "realm_access.roles",
+  roleMapping: {},
+}
+```
 ---
 
-## Map provider roles
+## How to map identity provider roles with roleMapping
 
-Your identity provider's role names don't have to match the role names used in your documentation.
+Use `roleMapping` to translate role names from your identity provider into the CamelMind role names used in `nav.yml`.
 
-Use `roleMapping` to translate them.
+For example, if your identity provider provides `Realm_Admin` and `Realm_Vendor` roles, map them to the CamelMind roles `admin` and `vendor`:
 
 ```typescript
 roleMapping: {
@@ -114,13 +132,20 @@ roleMapping: {
 }
 ```
 
-This lets you keep your navigation configuration simple while adapting to existing enterprise role names.
+The mapping works from the identity provider's role name to the CamelMind role name:
+
+| Identity provider role | CamelMind role |
+| --- | --- |
+| `Realm_Admin` | `admin` |
+| `Realm_Vendor` | `vendor` |
+
+CamelMind uses the mapped role names when evaluating the `roles` values defined in `nav.yml`.
 
 ---
 
-## Restrict pages
+## How to restrict documentation pages with roles
 
-Access is controlled directly in `nav.yml`.
+Use the `roles` field in `nav.yml` to specify which CamelMind roles can access a documentation page.
 
 ```yaml
 - label: Admin Dashboard
@@ -139,42 +164,41 @@ Access is controlled directly in `nav.yml`.
   roles: []
 ```
 
-The `roles` field determines who can access each page.
+CamelMind compares the roles assigned to the authenticated user with the roles defined for each page.
 
 | `roles` | Access |
 | --- | --- |
-| `[]` | Any authenticated user |
-| `["admin"]` | Administrators only |
-| `["vendor","admin"]` | Vendors or administrators |
+| `[]` | Public page |
+| `["admin"]` | Users with the `admin` role |
+| `["vendor","admin"]` | Users with either the `vendor` or `admin` role |
 
-When authentication is disabled, every page is treated as public regardless of the `roles` setting.
+Disabling authentication treats every page as public, even if you configure the roles setting.
 
 ---
 
-## How access is enforced
+## How CamelMind enforces authentication and RBAC access
 
-CamelMind protects documentation in two ways.
+CamelMind enforces documentation access in two ways: navigation filtering and route protection.
 
 === "Navigation filtering"
 
-Pages the current user cannot access are automatically hidden from the navigation.
+CamelMind automatically hides pages from the navigation when the current user does not have the required role.
 
 === "Route protection"
 
-Even if someone knows the URL, CamelMind blocks access unless the user has the required role.
+CamelMind checks the user's permissions before rendering a protected page. Knowing the page URL does not bypass the required role.
+
+<Callout type="important">
+Hiding a page from the navigation is not the security mechanism. CamelMind also validates permissions before rendering the page.
+</Callout>
 
 ===
 
-<Callout type="important">
-Hiding a page from the navigation is not the security mechanism—CamelMind also validates permissions before rendering the page.
-</Callout>
-
-
 ---
 
-## Public pages
+## How to allow unauthenticated access with publicPaths
 
-When `requireLogin` is enabled, pages listed in `publicPaths` remain accessible without signing in.
+You can use `publicPaths` to keep specific paths accessible without signing in when you enable requireLogin.
 
 ```typescript
 publicPaths: [
@@ -185,18 +209,21 @@ publicPaths: [
 ]
 ```
 
-This is commonly used for:
+Common public paths include:
 
 - Home pages
 - Login pages
 - Marketing pages
 - Authentication endpoints
 
+When you enable `requireLogin`, users can still access any pages listed in `publicPaths` without authenticating.
+
+
 ---
 
-# Local development
+## How to test authentication locally with dev-mock
 
-During development you can use the built-in mock authentication provider.
+Use the built-in `dev-mock` authentication provider to test authentication and RBAC locally without configuring an external identity provider.
 
 ```typescript
 auth: {
@@ -206,9 +233,7 @@ auth: {
 }
 ```
 
-The mock provider simulates a signed-in user without requiring an external identity provider.
-
-This makes it easy to test navigation, protected pages, and role-based access while developing locally.
+The mock provider simulates a signed-in user so you can test navigation, protected pages, and role-based access during local development.
 
 <Callout type="warning">
 Never deploy with `provider: "dev-mock"`. It bypasses real authentication and is intended for local development only.

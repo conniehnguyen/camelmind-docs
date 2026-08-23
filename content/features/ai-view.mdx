@@ -1,9 +1,9 @@
 ---
 title: AI View
-description: Preview what an AI/RAG pipeline ingests for a page, and catch formatting that loses meaning once content is split into retrieval chunks.
+description: Preview what an AI/RAG pipeline ingests for a page, and catch formatting that loses meaning after you split content into retrieval chunks.
 ---
 
-Documentation written for human readers doesn't always survive translation into an AI pipeline. Structural elements that rely on visual context—such as descriptive subheadings, directional phrases like "as shown above," or images lacking alt text—frequently lose meaning when a document is chunked and embedded for retrieval-augmented generation (RAG).
+Documentation written for human readers does not always survive translation into an AI pipeline. Structural elements that rely on visual context—such as descriptive subheadings, directional phrases like "as shown above," or images lacking alt text—frequently lose meaning when you chunk and embed a document for retrieval-augmented generation (RAG).
 
 **AI View** previews the exact text CamelMind serves to AI tools side-by-side with your rendered documentation, highlighting formatting patterns that degrade retrieval quality.
 
@@ -11,7 +11,7 @@ Documentation written for human readers doesn't always survive translation into 
 
 ## Enable AI View
 
-AI View is enabled by default across all documentation pages. You can explicitly configure or restrict access by adding an `aiView` block to your `camelmind.config.ts` file:
+CamelMind enables AI View by default across all documentation pages. You can explicitly configure or restrict access by adding an `aiView` block to your `camelmind.config.ts` file:
 
 ```typescript
 const config: CamelMindConfig = {
@@ -32,7 +32,7 @@ The `aiView` configuration object supports the following options:
 | Field | Required | Description |
 |---|---|---|
 | `enabled` | No | Set to `false` to disable AI View and hide it from the doc toolbar. Defaults to `true`. |
-| `roles` | No | Restricts AI View access to specific user roles (for example, `["admin"]`). Leave empty to inherit standard doc permissions. Has no effect if auth is disabled. |
+| `roles` | No | Restricts AI View access to specific user roles (for example, `["admin"]`). Leave empty to inherit standard doc permissions. This setting has no effect when you disable auth. |
 
 <Callout type="note">
 AI View inherits your existing document access controls. Users cannot access the AI View for a page they do not have permission to read.
@@ -61,13 +61,13 @@ Displays the live document as human readers see it, including full formatting an
 
 Displays the raw Markdown output served at `/api/llms/[page-slug]` for indexing by AI assistants and RAG pipelines.
 
-Interactive MDX components are flattened into plain text, and visual structures (such as `<Tabs>` components) are rendered sequentially without visual boundaries. Lines flagged with potential issues are highlighted directly in this pane.
+CamelMind flattens interactive MDX components into plain text and renders visual structures (such as `<Tabs>` components) sequentially without visual boundaries. The pane highlights lines flagged with potential issues directly.
 
 === "Issues (right)"
 
 Lists all identified formatting issues categorized by severity:
 
-- **Warnings**: High-priority formatting issues likely to cause loss of context when content is split into retrieval chunks.
+- **Warnings**: Catch high-priority formatting issues that cause content to lose context when you split it into retrieval chunks.
 
 - **Notes**: Lower-confidence observations or structural nuances worth inspecting.
 
@@ -99,8 +99,8 @@ The following rule categories trigger warnings or notes during an audit:
 * **Long paragraphs:** Divide extensive text blocks with subheadings or bullet points so each retrieved chunk covers a single self-contained topic.
 * **Context-less code or tables:** Add an introductory sentence directly beneath the section header to preserve standalone context for the table or code chunk.
 * **Weak alt text:** Supply descriptive alt text detailing the visual information contained in the image.
-* **Positional references:** Replace directional phrases with explicit named references (for example, use "as detailed in the Configuration section" instead of "as shown above").
-* **Opaque JSX:** Ensure each tab or step includes sufficient context to stand alone when read sequentially.
+* **Positional references:** Replace directional phrases with explicit named references (, use "as detailed in the Configuration section" instead of "as shown above").
+* **Opaque JSX:** Ensure each tab or step includes enough context to stand alone when read sequentially.
 * **Weak heading context:** State the explicit subject noun phrase at the start of a section instead of relying on introductory pronouns.
 
 ---
@@ -109,4 +109,4 @@ The following rule categories trigger warnings or notes during an audit:
 
 - [LLMs.txt](/features/llms-txt): Learn about the underlying `/api/llms` endpoint previewed by AI View.
 
-- Run RAG check: Provide real-time retrieval and generation testing directly from the AI View toolbar (when enabled for your project).
+- Run RAG check: Execute real-time retrieval and generation testing directly from the AI View toolbar (when enabled for your project).
