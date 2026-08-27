@@ -1,21 +1,21 @@
 ---
 title: AI View
-description: Preview what an AI/RAG pipeline ingests for a page, and catch formatting that loses meaning after you split content into retrieval chunks.
+description: Inspect text served to RAG pipelines and fix formatting patterns that cause context loss during chunking.
 ---
 
-Documentation written for human readers does not always survive translation into an AI pipeline. Structural elements that rely on visual context—such as descriptive subheadings, directional phrases like "as shown above," or images lacking alt text—frequently lose meaning when you chunk and embed a document for retrieval-augmented generation (RAG).
+Documentation written for human readers does not always preserve its meaning when processed by an AI pipeline. Structural elements that rely on visual context—such as descriptive subheadings, positional references (for example, "in the preceding section"), or images lacking alt text—lose meaning when an AI pipeline chunks and embeds documentation for retrieval-augmented generation (RAG).
 
-**AI View** previews the exact text CamelMind serves to AI tools side-by-side with your rendered documentation, highlighting formatting patterns that degrade retrieval quality.
+**AI View** previews the AI-readable text CamelMind serves to AI tools alongside your rendered documentation and highlights formatting patterns that can reduce retrieval quality.
 
 ---
 
-## Enable AI View
+## Enable AI View with aiView
 
-CamelMind enables AI View by default across all documentation pages. You can explicitly configure or restrict access by adding an `aiView` block to your `camelmind.config.ts` file:
+CamelMind enables AI View by default across all documentation pages. Configure the `ai.aiView` block in `camelmind.config.ts` to disable AI View or restrict who can access it.
 
 ```typescript
 const config: CamelMindConfig = {
-  // ...
+  // …
   ai: {
     aiView: {
       enabled: true,
@@ -25,88 +25,109 @@ const config: CamelMindConfig = {
 }
 ```
 
-### Configuration fields
+### Configure the aiView settings
 
 The `aiView` configuration object supports the following options:
 
-| Field | Required | Description |
-|---|---|---|
-| `enabled` | No | Set to `false` to disable AI View and hide it from the doc toolbar. Defaults to `true`. |
-| `roles` | No | Restricts AI View access to specific user roles (for example, `["admin"]`). Leave empty to inherit standard doc permissions. This setting has no effect when you disable auth. |
+| Field     | Required | Description                                                                                                                                                                                  |
+| --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled` | No       | Set to `false` to disable AI View and hide it from the documentation toolbar. Defaults to `true`.                                                                                            |
+| `roles`   | No       | Restricts AI View access to specific user roles, such as `["admin"]`. Leave empty to inherit standard documentation permissions. This setting has no effect when you disable authentication. |
 
 <Callout type="note">
-AI View inherits your existing document access controls. Users cannot access the AI View for a page they do not have permission to read.
+AI View inherits your existing document access controls. Users cannot access AI View for a page they do not have permission to read.
 </Callout>
 
 ---
 
-## Open AI View
+## Open AI View for a documentation page
 
-You can open AI View directly from any documentation page or by navigating directly via URL.
+Open AI View from the documentation toolbar on any page or navigate directly to the page's AI View URL.
 
-* **Doc Toolbar:** Click the **AI View** button in the toolbar above the page content, located alongside **View as Markdown** and **Download Markdown**.
-* **Direct URL:** `/ai-view/features/llms-txt/[page-slug]`. For example, `/ai-view/features/llms-txt/ai-view`
+* **Documentation toolbar:** Click the **AI View** button in the toolbar above the page content, alongside **View as Markdown** and **Download Markdown**.
+* **Direct URL:** `/ai-view/features/llms-txt/[page-slug]`
+
+For example:
+
+```text
+/ai-view/features/llms-txt/ai-view
+```
 
 ---
 
-## Reading the AI View screen
+## Read the rendered document, AI-readable text, and issues
 
-The AI View interface divides the screen into three distinct panes for easy side-by-side inspection.
+AI View displays three panes so you can compare the rendered documentation with the text available to AI and RAG pipelines.
 
 === "Rendered doc (left)"
 
-Displays the live document as human readers see it, including full formatting and interactive elements.
+Displays the documentation as human readers see it, including formatting and interactive elements.
 
 === "What the AI sees (middle)"
 
-Displays the raw Markdown output served at `/api/llms/[page-slug]` for indexing by AI assistants and RAG pipelines.
+Displays the raw Markdown output served at `/api/llms/[page-slug]` for AI assistants and RAG pipelines.
 
-CamelMind flattens interactive MDX components into plain text and renders visual structures (such as `<Tabs>` components) sequentially without visual boundaries. The pane highlights lines flagged with potential issues directly.
+CamelMind flattens interactive MDX components into plain text. Interactive components like `<Tabs>` lose their visual boundaries when text converters flatten them into sequential text.
+
+The pane highlights lines that AI View identifies as potential formatting issues.
 
 === "Issues (right)"
 
-Lists all identified formatting issues categorized by severity:
+Lists detected formatting issues by severity:
 
-- **Warnings**: Catch high-priority formatting issues that cause content to lose context when you split it into retrieval chunks.
+* **Warnings:** High-priority formatting issues that can cause content to lose context when split into retrieval chunks.
+* **Notes:** Lower-confidence observations or structural patterns worth inspecting.
 
-- **Notes**: Lower-confidence observations or structural nuances worth inspecting.
-
-Selecting any issue scrolls the middle pane directly to the flagged line.
+Selecting an issue scrolls the middle pane to the flagged line.
 
 ===
 
-![AI View](/images/view-ai-camelmind.png)
+![AI View showing the rendered documentation, AI-readable text, and detected issues](/images/view-ai-camelmind.png)
 
 ---
-## What gets flagged
 
-AI View evaluates AI-facing text using heuristics designed to detect chunking vulnerabilities.
+## What formatting issues does AI View flag
 
-The following rule categories trigger warnings or notes during an audit:
+AI View scans AI-readable text for formatting patterns that degrade retrieval quality when chunking splits
+
+The following rule categories can trigger warnings or notes:
+
+=== "Warning Rules"
 
 | Category | Severity | Description |
-|---|---|---|
-| `long-paragraph` | Warning | Paragraphs exceeding 120 words without subheadings or list breaks, which risk mid-thought splits across chunks. |
-| `context-less-code` | Warning | Code blocks positioned directly under a heading without an explanatory lead-in sentence. |
-| `context-less-table` | Warning | Tables positioned directly under a heading without an introductory context sentence. |
-| `weak-alt-text` | Warning | Images missing alt text or using generic descriptions (for example, "screenshot" or "diagram"). |
-| `positional-reference` | Warning | Spatial references such as "as shown above," "in the previous section," or "the following steps" that break when chunked. |
-| `opaque-jsx` | Note | Raw component tags, such as `<Tabs>` or `<Steps>`, that render sequentially without clear section boundaries. |
-| `weak-heading-context` | Note | Sections opening with leading pronouns ("It," "This," "These") rather than explicit subject noun phrases. |
+| :--- | :--- | :--- |
+| `long-paragraph` | Warning | Flags paragraphs exceeding 120 words without subheadings… |
+| `context-less-code` | Warning | Flags code blocks placed directly under a heading… |
+| `context-less-table` | Warning | Flags tables placed directly under a heading… |
+| `weak-alt-text` | Warning | Flags images missing alt text… |
+| `positional-reference` | Warning | Flags spatial references such as "as shown above"… |
 
-### Fixing common issues
+=== "Note Rules"
 
-* **Long paragraphs:** Divide extensive text blocks with subheadings or bullet points so each retrieved chunk covers a single self-contained topic.
-* **Context-less code or tables:** Add an introductory sentence directly beneath the section header to preserve standalone context for the table or code chunk.
-* **Weak alt text:** Supply descriptive alt text detailing the visual information contained in the image.
-* **Positional references:** Replace directional phrases with explicit named references (, use "as detailed in the Configuration section" instead of "as shown above").
-* **Opaque JSX:** Ensure each tab or step includes enough context to stand alone when read sequentially.
-* **Weak heading context:** State the explicit subject noun phrase at the start of a section instead of relying on introductory pronouns.
+| Category | Severity | Description |
+| :--- | :--- | :--- |
+| `opaque-jsx` | Note | Flags raw component structures… |
+| `weak-heading-context` | Note | Flags sections that begin with pronouns… |   
+
+===                                                |
+
+### How to fix AI View formatting issues
+
+Use the following fixes to address the formatting issues identified by AI View:
+
+* **Long paragraphs:** Divide extensive text into smaller paragraphs, subheadings, or lists so each retrieved chunk covers a focused topic.
+* **Context-less code:** Add an explanatory sentence directly beneath the section heading that describes what the code does or configures.
+* **Context-less tables:** Add an introductory sentence directly beneath the section heading that explains what the table describes.
+* **Weak alt text:** Add descriptive alt text that explains the information conveyed by the image.
+* **Positional references:** Replace directional phrases with explicit references to the subject or section. For example, use "See the Configuration section" instead of "as shown above."
+* **Opaque JSX:** Ensure each tab or step includes enough context to remain understandable when rendered sequentially.
+* **Weak heading context:** Start the section with an explicit subject instead of relying on introductory pronouns such as "It," "This," or "These."
 
 ---
 
-## Related tools
+## Related AI documentation tools
 
-- [LLMs.txt](/features/llms-txt): Learn about the underlying `/api/llms` endpoint previewed by AI View.
+Explore additional CamelMind AI features and tools designed to optimize documentation for LLMs and RAG pipelines:
 
-- Run RAG check: Execute real-time retrieval and generation testing directly from the AI View toolbar (when enabled for your project).
+* [LLMs.txt](/features/llms-txt): Learn about the underlying `/api/llms` endpoint previewed by AI View.
+* [RAG Check](/features/run-rag-check): Learn how to execute retrieval and generation testing from the AI View toolbar.
