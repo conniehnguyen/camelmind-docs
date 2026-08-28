@@ -3,7 +3,7 @@ title: Prepare & Download Offline Package and PDF
 description: Generate downloadable offline packages and master PDFs for a documentation version.
 ---
 
-CamelMind lets users take your documentation with them. Generate a self-contained offline website for interactive browsing without an internet connection, or export your entire documentation as a single PDF for printing, sharing, or compliance requirements. Both artifacts are generated ahead of time and made available as downloads directly from the version selector.
+CamelMind lets users take your documentation with them. Generate a self-contained offline website for interactive browsing without an internet connection, or export your entire documentation as a single PDF for printing, sharing, or compliance requirements. CamelMind generates both artifacts ahead of time and serves them as direct downloads from the version selector.
 
 ---
 
@@ -16,9 +16,11 @@ CamelMind lets users take your documentation with them. Generate a self-containe
 
 </Callout>
 
+---
+
 ## Build the artifacts
 
-Run the build script and specify the version ID.
+Run the CamelMind build script and specify the version ID to generate offline documentation packages and master PDF files.
 
 ```bash
 ./scripts/build-offline.sh latest
@@ -47,7 +49,9 @@ offline-builds/
 
 ## Publish the artifacts
 
-Start the documentation site normally.
+Publish your generated artifacts by starting or deploying your site server.
+
+Start the documentation site locally:
 
 ```bash
 npm run dev
@@ -55,18 +59,18 @@ npm run dev
 
 Or deploy your production build.
 
-If CamelMind detects matching files in `offline-builds/`, download icons automatically appear beside every stable version in the version selector.
+When CamelMind detects matching files in `offline-builds/`, download icons automatically appear beside every stable version in the version selector.
 
 - **ZIP** downloads the offline documentation package.
 - **PDF** downloads the master PDF.
 
-No additional configuration is required.
+You do not need to configure anything else.
 
 ---
 
-## Keep artifacts up to date
+## Keep offline packages and PDF artifacts up to date
 
-Offline packages are generated only when you run the build script.
+CamelMind generates offline packages and PDF exports only when you run the build script.
 
 Rebuild the artifacts whenever your documentation changes.
 
@@ -76,9 +80,9 @@ For production deployments, include the build script in your CI/CD pipeline and 
 
 ## Security considerations
 
-During the build process, authentication is bypassed so the generated ZIP and PDF contain **all documentation pages**, including restricted content.
+Review these security considerations before sharing output files: the build process bypasses authentication, so the generated ZIP and PDF contain all documentation pages, including restricted content.
 
-Only distribute offline packages to users who are authorized to access your documentation.
+Distribute offline packages only to users who have authorization to access your documentation.
 
 ---
 

@@ -22,9 +22,9 @@ CamelMind vendors its style packages under `styles/vale/` instead of downloading
 
 ---
 
-## What's included
+## Default Vale style packages in CamelMind
 
-CamelMind enables the following styles by default:
+CamelMind enables these default Vale style packages to check your documentation:
 
 | Style | What it checks |
 |---|---|
@@ -35,7 +35,7 @@ CamelMind enables the following styles by default:
 | `proselint` | Additional prose-quality issues such as jargon, hedging, corporate language, and hyperbole. |
 | `signs-of-ai-writing` | Common artifacts of unedited AI-generated prose, such as citation markers, knowledge-cutoff disclaimers, and formulaic phrasing. |
 
-These styles are configured in `.vale.ini` at the root of your project:
+You can configure these styles in `.vale.ini` at the root of your project:
 
 ```ini
 StylesPath = styles/vale
@@ -57,7 +57,9 @@ You can also disable individual rules from a style without disabling the entire 
 
 ---
 
-## Set up Vale
+## Set up Vale for prose linting
+
+Follow these steps to install and configure Vale prose linting for your CamelMind project:
 
 <Steps>
   <Step n={1} title="Install Vale">
@@ -125,7 +127,7 @@ vale --minAlertLevel=suggestion content/
 
 ## Configure the built-in style
 
-`cm-light` is CamelMind's own lightweight, opinionated style. It is designed as a starting point rather than a fixed set of rules. The rules are stored in:
+`cm-light` is CamelMind's lightweight, opinionated style, starting as a baseline rather than a fixed set of rules. CamelMind stores these rules in:
 
 ```text
 styles/vale/cm-light/
@@ -135,7 +137,7 @@ Each rule is a YAML file. For example, `styles/vale/cm-light/Link.yml` contains:
 
 ```yaml
 ---
-message: "Don't use '%s' as the content of a link."
+message: "Do not use '%s' as the content of a link."
 extends: existence
 ignorecase: true
 scope: link
@@ -144,9 +146,9 @@ tokens:
   - here
 ```
 
-### Change an existing rule
+### Change an existing Vale rule severity
 
-To change how strict a rule is, update its `level`:
+To change the severity level of an existing Vale rule, update its `level` setting:
 
 ```yaml
 level: warning
@@ -160,7 +162,7 @@ Supported levels are:
 
 To change what a rule detects, update its `tokens` or raw expression.
 
-For example, you could change the link rule to flag additional vague link text:
+For example, you can change the link rule to flag additional vague link text:
 
 ```yaml
 tokens:
@@ -191,7 +193,7 @@ tokens:
   - really
 ```
 
-Vale automatically discovers `.yml` rule files in the style directory. You don't need to register the new rule separately.
+Vale automatically discovers `.yml` rule files in the style directory. You do not need to register the new rule.
 
 Run the linter again:
 
@@ -203,9 +205,9 @@ If the word "really" appears in your documentation, Vale reports it as a suggest
 
 ---
 
-## Disable individual rules
+## Disable individual Vale style rules
 
-You don't have to remove an entire style when a particular rule doesn't fit your documentation.
+You can disable an individual Vale linting rule without removing its entire parent style from your project.
 
 Disable an individual rule in `.vale.ini` using the style and rule name:
 
@@ -218,13 +220,13 @@ Microsoft.Dashes = NO
 
 The `Microsoft.Dashes = NO` setting disables only the `Dashes` rule from the `Microsoft` style.
 
-This approach is useful when you generally want a style's guidance but have a specific project convention that conflicts with one rule.
+This approach is useful when you want a style's guidance but have a specific project convention that conflicts with one rule.
 
 ---
 
-## Manage your vocabulary
+## Manage your Vale project vocabulary
 
-Vale uses a project vocabulary to recognize terms that are specific to your documentation.
+Vale uses a custom project vocabulary to recognize and verify terms specific to your CamelMind documentation.
 
 CamelMind configures the vocabulary with:
 
@@ -232,7 +234,7 @@ CamelMind configures the vocabulary with:
 Vocab = CamelMind
 ```
 
-The vocabulary is stored in:
+CamelMind stores the vocabulary in:
 
 ```text
 styles/vale/config/vocabularies/CamelMind/
@@ -252,7 +254,7 @@ Next\.js
 camelmind\.config\.ts
 ```
 
-Regular expressions are supported, so escape literal periods when necessary. Add one term or pattern per line:
+Since Vale supports regular expressions, escape literal periods when necessary. Add one term or pattern per line:
 
 ```text
 # styles/vale/config/vocabularies/CamelMind/accept.txt
@@ -266,7 +268,7 @@ Use `reject.txt` for terms that you want Vale to flag wherever they appear. This
 
 - Deprecated product names
 - Terms your team no longer uses
-- Words that should always be replaced with preferred terminology
+- Words that require replacement with preferred terminology
 
 For example:
 
@@ -284,7 +286,7 @@ The file is empty by default.
 
 ## Replace the built-in style
 
-If `cm-light` doesn't match your team's writing conventions, you can replace it with your own style.
+If `cm-light` does not match your team's writing conventions, you can replace it with your own style.
 
 <Steps>
   <Step n={1} title="Create a style">
@@ -319,7 +321,7 @@ If `cm-light` doesn't match your team's writing conventions, you can replace it 
 
   </Step>
 
-  <Step n={3} title="Remove cm-light if you don't need it">
+  <Step n={3} title="Remove cm-light if you do not need it">
 
     If you're fully replacing the built-in style, remove its directory:
 
@@ -359,7 +361,7 @@ For example:
 BasedOnStyles = Vale, write-good, Microsoft, cm-light, proselint, signs-of-ai-writing, my-style
 ```
 
-Keeping the style files in your repository means the rules are versioned alongside your documentation and remain consistent across development environments.
+Keeping style files in your repository versions the rules alongside your documentation and ensures consistency across development environments.
 
 ---
 
@@ -378,7 +380,7 @@ A typical workflow is:
 1. Authors run Vale locally while writing.
 2. Pull requests run the same linting command automatically.
 3. `error`-level findings block the merge.
-4. `warning`-level findings are reviewed but do not necessarily block the merge.
+4. Authors review `warning`-level findings without blocking the pipeline merge.
 5. The style configuration and vocabulary remain version-controlled with the documentation.
 
 This gives your documentation team a consistent writing quality gate without requiring an external service.
@@ -462,14 +464,14 @@ Vale focuses on prose quality and writing consistency. CamelMind's other AI-focu
 | Vale | Lint prose for spelling, terminology, style, clarity, and common AI-writing artifacts. |
 | AI View | Preview the AI-readable representation of a documentation page. |
 | Run RAG Check | Test chunking, retrieval, and AI-readiness using a local heuristic evaluation. |
-| LLMs.txt | Publish AI-readable documentation in the llms.txt format. |
+| llms.txt | Publish AI-readable documentation in the llms.txt format. |
 
-Together, these tools help you evaluate documentation from both sides:
+Together, these tools help you review documentation from both sides:
 
 - **Vale** checks whether the content is well written.
 - **AI View** checks what an AI system actually receives.
-- **Run RAG Check** checks whether that content remains useful when it is chunked and retrieved.
-- **LLMs.txt** makes the resulting documentation available in an AI-friendly format.
+- **Run RAG Check** verifies that retrieval systems can chunk and retrieve your content.
+- **llms.txt** makes the resulting documentation available in an AI-friendly format.
 
 ---
 
@@ -478,5 +480,5 @@ Together, these tools help you evaluate documentation from both sides:
 - [Writing Content](/getting-started/writing-content) — Learn the general MDX authoring conventions that your Vale configuration helps enforce.
 - [AI View](/features/ai-view) — Preview the AI-readable version of your documentation.
 - [Run RAG Check](/features/run-rag-check) — Check how your documentation performs when chunked and retrieved.
-- [LLMs.txt](/features/llms-txt) — Learn how CamelMind generates AI-readable documentation.
+- [llms.txt](/features/llms-txt) — Learn how CamelMind generates AI-readable documentation.
 - [Vale documentation](https://vale.sh) — See the complete reference for Vale rules, styles, and configuration.
