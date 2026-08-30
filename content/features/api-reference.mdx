@@ -28,12 +28,12 @@ openapi/
 ```
 </Callout>
 
-## Enable the API reference
+## Enable the interactive OpenAPI reference
 
-Enabling the API Reference requires two steps:
+To enable the interactive API reference in CamelMind:
 
-1. Configure one or more OpenAPI specifications in `camelmind.config.ts`.
-2. Associate a specification with each documentation version in `versions.yml`.
+1. Configure your OpenAPI specifications in `camelmind.config.ts`.
+2. Associate an API specification with each documentation version in `versions.yml`.
 
 <Steps>
   <Step n={1} title="Configure your API specifications">
@@ -63,7 +63,7 @@ This registers the available OpenAPI specifications for your documentation site.
 
 ```yaml
 versions:
-  - id: "v2"
+  - id: "latest"
     label: "Latest"
     stable: true
     nav: nav/nav.yml
@@ -80,35 +80,58 @@ versions:
 
 If your documentation includes multiple APIs—for example, a public API and a partner API—you can publish multiple OpenAPI specifications as tabs within the same API Reference.
 
-Configure the tabs for each documentation version in `versions.yml`:
+First, register each spec in `camelmind.config.ts`:
+
+```ts
+apiReference: {
+  enabled: true,
+
+  navLabel: "API Reference",
+
+  specs: {
+    main: {
+      label: "REST API",
+      file: "openapi/openapi.yaml",
+    },
+    partner: {
+      label: "Partner API",
+      file: "openapi/openapi-partner.yaml",
+    },
+  },
+},
+```
+
+Then configure the tabs for each documentation version in `versions.yml`:
 
 ```yaml
 versions:
-  - id: "v1"
-    label: "v1"
+  - id: "latest"
+    label: "Latest"
     stable: true
-    nav: nav/nav-v1.yml
+    nav: nav/nav.yml
 
     api_reference:
       tabs:
         - id: main
-          spec: main-api
+          spec: main
 
         - id: partner
-          spec: partner-api
+          spec: partner
 ```
 
-Each tab references a spec defined in `apiReference.specs` in `camelmind.config.ts`.
-
-The `spec` value must match one of the configured specification IDs.
+Each tab's `spec` value must match one of the specification IDs defined in `apiReference.specs`.
 
 When users open the API Reference, they can switch between the available API specifications using the tabs at the top of the page.
 
+<Callout type="note" title="See it in action">
+This documentation site registers two OpenAPI specifications—`main` and `partner`—and publishes them as tabs in the same API Reference page: [REST API](/api-reference/main) and [Partner API](/api-reference/partner).
+</Callout>
+
 ---
 
-## Customize code samples
+## Customize API reference code sample languages
 
-Choose which languages appear in the generated examples.
+To specify which programming languages appear in the generated API reference code samples, configure the `languages` array in `camelmind.config.ts`:
 
 ```ts
 apiReference: {
@@ -120,7 +143,7 @@ apiReference: {
 }
 ```
 
-By default CamelMind displays:
+By default, CamelMind displays code samples for:
 
 - curl
 - JavaScript
@@ -128,9 +151,9 @@ By default CamelMind displays:
 
 ---
 
-## Restrict access
+## Restrict API reference access with user roles
 
-To make the API reference available only to specific users, configure the required roles.
+To restrict access to the API reference, specify the required user roles in `camelmind.config.ts`:
 
 ```ts
 apiReference: {
@@ -141,10 +164,10 @@ apiReference: {
 }
 ```
 
-If `roles` is empty (`[]`), the API reference is publicly accessible.
+When you leave `roles` empty (`[]`), CamelMind allows public access to the entire API reference.
 
 <Callout type="note">
-Role restrictions apply to the entire API reference. Individual endpoints cannot currently be restricted independently.
+Role restrictions apply to the entire API reference. You cannot currently restrict individual endpoints independently.
 </Callout>
 
 ---
@@ -153,28 +176,52 @@ Role restrictions apply to the entire API reference. Individual endpoints cannot
 
 If your documentation uses versioning, each version can display its own OpenAPI specification.
 
+First, register each version's spec in `camelmind.config.ts`:
+
+```ts
+apiReference: {
+  enabled: true,
+
+  specs: {
+    v2: {
+      label: "API v2",
+      file: "openapi/v2.yaml",
+    },
+    v1: {
+      label: "API v1",
+      file: "openapi/v1.yaml",
+    },
+  },
+},
+```
+
+Then reference the matching spec ID for each version in `versions.yml`:
+
 ```yaml
 versions:
   - id: v2
     label: v2 (Latest)
+    stable: true
+    nav: nav/nav-v2.yml
 
-    apiSpec:
-      label: API v2
-      file: openapi/v2.yaml
+    api_reference:
+      spec: v2
 
   - id: v1
     label: v1
+    nav: nav/nav-v1.yml
 
-    apiSpec:
-      label: API v1
-      file: openapi/v1.yaml
+    api_reference:
+      spec: v1
 ```
 
 When users switch documentation versions, CamelMind automatically loads the corresponding API specification.
 
 ---
 
-## Configuration reference
+## API reference configuration options
+
+Use these configuration options in `camelmind.config.ts` to customize your API reference settings:
 
 | Field | Description |
 |------|-------------|
@@ -186,11 +233,11 @@ When users switch documentation versions, CamelMind automatically loads the corr
 
 ---
 
-## Supported specification format
+## Supported OpenAPI specification formats
 
-CamelMind supports **OpenAPI 3.x** specifications in either YAML or JSON format.
+CamelMind supports **OpenAPI 3.x** specifications in both YAML and JSON formats.
 
-Example:
+Example OpenAPI 3.1 specification:
 
 ```yaml
 openapi: "3.1.0"

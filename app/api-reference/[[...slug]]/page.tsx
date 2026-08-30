@@ -57,13 +57,22 @@ export async function generateStaticParams() {
     }
   }
 
-  // No-version-prefix routes using the default (first) spec
+  // No-version-prefix routes using the stable version's config
   const defaultResolved = getApiReferenceForVersion(null, apiRef)
   if (defaultResolved?.mode === "single") {
     let defaultSpec
     try { defaultSpec = loadApiSpec(defaultResolved.file, defaultResolved.languages) } catch { return params }
     for (const op of defaultSpec.allOperations) {
       params.push({ slug: [op.tagSlug, op.operationId] })
+    }
+  } else if (defaultResolved?.mode === "tabs") {
+    for (const tab of defaultResolved.tabs) {
+      params.push({ slug: [tab.id] })
+      let spec
+      try { spec = loadApiSpec(tab.file, tab.languages) } catch { continue }
+      for (const op of spec.allOperations) {
+        params.push({ slug: [tab.id, op.tagSlug, op.operationId] })
+      }
     }
   }
 

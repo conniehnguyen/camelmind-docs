@@ -1,0 +1,889 @@
+openapi: 3.1.0
+
+info:
+  title: Camel Trading
+  version: v1
+  description: |
+    The Camel Trading Company API provides programmatic access to desert caravans,
+    cargo manifests, bazaar orders, and trade route dispatch operations.
+
+    All API requests require authentication using a Bearer token issued from your
+    Camel Trading Company merchant dashboard.
+
+servers:
+  - url: https://api.cameltrading.example/v1
+    description: Production
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Caravans
+    description: Create and manage camel caravans, handlers, route plans, and caravan lifecycle state.
+  - name: Cargo Manifests
+    description: Build and update cargo manifests for caravan shipments, including spice, textile, and artifact lots.
+  - name: Bazaar Orders
+    description: Review bazaar purchase orders, track fulfillment, and record merchant responses.
+
+paths:
+  /caravans:
+    get:
+      tags: [Caravans]
+      operationId: listCaravans
+      summary: List caravans
+      description: Returns a paginated list of all caravans operated by your trading company.
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          example: 1
+        - name: per_page
+          in: query
+          description: Number of results per page (max 100)
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+          example: 20
+        - name: status
+          in: query
+          description: Filter by caravan status
+          schema:
+            type: string
+            enum: [forming, ready, in_transit, arrived, resting, retired]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedCaravans"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      tags: [Caravans]
+      operationId: createCaravan
+      summary: Create a caravan
+      description: Creates a new caravan in forming status.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCaravanRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Caravan"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /caravans/{caravanId}:
+    get:
+      tags: [Caravans]
+      operationId: getCaravan
+      summary: Get a caravan
+      description: Retrieves a single caravan by its ID.
+      parameters:
+        - name: caravanId
+          in: path
+          required: true
+          description: The unique caravan identifier
+          schema:
+            type: string
+          example: car_sahara_001
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Caravan"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    patch:
+      tags: [Caravans]
+      operationId: updateCaravan
+      summary: Update a caravan
+      description: Updates a subset of fields on an existing caravan.
+      parameters:
+        - name: caravanId
+          in: path
+          required: true
+          description: The unique caravan identifier
+          schema:
+            type: string
+          example: car_sahara_001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCaravanRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Caravan"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /caravans/{caravanId}/manifest:
+    get:
+      tags: [Cargo Manifests]
+      operationId: getCargoManifest
+      summary: Get cargo manifest
+      description: Returns the current cargo manifest for a caravan, including all lots and loading status.
+      parameters:
+        - name: caravanId
+          in: path
+          required: true
+          description: The unique caravan identifier
+          schema:
+            type: string
+          example: car_sahara_001
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CargoManifest"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /caravans/{caravanId}/manifest/lots:
+    post:
+      tags: [Cargo Manifests]
+      operationId: createCargoLot
+      summary: Add a cargo lot
+      description: Adds a new cargo lot to the caravan manifest.
+      parameters:
+        - name: caravanId
+          in: path
+          required: true
+          description: The unique caravan identifier
+          schema:
+            type: string
+          example: car_sahara_001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCargoLotRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CargoLot"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /caravans/{caravanId}/manifest/lots/{lotId}:
+    put:
+      tags: [Cargo Manifests]
+      operationId: updateCargoLot
+      summary: Update a cargo lot
+      description: Replaces the details of an existing cargo lot on the manifest.
+      parameters:
+        - name: caravanId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: car_sahara_001
+        - name: lotId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: lot_spice_042
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCargoLotRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CargoLot"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /caravans/{caravanId}/dispatch:
+    post:
+      tags: [Cargo Manifests]
+      operationId: dispatchCaravan
+      summary: Dispatch caravan
+      description: |
+        Dispatches a loaded caravan onto its assigned trade route.
+        All required cargo lots must be weighed, sealed, and marked ready before dispatch.
+      parameters:
+        - name: caravanId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: car_sahara_001
+      responses:
+        "200":
+          description: OK - dispatch accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CargoManifest"
+        "422":
+          description: Unprocessable Entity - manifest is not ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /markets/{marketId}/orders:
+    get:
+      tags: [Bazaar Orders]
+      operationId: listBazaarOrders
+      summary: List bazaar orders
+      description: Returns all bazaar orders for a market destination.
+      parameters:
+        - name: marketId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: mkt_marrakesh
+        - name: priority
+          in: query
+          description: Filter by buyer priority level
+          schema:
+            type: string
+            enum: [royal, urgent, standard, low]
+        - name: status
+          in: query
+          description: Filter by fulfillment status
+          schema:
+            type: string
+            enum: [open, reserved, packed, dispatched, delivered, cancelled]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  market_id:
+                    type: string
+                    example: mkt_marrakesh
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BazaarOrder"
+                  total:
+                    type: integer
+                    example: 9
+                  page:
+                    type: integer
+                    example: 1
+                  per_page:
+                    type: integer
+                    example: 20
+                  request_id:
+                    type: string
+                    example: req_7f3a91c2
+
+  /markets/{marketId}/orders/{orderId}:
+    get:
+      tags: [Bazaar Orders]
+      operationId: getBazaarOrder
+      summary: Get a bazaar order
+      description: Retrieves a single bazaar order with its full details and merchant notes.
+      parameters:
+        - name: marketId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: mkt_marrakesh
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: ord_silk_77
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BazaarOrderDetail"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /markets/{marketId}/orders/{orderId}/notes:
+    post:
+      tags: [Bazaar Orders]
+      operationId: addOrderNote
+      summary: Add an order note
+      description: |
+        Adds a merchant note to a bazaar order. Use this to describe packing updates,
+        substitutions, delivery constraints, or formally reject an order.
+      parameters:
+        - name: marketId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: mkt_marrakesh
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: ord_silk_77
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderNoteRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderNote"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token from your Camel Trading Company merchant dashboard
+
+  schemas:
+    Caravan:
+      type: object
+      required: [id, name, status, created_at]
+      properties:
+        id:
+          type: string
+          description: Unique caravan identifier
+          example: car_sahara_001
+        name:
+          type: string
+          description: Human-readable caravan name
+          example: Dune Pearl Caravan
+        description:
+          type: string
+          description: Optional description of the caravan
+          example: A twelve-camel spice caravan bound for the western oasis markets
+        route:
+          type: string
+          enum: [sahara_crossing, oasis_loop, silk_road_west, nile_delta, atlas_pass]
+          description: Assigned trade route
+          example: sahara_crossing
+        status:
+          type: string
+          enum: [forming, ready, in_transit, arrived, resting, retired]
+          description: Current lifecycle status
+          example: ready
+        camel_count:
+          type: integer
+          description: Number of camels assigned to the caravan
+          example: 12
+        lead_trader_name:
+          type: string
+          description: Name of the trader responsible for the caravan
+          example: Samira ibn Harun
+        origin_market:
+          type: string
+          description: Market where the caravan begins its route
+          example: mkt_timbuktu
+        destination_market:
+          type: string
+          description: Primary market destination for the caravan
+          example: mkt_marrakesh
+        scheduled_departure_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Planned departure time for the caravan
+          example: "2026-04-01T05:30:00Z"
+        estimated_arrival_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Estimated arrival time at the destination market
+          example: "2026-04-09T18:00:00Z"
+        manifest_id:
+          type: string
+          nullable: true
+          description: Active cargo manifest assigned to the caravan
+          example: man_amber_2026
+        created_at:
+          type: string
+          format: date-time
+          description: When the caravan was created
+          example: "2026-01-15T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: When the caravan was last updated
+          example: "2026-03-20T14:45:00Z"
+
+    CreateCaravanRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: Human-readable caravan name
+          example: Dune Pearl Caravan
+        description:
+          type: string
+          description: Optional description of the caravan
+          example: A twelve-camel spice caravan bound for the western oasis markets
+        route:
+          type: string
+          enum: [sahara_crossing, oasis_loop, silk_road_west, nile_delta, atlas_pass]
+          description: Assigned trade route
+          example: sahara_crossing
+        camel_count:
+          type: integer
+          minimum: 1
+          description: Number of camels assigned to the caravan
+          example: 12
+
+    UpdateCaravanRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Dune Pearl Caravan (North Gate)
+        description:
+          type: string
+          example: Updated route notes for a caravan carrying saffron and indigo cloth
+        route:
+          type: string
+          enum: [sahara_crossing, oasis_loop, silk_road_west, nile_delta, atlas_pass]
+          example: oasis_loop
+        camel_count:
+          type: integer
+          minimum: 1
+          example: 14
+
+    PaginatedCaravans:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Caravan"
+        total:
+          type: integer
+          description: Total number of caravans
+          example: 18
+        page:
+          type: integer
+          description: Current page number
+          example: 1
+        per_page:
+          type: integer
+          description: Results per page
+          example: 20
+        has_more:
+          type: boolean
+          description: Whether another page of results is available
+          example: false
+        next_page:
+          type: integer
+          nullable: true
+          description: Next page number, if more results are available
+          example: null
+        request_id:
+          type: string
+          description: Unique request identifier for support and tracing
+          example: req_camel_4d21
+
+    CargoManifest:
+      type: object
+      required: [id, caravan_id, status]
+      properties:
+        id:
+          type: string
+          example: man_amber_2026
+        caravan_id:
+          type: string
+          example: car_sahara_001
+        status:
+          type: string
+          enum: [draft, loading, sealed, dispatched, delivered, disputed]
+          example: loading
+        route:
+          type: string
+          enum: [sahara_crossing, oasis_loop, silk_road_west, nile_delta, atlas_pass]
+          description: Route assigned to the manifest
+          example: sahara_crossing
+        total_lots:
+          type: integer
+          description: Number of cargo lots on the manifest
+          example: 6
+        total_weight_kg:
+          type: number
+          format: float
+          description: Combined weight of all cargo lots
+          example: 248.75
+        total_declared_value:
+          type: number
+          format: float
+          description: Combined declared value of all cargo lots
+          example: 18420.50
+        currency:
+          type: string
+          description: Currency used for declared cargo values
+          example: CTD
+        lots:
+          type: array
+          items:
+            $ref: "#/components/schemas/CargoLot"
+        sealed_by:
+          type: string
+          nullable: true
+          description: Name of the manifest clerk who sealed the manifest
+          example: Farid al-Masri
+        next_checkpoint:
+          type: string
+          nullable: true
+          description: Next expected route checkpoint
+          example: Silver Well Oasis
+        dispatched_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+
+    CargoLot:
+      type: object
+      required: [id, commodity, status]
+      properties:
+        id:
+          type: string
+          example: lot_spice_042
+        commodity:
+          type: string
+          example: Saffron
+        category:
+          type: string
+          enum: [spice, textile, pottery, gemstone, artifact, provision, other]
+          description: Cargo category
+          example: spice
+        description:
+          type: string
+          description: Handling guidance for this cargo lot
+          example: Keep sealed in waxed linen and away from direct sun
+        status:
+          type: string
+          enum: [pending, weighed, sealed, loaded]
+          example: weighed
+        quantity:
+          type: integer
+          description: Count of packages, crates, bolts, jars, or bundles in the lot
+          example: 12
+        unit:
+          type: string
+          enum: [crate, jar, bolt, sack, bundle, chest]
+          description: Unit used to count this cargo lot
+          example: jar
+        weight_kg:
+          type: number
+          format: float
+          description: Total lot weight in kilograms
+          example: 38.5
+        declared_value:
+          type: number
+          format: float
+          description: Declared value in trading dinars
+          example: 1240.75
+        origin_stall:
+          type: string
+          description: Stall or warehouse where the cargo lot originated
+          example: Spice Vault 3
+        inspection_status:
+          type: string
+          enum: [not_required, pending, passed, held]
+          description: Current inspection result for the lot
+          example: passed
+
+    CreateCargoLotRequest:
+      type: object
+      required: [commodity]
+      properties:
+        commodity:
+          type: string
+          example: Saffron
+        category:
+          type: string
+          enum: [spice, textile, pottery, gemstone, artifact, provision, other]
+          example: spice
+        description:
+          type: string
+          example: Keep sealed in waxed linen and away from direct sun
+        weight_kg:
+          type: number
+          format: float
+          minimum: 0
+          example: 38.5
+        declared_value:
+          type: number
+          format: float
+          minimum: 0
+          example: 1240.75
+
+    UpdateCargoLotRequest:
+      type: object
+      properties:
+        commodity:
+          type: string
+          example: Saffron Threads
+        description:
+          type: string
+          example: Lot resealed after inspection by the master trader
+        status:
+          type: string
+          enum: [pending, weighed, sealed, loaded]
+          example: sealed
+        weight_kg:
+          type: number
+          format: float
+          minimum: 0
+          example: 38.2
+        declared_value:
+          type: number
+          format: float
+          minimum: 0
+          example: 1265.00
+
+    BazaarOrder:
+      type: object
+      required: [id, buyer_name, priority, status, created_at]
+      properties:
+        id:
+          type: string
+          example: ord_silk_77
+        buyer_name:
+          type: string
+          example: House Al-Qamar Textiles
+        description:
+          type: string
+          example: Request for indigo silk bolts and cardamom crates before the new moon auction
+        priority:
+          type: string
+          enum: [royal, urgent, standard, low]
+          example: urgent
+        status:
+          type: string
+          enum: [open, reserved, packed, dispatched, delivered, cancelled]
+          example: open
+        commodity:
+          type: string
+          description: Primary commodity requested by the buyer
+          example: Indigo silk
+        quantity:
+          type: integer
+          description: Requested quantity of the commodity
+          example: 20
+        unit:
+          type: string
+          enum: [crate, jar, bolt, sack, bundle, chest]
+          description: Unit used for the requested quantity
+          example: bolt
+        market_id:
+          type: string
+          description: Market destination for the order
+          example: mkt_marrakesh
+        destination_stall:
+          type: string
+          description: Bazaar stall or warehouse receiving the order
+          example: Blue Gate Stall 14
+        requested_delivery_date:
+          type: string
+          format: date
+          description: Date requested by the buyer for delivery
+          example: "2026-02-20"
+        assigned_caravan_id:
+          type: string
+          nullable: true
+          description: Caravan assigned to fulfill the order
+          example: car_sahara_001
+        quoted_price:
+          type: number
+          format: float
+          description: Quoted order price
+          example: 3150.00
+        currency:
+          type: string
+          description: Currency used for the quoted price
+          example: CTD
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-02-10T08:00:00Z"
+
+    BazaarOrderDetail:
+      allOf:
+        - $ref: "#/components/schemas/BazaarOrder"
+        - type: object
+          properties:
+            notes:
+              type: array
+              items:
+                $ref: "#/components/schemas/OrderNote"
+
+    OrderNote:
+      type: object
+      required: [id, content, created_at]
+      properties:
+        id:
+          type: string
+          example: note_001
+        content:
+          type: string
+          example: Two silk bolts reserved from lot lot_silk_118. Buyer requested delivery after sunset.
+        action:
+          type: string
+          enum: [reserved, packed, substituted, delayed, rejected]
+          example: reserved
+        author_name:
+          type: string
+          description: Merchant or clerk who wrote the note
+          example: Layla bint Yusuf
+        visibility:
+          type: string
+          enum: [internal, buyer_visible]
+          description: Whether the note is internal or visible to the buyer
+          example: buyer_visible
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-02-15T11:00:00Z"
+
+    CreateOrderNoteRequest:
+      type: object
+      required: [content, action]
+      properties:
+        content:
+          type: string
+          description: Detailed description of the order update or merchant decision
+          example: Two silk bolts reserved from lot lot_silk_118.
+        action:
+          type: string
+          enum: [reserved, packed, substituted, delayed, rejected]
+          description: The type of order update
+          example: reserved
+
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          example: not_found
+        message:
+          type: string
+          example: The requested resource was not found
+        request_id:
+          type: string
+          description: Unique request identifier for support and tracing
+          example: req_7f3a91c2
+        status_code:
+          type: integer
+          description: HTTP status code returned with the error
+          example: 404
+
+    ValidationError:
+      type: object
+      required: [error, message, details]
+      properties:
+        error:
+          type: string
+          example: validation_error
+        message:
+          type: string
+          example: One or more fields are invalid
+        request_id:
+          type: string
+          description: Unique request identifier for support and tracing
+          example: req_camel_9a12
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: name
+              code:
+                type: string
+                example: required
+              message:
+                type: string
+                example: Name is required

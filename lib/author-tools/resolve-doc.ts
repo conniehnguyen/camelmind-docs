@@ -13,7 +13,7 @@ import {
   type SessionUser,
 } from "@/lib/auth"
 import { getConfig, isAuthEnabled } from "@/lib/config"
-import { loadVersions, getVersionFromSlug, getNavForVersion } from "@/lib/versions"
+import { loadVersions, getVersionFromSlug, getNavForVersion, getApiReferenceForVersion } from "@/lib/versions"
 import {
   buildAiReadableText,
   buildChunkText,
@@ -55,8 +55,32 @@ export async function resolveDocPage(fullSlug: string): Promise<DocAccessResult>
   const versionId = getVersionFromSlug(fullSlug)
   const nav = getNavForVersion(versionId)
   const { versions } = loadVersions()
+
+  // Nav-registered content slugs plus any API Reference routes (base page and,
+  // when configured, its tabs) — those aren't in nav.yml but are real, reachable
+  // pages, so link validators like RAG Check need to see them as valid too.
+  const apiRef = getConfig().apiReference
+  const apiReferenceSlugs: string[] = []
+  if (apiRef?.enabled) {
+    const defaultResolved = getApiReferenceForVersion(null, apiRef)
+    if (defaultResolved) {
+      apiReferenceSlugs.push("/api-reference")
+      if (defaultResolved.mode === "tabs") {
+        apiReferenceSlugs.push(...defaultResolved.tabs.map((t) => `/api-reference/${t.id}`))
+      }
+    }
+    for (const v of versions) {
+      const resolved = getApiReferenceForVersion(v.id, apiRef)
+      if (!resolved) continue
+      apiReferenceSlugs.push(`/api-reference/${v.id}`)
+      if (resolved.mode === "tabs") {
+        apiReferenceSlugs.push(...resolved.tabs.map((t) => `/api-reference/${v.id}/${t.id}`))
+      }
+    }
+  }
+
   const versionSlugs: Record<string, string[]> = Object.fromEntries(
-    versions.map((v) => [v.id, getSlugsFromConfig(getNavForVersion(v.id))])
+    versions.map((v) => [v.id, [...getSlugsFromConfig(getNavForVersion(v.id)), ...apiReferenceSlugs]])
   )
 
   const navEntry = getEntryBySlugFromConfig(nav, fullSlug)

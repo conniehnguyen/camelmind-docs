@@ -58,11 +58,12 @@ export function getApiReferenceForVersion(
 ): ResolvedApiReference | null {
   const { versions } = loadVersions()
 
-  let versionAr: boolean | VersionApiReference | undefined
-  if (versionId) {
-    const v = versions.find((v) => v.id === versionId)
-    versionAr = v?.api_reference
-  }
+  // Mirror lib/nav.ts: unversioned (bare-URL) access resolves against the
+  // stable version's config, not an empty default.
+  const v = versionId
+    ? versions.find((v) => v.id === versionId)
+    : (versions.find((v) => v.stable) ?? versions[0])
+  const versionAr = v?.api_reference
 
   if (versionAr === false) return null
 

@@ -1,0 +1,283 @@
+openapi: 3.1.0
+
+info:
+  title: Partner Network
+  version: v2
+  description: |
+    The Camel Partner Network API lets certified trade partners query shared
+    route intelligence, register oasis waypoints, and subscribe to caravan
+    arrival events across the desert network.
+
+    All requests require a Partner API key issued from your Partner Dashboard.
+
+servers:
+  - url: https://partners.cameltrading.example/v2
+    description: Production
+
+security:
+  - partnerKey: []
+
+tags:
+  - name: Routes
+    description: Query and publish shared trade routes across partner caravans.
+  - name: Waypoints
+    description: Register and manage oasis waypoints available to the partner network.
+  - name: Events
+    description: Subscribe to and retrieve real-time caravan arrival and departure events.
+
+paths:
+  /routes:
+    get:
+      tags: [Routes]
+      operationId: listRoutes
+      summary: List shared routes
+      description: Returns all trade routes currently shared with the partner network.
+      parameters:
+        - name: region
+          in: query
+          description: Filter by desert region (e.g. "northern", "eastern")
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        "200":
+          description: A list of shared routes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  routes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Route"
+                  total:
+                    type: integer
+
+    post:
+      tags: [Routes]
+      operationId: publishRoute
+      summary: Publish a route
+      description: Share a new trade route with the partner network.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RouteInput"
+      responses:
+        "201":
+          description: Route published
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+
+  /routes/{routeId}:
+    get:
+      tags: [Routes]
+      operationId: getRoute
+      summary: Get a route
+      description: Returns details for a single shared route.
+      parameters:
+        - name: routeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Route details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "404":
+          description: Route not found
+
+  /waypoints:
+    get:
+      tags: [Waypoints]
+      operationId: listWaypoints
+      summary: List waypoints
+      description: Returns all oasis waypoints registered in the partner network.
+      responses:
+        "200":
+          description: A list of waypoints
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  waypoints:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Waypoint"
+
+    post:
+      tags: [Waypoints]
+      operationId: registerWaypoint
+      summary: Register a waypoint
+      description: Add a new oasis waypoint to the partner network.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaypointInput"
+      responses:
+        "201":
+          description: Waypoint registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Waypoint"
+
+  /events:
+    get:
+      tags: [Events]
+      operationId: listEvents
+      summary: List events
+      description: Returns recent caravan arrival and departure events visible to your partner account.
+      parameters:
+        - name: type
+          in: query
+          description: Filter by event type
+          required: false
+          schema:
+            type: string
+            enum: [arrival, departure]
+        - name: since
+          in: query
+          description: Return events after this ISO 8601 timestamp
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: A list of events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+
+components:
+  securitySchemes:
+    partnerKey:
+      type: apiKey
+      in: header
+      name: X-Partner-Key
+
+  schemas:
+    Route:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        name:
+          type: string
+          example: "Northern Silk Road"
+        region:
+          type: string
+          example: "northern"
+        waypoints:
+          type: array
+          items:
+            type: string
+          example: ["oasis-north-1", "oasis-north-3"]
+        distance_km:
+          type: integer
+          example: 480
+        published_by:
+          type: string
+          example: "partner_acme"
+        created_at:
+          type: string
+          format: date-time
+
+    RouteInput:
+      type: object
+      required: [name, region, waypoints]
+      properties:
+        name:
+          type: string
+        region:
+          type: string
+        waypoints:
+          type: array
+          items:
+            type: string
+
+    Waypoint:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "oasis-north-1"
+        name:
+          type: string
+          example: "Northern Oasis Station"
+        latitude:
+          type: number
+          example: 32.5
+        longitude:
+          type: number
+          example: 51.2
+        amenities:
+          type: array
+          items:
+            type: string
+          example: ["water", "fodder", "shelter"]
+        registered_by:
+          type: string
+          example: "partner_acme"
+
+    WaypointInput:
+      type: object
+      required: [id, name, latitude, longitude]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        amenities:
+          type: array
+          items:
+            type: string
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [arrival, departure]
+        caravan_id:
+          type: string
+          format: uuid
+        waypoint_id:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time

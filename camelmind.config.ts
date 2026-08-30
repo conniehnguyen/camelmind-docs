@@ -33,6 +33,23 @@ const config: CamelMindConfig = {
     showFeedbackWidget: true,
   },
 
+  apiReference: {
+    enabled: true,
+
+    navLabel: "API Reference",
+
+    specs: {
+      main: {
+        label: "REST API",
+        file: "openapi/openapi.yaml",
+      },
+      partner: {
+        label: "Partner API",
+        file: "openapi/openapi-partner.yaml",
+      },
+    },
+  },
+
   ai: {
     llmsTxt: {
       enabled: true,
