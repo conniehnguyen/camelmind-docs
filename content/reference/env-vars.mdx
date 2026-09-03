@@ -1,92 +1,249 @@
 ---
-title: Environment Variables
-description: Complete reference for all environment variables supported by CamelMind.
+title: Environment variables
+description: Configure CamelMind with environment variables for local development, production, authentication, and integrations.
 ---
 
-CamelMind is configured at runtime via environment variables. Set them in `.env.local` for local development, or in your hosting platform's environment settings for production.
+Use environment variables to configure CamelMind at runtime. This page explains **which variables you need, when to set them, and where to configure them**.
+
+You typically configure environment variables in one of these places:
+
+- **Local development:** `.env.local`
+- **Production:** Your hosting platform's environment variable settings
+
+You do not need to configure every variable on this page. Start with the variables required for your setup, then add optional variables when you enable features such as authentication, Last Updated information, offline exports, or the feedback widget.
+
+## Configure environment variables for local development
+
+For local development, create `.env.local` from the example file included with your CamelMind project:
 
 ```bash
-# Copy the example file to get started
 cp .env.example .env.local
 ```
 
-<Callout type="warning">
+Open `.env.local` and set the values required for your site.
+
+<Callout type="important">
 Never commit `.env.local` or any file containing secrets to version control. The `.gitignore` in the starter template already excludes `.env.local`.
 </Callout>
 
-## Site
+---
+
+## Configure environment variables for production
+
+For production deployments, configure environment variables in your hosting platform instead of committing an `.env` file to your repository.
+
+For example, on Vercel, go to **Project Settings → Environment Variables**. Vercel makes the variables available to your application at build time and runtime.
+
+The variables you need depend on which CamelMind features you use:
+
+| If you want to | Configure |
+| --- | --- |
+| Set your site's public URL | `CAMELMIND_URL` |
+| Enable authentication | `CAMELMIND_AUTH_ENABLED`, `CAMELMIND_AUTH_REQUIRE_LOGIN`, `CAMELMIND_AUTH_PROVIDER`, `SESSION_SECRET` |
+| Connect an OIDC/SSO provider | `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `OIDC_ROLES_CLAIM` |
+| Show the correct Last Updated date and author | `GITHUB_TOKEN` or `GITLAB_TOKEN` when required |
+| Build an offline/static version of the site | `OFFLINE_MODE` |
+| Send feedback widget submissions by email | `RESEND_API_KEY`, `FEEDBACK_EMAIL_TO`, and optionally `FEEDBACK_EMAIL_FROM` |
+
+---
+
+## Site configuration environment variables and public URL settings
+
+Configure general site configuration options, canonical domain settings, and base public URLs by setting the `CAMELMIND_URL` environment variable for your CamelMind documentation site:
 
 | Variable | Default | Description |
-|---|---|---|
+| --- | --- | --- |
 | `CAMELMIND_URL` | `http://localhost:3000` | Public-facing URL of your site. Used in auth callbacks and `<meta>` tags. Must not have a trailing slash. |
 
-## Authentication
+For local development, use the default:
+
+```bash
+CAMELMIND_URL=http://localhost:3000
+```
+
+For production, replace it with your site's public URL:
+
+```bash
+CAMELMIND_URL=https://docs.example.com
+```
+
+---
+
+## Authentication environment variables and access control
+
+Set these authentication environment variables when you enable CamelMind authentication to manage user sessions and control access to your documentation site:
 
 | Variable | Default | Description |
-|---|---|---|
-| `CAMELMIND_AUTH_ENABLED` | `false` | Set `"true"` to enable the auth layer. |
-| `CAMELMIND_AUTH_REQUIRE_LOGIN` | `false` | Set `"true"` to require a valid session on all pages (except `publicPaths`). |
-| `CAMELMIND_AUTH_PROVIDER` | `dev-mock` | Auth provider: `"dev-mock"` or `"oidc"`. |
-| `SESSION_SECRET` | — | Random string used to sign and encrypt session cookies. **Required when auth is enabled.** Minimum 32 characters. Generate one with: `openssl rand -base64 32` |
+| --- | --- | --- |
+| `CAMELMIND_AUTH_ENABLED` | `false` | Set `"true"` to enable the authentication layer. |
+| `CAMELMIND_AUTH_REQUIRE_LOGIN` | `false` | Set `"true"` to require a valid session on all pages except `publicPaths`. |
+| `CAMELMIND_AUTH_PROVIDER` | `dev-mock` | Authentication provider: "dev-mock" or "oidc". |
+| `SESSION_SECRET` | — | Random string used to sign and encrypt session cookies. **Required when you enable authentication is.** Must be at least 32 characters. Generate one with `openssl rand -base64 32`. |
 
-## OIDC / SSO
+For example, to enable authentication with the development mock provider:
 
-Only needed when `CAMELMIND_AUTH_PROVIDER=oidc`.
+```bash
+CAMELMIND_AUTH_ENABLED=true
+CAMELMIND_AUTH_REQUIRE_LOGIN=true
+CAMELMIND_AUTH_PROVIDER=dev-mock
+SESSION_SECRET=your-random-32-character-secret
+```
+
+For the complete authentication setup, see [Authentication and RBAC](/features/auth-rbac).
+
+---
+
+## OIDC and SSO identity provider environment variables
+
+Configure these OpenID Connect (OIDC) and Single Sign-On (SSO) environment variables when `CAMELMIND_AUTH_PROVIDER=oidc` to integrate your identity provider with CamelMind:
 
 | Variable | Description |
-|---|---|
-| `OIDC_ISSUER` | OIDC issuer URL — your IdP's realm URL, e.g. `https://auth.example.com/realms/my-realm` |
-| `OIDC_CLIENT_ID` | Client ID registered in your IdP |
-| `OIDC_CLIENT_SECRET` | Client secret from your IdP (keep this secret) |
+| --- | --- |
+| `OIDC_ISSUER` | OIDC issuer URL, such as `https://keycloak.example.com/realms/my-realm`. |
+| `OIDC_CLIENT_ID` | Client ID registered with your identity provider. |
+| `OIDC_CLIENT_SECRET` | Client secret from your identity provider. Keep this secret. |
 | `OIDC_ROLES_CLAIM` | JWT claim path containing user roles. Default: `realm_access.roles` (Keycloak format). |
 
-## Build flags
+Example:
 
-| Variable | Description |
-|---|---|
-| `OFFLINE_MODE` | Set `"true"` to enable static export mode (`output: export`). Bypasses auth and hides server-only UI. Used by `build-offline.sh`. |
+```bash
+CAMELMIND_AUTH_PROVIDER=oidc
+OIDC_ISSUER=https://keycloak.example.com/realms/my-realm
+OIDC_CLIENT_ID=my-docs
+OIDC_CLIENT_SECRET=your-client-secret
+OIDC_ROLES_CLAIM=realm_access.roles
+```
 
-## Feedback
+Only configure these variables if you are using an OIDC provider. You do not need them when using the default `dev-mock` provider.
+
+---
+
+## Configure Git access for Last Updated information
+
+CamelMind can show the date and author of the most recent documentation change in the **Last Updated** footer.
+
+To determine this information, CamelMind queries the GitHub or GitLab REST API. It checks public repositories without a token, subject to unauthenticated API rate limits. Private repositories require an API token.
+
+This access is separate from your hosting provider's repository access. For example, Vercel may have permission to clone a private GitHub repository, but CamelMind still needs its own token to make an authenticated GitHub API request.
+
+### GitHub repositories environment variables
+
+Configure `GITHUB_TOKEN` environment variables when your GitHub documentation repository is private or when you want to avoid unauthenticated GitHub API rate limits for Last Updated data:
 
 | Variable | Default | Description |
-|---|---|---|
-| `RESEND_API_KEY` | — | API key for [Resend](https://resend.com). When set (along with `FEEDBACK_EMAIL_TO`), the feedback widget emails submissions. If unset, the feedback API returns a 503 and submissions are not recorded. |
-| `FEEDBACK_EMAIL_TO` | — | Address that receives feedback submissions. |
-| `FEEDBACK_EMAIL_FROM` | `Doc Feedback <onboarding@resend.dev>` | The `From` address used when sending feedback emails. Must be a verified domain/sender in your Resend account for anything other than the default `onboarding@resend.dev`. |
+| --- | --- | --- |
+| `GITHUB_TOKEN` | — | Token with read access to your repository. Required for CamelMind to look up Last Updated information for a private GitHub repository. Recommended for public repositories to avoid API rate limits. |
 
-## Example .env.local
+### GitLab repositories environment variables
+
+Configure `GITLAB_TOKEN` environment variables when your GitLab documentation repository is private or when you want to avoid unauthenticated GitLab API rate limits for Last Updated data:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `GITLAB_TOKEN` | — | Token with read access to your repository. Required for CamelMind to look up Last Updated information for a private GitLab repository. Recommended for public repositories to avoid API rate limits. |
+
+For more information about how CamelMind determines the date and author, see [Last Updated](/features/last-updated).
+
+---
+
+## Configure offline and static builds
+
+Set `OFFLINE_MODE` when you want to generate a static version of your CamelMind site for offline use.
+
+| Variable | Description |
+| --- | --- |
+| `OFFLINE_MODE` | Set `"true"` to enable static export mode (`output: export`). Bypasses authentication and hides server-only UI. Used by `build-offline.sh`. |
+
+For example:
+
+```bash
+OFFLINE_MODE=true
+```
+
+You do not need to set this variable for a normal CamelMind deployment.
+
+---
+
+## Configure the feedback widget
+
+Set these variables when you want the CamelMind feedback widget to send visitor feedback by email through Resend.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `RESEND_API_KEY` | — | API key for [Resend](https://resend.com/). When set along with `FEEDBACK_EMAIL_TO`, the feedback widget emails submissions. If unset, the feedback API returns a 503 and submissions are not recorded. |
+| `FEEDBACK_EMAIL_TO` | — | Address that receives feedback submissions. |
+| `FEEDBACK_EMAIL_FROM` | `Doc Feedback <onboarding@resend.dev>` | The `From` address used when sending feedback emails. For anything other than the default `onboarding@resend.dev`, the address must use a verified domain or sender in your Resend account. |
+
+At minimum, configure:
+
+```bash
+RESEND_API_KEY=your-resend-api-key
+FEEDBACK_EMAIL_TO=feedback@example.com
+```
+
+---
+
+## Example .env.local development environment file
+
+For local development, use the following `.env.local` configuration. The example uses the default development mock provider, so it comments out the OIDC environment variables:
+
 
 ```bash
 # Site
 CAMELMIND_URL=http://localhost:3000
 
-# Auth — disabled by default
+# Authentication
 CAMELMIND_AUTH_ENABLED=false
 CAMELMIND_AUTH_REQUIRE_LOGIN=false
 CAMELMIND_AUTH_PROVIDER=dev-mock
-SESSION_SECRET=change-me-to-a-random-32-char-string
+SESSION_SECRET=change-me-to-a-random-32-character-string
 
 # OIDC — only needed when AUTH_PROVIDER=oidc
-# OIDC_ISSUER=https://auth.example.com/realms/my-realm
+# OIDC_ISSUER=https://keycloak.example.com/realms/my-realm
 # OIDC_CLIENT_ID=my-docs
 # OIDC_CLIENT_SECRET=
 # OIDC_ROLES_CLAIM=realm_access.roles
 ```
 
-## Production .env example
+You can add other variables from this page as you enable the corresponding features.
+
+---
+
+## Example production environment variables
+
+The following example shows a production configuration using OIDC authentication:
 
 ```bash
 CAMELMIND_URL=https://docs.example.com
+
+# Authentication
 CAMELMIND_AUTH_ENABLED=true
 CAMELMIND_AUTH_REQUIRE_LOGIN=true
 CAMELMIND_AUTH_PROVIDER=oidc
 SESSION_SECRET=a-truly-random-32-character-secret
-OIDC_ISSUER=https://auth.example.com/realms/prod
+
+# OIDC
+OIDC_ISSUER=https://keycloak.example.com/realms/prod
 OIDC_CLIENT_ID=docs-prod
 OIDC_CLIENT_SECRET=prod-secret-from-your-idp
 OIDC_ROLES_CLAIM=realm_access.roles
 ```
 
-<Callout type="tip">
-On Vercel, set environment variables in **Project Settings → Environment Variables**. They are injected at build and runtime automatically — no `.env` file needed.
-</Callout>
+Add `GITHUB_TOKEN` or `GITLAB_TOKEN` if your repository requires authentication to retrieve Last Updated information.
+
+Add the Resend variables if you want to enable the feedback widget.
+
+---
+
+## Environment variable checklist
+
+Before deploying your CamelMind site, check which of these apply to your setup:
+
+- [ ] Set `CAMELMIND_URL` to your production site URL.
+- [ ] Set authentication variables if your site requires user login.
+- [ ] Set OIDC variables if you use an OIDC identity provider.
+- [ ] Set `GITHUB_TOKEN` or `GITLAB_TOKEN` if your repository is private or you want authenticated Git API access.
+- [ ] Set `OFFLINE_MODE=true` only if you are generating a static offline build.
+- [ ] Set Resend variables if you want to receive feedback widget submissions.
+- [ ] Store secrets in your hosting platform's environment variable settings rather than in your repository.
+- [ ] Never commit `.env.local` or files containing secrets to Git.

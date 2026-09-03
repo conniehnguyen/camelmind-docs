@@ -31,9 +31,9 @@ When enabled, CamelMind displays the last updated date at the bottom of every do
 
 ---
 
-## Show the author
+## Show the author of the last update
 
-To include the author of the most recent change, enable `showLastUpdateAuthor`:
+To show the author of the most recent change in the footer, enable the `showLastUpdateAuthor` configuration option:
 
 ```ts
 site: {
@@ -48,7 +48,7 @@ Example:
 🕐 Last updated by Jane Doe on July 22, 2026
 ```
 
-If `showLastUpdateAuthor` is disabled, only the date is shown.
+When you disable `showLastUpdateAuthor`, the page shows only the date.
 
 ```text
 🕐 July 22, 2026
@@ -60,9 +60,9 @@ If `showLastUpdateAuthor` is disabled, only the date is shown.
 
 ---
 
-## Override the last updated date
+## Override the last updated date in frontmatter
 
-By default, CamelMind determines the last updated date automatically. If you want to display a specific date instead, add the `last_updated` field to the page's frontmatter.
+To override the last updated date on a page, add the `last_updated` field to its frontmatter. This replaces the automatically detected date with your custom date value.
 
 ```md
 ---
@@ -75,25 +75,91 @@ CamelMind displays this value instead of the automatically detected date.
 
 ---
 
-## How CamelMind determines the date
+## How CamelMind determines the last updated date and author
 
-CamelMind determines the last updated date in the following order:
+When you enable `showLastUpdateAuthor`, CamelMind shows the **person who most recently changed the page**, based on your site's Git history.
 
-1. The page's `last_updated` frontmatter field, if present.
-2. Otherwise, the file's last modified timestamp.
+CamelMind checks several sources to find the most recent update date and author. It uses the first source that provides the information:
 
----
+1. **Page configuration** — If the page has a `last_updated` date in its frontmatter, CamelMind uses that date. This provides a date, but not an author.
+2. **GitHub or GitLab** — CamelMind checks the repository's commit history through the GitHub or GitLab API. This can provide both the update date and author.
+3. **Local Git history** — If the documentation repository is available on the build server, CamelMind checks its local Git history.
+4. **File timestamp** — If no Git history is available, CamelMind uses the date you last modified the file on the build server. This provides a date only, so the site displays no author.
 
-## How CamelMind determines the author
+In other words, **Git history is what tells CamelMind who made the change**. If CamelMind cannot access that history, it can still show a date sometimes, but it cannot determine the author.
 
-When `showLastUpdateAuthor` is enabled, CamelMind uses the author of the most recent Git commit that modified the page.
+<Callout type="important" title="Why do I need a GitHub token?">
 
-If Git history isn't available—for example, when building from an exported archive—the author is omitted even if the feature is enabled.
+If your repository is private, you may wonder why CamelMind needs a GitHub token when Vercel can already access the repository.
 
-<Callout type="important" title="Limitations">
+The reason is that **Vercel's access to your repository and CamelMind's access to the GitHub API are separate**.
 
-- The **Last updated** footer is configured globally for the entire documentation site.
-- Individual pages cannot currently hide the footer.
-- The author name cannot be overridden in frontmatter.
+When Vercel builds your site, Vercel has its own permission to clone your private repository. CamelMind does not automatically inherit that permission when it makes a separate request to the GitHub API to find the commit date and author.
+
+For a public GitHub repository, CamelMind can query the GitHub API without authentication. For a private repository, GitHub requires CamelMind to authenticate.
+
+If you're deploying a private repository through Vercel, add a `GITHUB_TOKEN` to your Vercel environment variables. The token gives CamelMind permission to read the repository's commit history so it can determine the correct update date and author.
+
+This is especially important when the build environment does not contain the full Git history, such as with a shallow clone.
+
+</Callout>
+
+<Callout type="important" title="When the author or update date may be missing">
+
+CamelMind needs access to your Git history to reliably show the person who last changed a page. How much Git history is available depends on how your site is built and deployed.
+
+### Private repositories {/* toc:exclude */}
+
+For a private GitHub or GitLab repository, CamelMind needs its own access token to look up the repository through the GitHub or GitLab API:
+
+- GitHub: `GITHUB_TOKEN`
+- GitLab: `GITLAB_TOKEN`
+
+Your deployment platform may already have permission to download your private repository. **That permission does not automatically give CamelMind permission to make its own API requests.**
+
+If CamelMind cannot access the API, it tries the next available source.
+
+### Self-hosted Git repositories {/* toc:exclude */}
+
+CamelMind's API lookup supports repositories hosted on:
+
+- `github.com`
+- `gitlab.com`
+
+For self-hosted GitHub Enterprise, self-managed GitLab, Bitbucket, or another Git server, CamelMind skips the API lookup and tries to use the Git history available locally instead.
+
+Sites [deployed without a Git repository](/before-you-begin/deploy-without-git) also skip the API lookup.
+
+### Shallow Git clones {/* toc:exclude */}
+
+Some deployment systems download only the most recent commit instead of the repository's full history. This is called a **shallow clone**.
+
+With only one recent commit available, CamelMind may not be able to determine when a particular page was last changed or who changed it. In that case, CamelMind falls back to the file's modification date.
+
+That date can be misleading because it may reflect **when the deployment system downloaded the file**, rather than when someone actually edited the page.
+
+For example, Vercel projects should enable **Deep Clone**. Other CI systems should avoid options such as `--depth` or `fetch-depth: 1` when checking out the repository.
+
+### Docker deployments {/* toc:exclude */}
+
+If you deploy CamelMind using the provided `Dockerfile`, the final runtime image does not include the repository's `.git` directory. This means CamelMind cannot use local Git history.
+
+For Docker deployments, the GitHub or GitLab API is therefore the way to get reliable update dates and authors. For private repositories, make sure the appropriate API token is available to CamelMind.
+
+### Branches and preview deployments {/* toc:exclude */}
+
+When CamelMind uses the GitHub or GitLab API, it looks at the branch configured by `repo.branch` (`main` by default).
+
+This means a preview deployment for a feature branch may show the latest commit from `main` instead of the latest commit from the feature branch.
+
+If your deployment workflow builds documentation from a different branch, configure `repo.branch` to match that branch.
+
+</Callout>
+
+<Callout type="important" title="Current limitations">
+
+- The **Last updated** footer is configured for the entire documentation site.
+- You cannot currently hide the footer on individual pages.
+- You cannot override the author name using page frontmatter.
 
 </Callout>

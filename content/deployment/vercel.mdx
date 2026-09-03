@@ -19,7 +19,10 @@ You'll need:
 
 ---
 
-## Deploy your site
+## Deploy your CamelMind site to Vercel
+
+Follow these steps to build, configure, and deploy your CamelMind site to Vercel:
+
 
 <Steps>
 
@@ -65,7 +68,7 @@ If you're using OpenID Connect (OIDC), also configure:
 - `OIDC_CLIENT_ID`
 - `OIDC_CLIENT_SECRET`
 
-See [Environment Variables](/reference/environment-variables) for the complete list of supported variables.
+See [Environment Variables](/deployment/environment-variables) for the complete list of supported variables.
 
 </Step>
 
@@ -83,9 +86,9 @@ Every future push to your default branch automatically triggers a new deployment
 
 ---
 
-## Use a custom domain
+## Use a custom domain on Vercel
 
-To use your own domain:
+To set up a custom domain for your Vercel deployment, follow these steps:
 
 1. Open your Vercel project.
 2. Go to **Settings → Domains**.
@@ -94,15 +97,15 @@ To use your own domain:
 
 ---
 
-## Preview deployments
+## Preview deployments for pull requests on Vercel
 
-Every pull request automatically receives its own preview deployment.
-
-This allows reviewers to browse documentation changes before they're merged into your main branch.
+When you create or update a pull request, Vercel automatically builds and assigns a unique preview deployment URL to test your CamelMind changes.
 
 ---
 
-## Troubleshooting
+## Troubleshooting Vercel deployments
+
+If you encounter issues when deploying your site to Vercel, refer to these common troubleshooting solutions:
 
 <Details summary="The build fails" id="build-failed">
 

@@ -101,7 +101,15 @@ Only used when `provider` is `"oidc"`.
 
 | Field | Type | Description |
 |---|---|---|
-| `github` | `string` | GitHub repo URL — shown as a link in the top nav and footer |
+| `github` | `string` | GitHub or GitLab repo URL — shown as a link in the top nav and footer, and used to look up commit dates/authors for the [Last Updated](/features/last-updated) footer |
+
+## `repo`
+
+Optional settings for the repo referenced in `links.github`.
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `branch` | `string` | `"main"` | Branch to read commit history from when looking up [Last Updated](/features/last-updated) info via the GitHub/GitLab API |
 
 ## `site`
 

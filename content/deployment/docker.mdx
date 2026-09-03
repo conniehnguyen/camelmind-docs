@@ -7,10 +7,11 @@ CamelMind includes a production-ready `Dockerfile` and `docker-compose.yml`, mak
 
 Docker deployments are ideal for on-premises environments, private clouds, Kubernetes clusters, and air-gapped networks.
 
-## Build and run
+---
 
-From the root of your project, build the Docker image:
+## Build and run the Docker image
 
+To build and run the Docker image for your documentation site, execute the following command from your project root:
 ```bash
 docker build -t my-docs .
 ```
@@ -73,19 +74,20 @@ If you're using Docker Compose, uncomment the `volumes` section in `docker-compo
 
 ---
 
-## Deploy to production
+## Deploy Docker to production
 
-For production deployments, place a reverse proxy such as **Nginx**, **Caddy**, or **Traefik** in front of the CamelMind container to provide HTTPS and TLS termination.
-
+To deploy your Docker container to production, place a reverse proxy such as **Nginx**, **Caddy**, or **Traefik** in front of the CamelMind container to provide HTTPS and TLS termination.
 Also ensure that:
 
-- `CAMELMIND_URL` is set to your public HTTPS URL.
+- Set `CAMELMIND_URL` to your public HTTPS URL.
 - Your reverse proxy forwards requests to the CamelMind container.
 - Container health checks target `/home`.
 
 ---
 
-## Next steps
+## Next steps for Docker self-hosting
+
+After you deploy your container, you can complete these next steps:
 
 - Configure your site's [Environment Variables](/deployment/environment-variables).
 - Set up [Authentication](/features/auth-rbac) for protected documentation sites.
