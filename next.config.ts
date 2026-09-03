@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const isOffline = process.env.OFFLINE_MODE === "true"
 const isDev = process.env.NODE_ENV === "development"
+const isVercel = process.env.VERCEL === "1"
 
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
@@ -24,8 +25,14 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
-  // Static export for offline builds — no server required
-  ...(isOffline ? { output: "export", trailingSlash: true } : { output: "standalone" }),
+  // Static export for offline builds — no server required.
+  // Standalone output is only for Docker self-hosting; Vercel does its own
+  // file tracing and conflicts with it, so leave output unset there.
+  ...(isOffline
+    ? { output: "export", trailingSlash: true }
+    : isVercel
+      ? {}
+      : { output: "standalone" }),
   // Security headers are only meaningful when running as a server (not static export)
   ...(!isOffline ? {
     async headers() {
