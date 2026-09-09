@@ -1,0 +1,48 @@
+extends: script
+message: "'%s' is only used once in this document — spell out the term and remove the acronym in parentheses."
+level: warning
+# We need the full raw file so we can count every use of the acronym across
+# the whole document, not just the sentence or paragraph where it's defined.
+scope: raw
+script: |
+  text := import("text")
+  matches := []
+
+  // A parenthetical acronym definition, e.g. "(API)" or "(OIDC)". We match
+  // any short all-letter token in parentheses, then filter to ones that
+  // look like acronyms (2+ uppercase letters), which excludes plain words
+  // like "(Optional)".
+  defs := text.re_find(`\(([A-Za-z]{2,12})\)`, scope, -1)
+
+  if !is_undefined(defs) {
+    for m in defs {
+      acronym := m[1].text
+
+      upper := text.re_find("[A-Z]", acronym, -1)
+      upper_count := 0
+      if !is_undefined(upper) {
+        upper_count = len(upper)
+      }
+
+      if upper_count >= 2 {
+        base := acronym
+        if text.has_suffix(base, "s") {
+          base = base[:len(base) - 1]
+        }
+
+        uses := text.re_find("\\b" + base + "s?\\b", scope, -1)
+        count := 0
+        if !is_undefined(uses) {
+          count = len(uses)
+        }
+
+        // `uses` includes the occurrence inside the definition itself, so a
+        // count of 1 means the acronym is never used again in the document.
+        if count <= 1 {
+          matches = append(matches, {begin: m[0].begin, end: m[0].end})
+        }
+      }
+    }
+  }
+
+  matches

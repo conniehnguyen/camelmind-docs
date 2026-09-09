@@ -45,6 +45,22 @@ export type AiViewConfig = {
   roles?: string[]
 }
 
+export type ContentSignalConfig = {
+  search?: "yes" | "no"
+  aiInput?: "yes" | "no"
+  aiTrain?: "yes" | "no"
+}
+
+export type RobotsConfig = {
+  enabled?: boolean
+  contentSignal?: ContentSignalConfig
+}
+
+export type SitemapConfig = {
+  enabled?: boolean
+  includeVersions?: "stable" | "all"
+}
+
 export type RagCheckEvaluator = "heuristic" | "ragas" | "trulens"
 
 export type RagCheckConfig = {
@@ -61,6 +77,8 @@ export type RagCheckConfig = {
 
 export type AiConfig = {
   llmsTxt?: LlmsTxtConfig
+  robotsTxt?: RobotsConfig
+  sitemap?: SitemapConfig
   aiView?: AiViewConfig
   ragCheck?: RagCheckConfig
 }

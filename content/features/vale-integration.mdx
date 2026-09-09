@@ -106,7 +106,13 @@ npm run lint:prose
 To check an individual file, run:
 
 ```bash
-vale content/[path-to-mdx-file]
+node scripts/vale-preprocess.mjs content/[path-to-mdx-file]
+```
+
+For example:
+
+```bash
+node scripts/vale-preprocess.mjs content/getting-started/installation.mdx
 ```
 
 Below is an example finding:
@@ -120,7 +126,7 @@ content/features/vale-integration.mdx
 To see all alerts, including suggestions, run:
 
 ```bash
-vale --minAlertLevel=suggestion content/
+node scripts/vale-preprocess.mjs --minAlertLevel=suggestion
 ```
 
 ---
@@ -449,7 +455,7 @@ it won't appear with `MinAlertLevel = warning`.
 To test it explicitly:
 
 ```bash
-vale --minAlertLevel=suggestion content/
+node scripts/vale-preprocess.mjs --minAlertLevel=suggestion
 ```
 </Details>
 

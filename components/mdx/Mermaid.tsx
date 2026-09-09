@@ -24,6 +24,9 @@ export function Mermaid({ chart }: { chart: string }) {
       mermaid.initialize({
         startOnLoad: false,
         theme: "base",
+        flowchart: {
+          useMaxWidth: false,
+        },
         themeVariables: {
           background: cssVar("--cm-bg-secondary"),
           primaryColor: cssVar("--cm-bg-tertiary"),

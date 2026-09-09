@@ -1,0 +1,270 @@
+---
+title: Prepare Offline Packages and PDFs
+description: Generate downloadable offline packages and master PDFs for a stable documentation version.
+---
+
+CamelMind can generate two downloadable formats for a documentation version:
+
+- **Offline package:** A self-contained website for browsing documentation without an internet connection.
+- **Master PDF:** A single PDF containing the documentation for printing, sharing, or compliance requirements.
+
+CamelMind generates both artifacts together and makes them available as downloads from the version selector.
+
+---
+
+
+
+- You must define the version in `versions.yml` and have `stable: true`.
+- Install all project dependencies.
+- Install Playwright's Chromium browser:
+  `npx playwright install chromium`
+- Stop any running development server (`npm run dev`) before building.
+
+The build script always generates both the ZIP package and PDF, so it requires Chromium even if you only need the offline package.
+
+
+
+---
+
+## Generate the offline package and PDF artifacts with build scripts
+
+Run the `./scripts/build-offline.sh` build script with the version ID to generate offline ZIP and master PDF artifacts.
+
+```bash
+./scripts/build-offline.sh latest
+```
+
+To generate artifacts for a different version, replace `latest` with its version ID:
+
+```bash
+./scripts/build-offline.sh v2
+```
+
+CamelMind writes both artifacts to `offline-builds/`:
+
+```text
+offline-builds/
+  camelmind-<version>-offline.zip
+  camelmind-<version>.pdf
+```
+
+| Artifact | Description |
+|----------|-------------|
+| `camelmind-<version>-offline.zip` | Self-contained offline documentation site. |
+| `camelmind-<version>.pdf` | Single PDF containing the cover page, table of contents, and all documentation pages. |
+
+
+The build script always generates both artifacts. You cannot generate only the ZIP or only the PDF.
+
+
+---
+
+## Make offline package and PDF artifacts available for download
+
+Start or deploy the documentation site to serve downloadable offline packages and PDFs.
+
+For local development:
+
+```bash
+npm run dev
+```
+
+When CamelMind finds matching artifacts in `offline-builds/`, it automatically displays download icons for each stable version in the version selector:
+
+- **ZIP:** Downloads the offline documentation package.
+- **PDF:** Downloads the master PDF.
+
+If you enable authentication with `CAMELMIND_AUTH_ENABLED=true`, only signed-in users see the download icons. When you disable authentication, the icons are visible to everyone.
+
+### Make offline package and PDF artifacts available in Docker containers
+
+Standard Docker container builds do not automatically include generated offline ZIP packages and PDFs from the `offline-builds/` directory.
+
+A standard `docker build` does not include `offline-builds/`. The default `Dockerfile` copies the documentation source directories, but not generated offline artifacts.
+
+As a result, a deployed container can display the download icons but return `404` from `/api/download` unless you explicitly make `offline-builds/` available to the container.
+
+Choose one of these approaches:
+
+| | Mount `offline-builds/` | Bake artifacts into the image |
+|---|---|---|
+| Refresh artifacts | No image rebuild required | Requires a new image build and deployment |
+| Host access required | Yes | No |
+| Image build time | Unchanged | Longer |
+
+### Option A: Mount `offline-builds/` as a volume
+
+Generate the artifacts on the host, then mount the directory into the running container.
+
+```bash
+./scripts/build-offline.sh latest
+
+docker run --rm -p 3000:3000 \
+  -v "$(pwd)/offline-builds:/app/offline-builds" \
+  my-docs
+```
+
+For Docker Compose:
+
+```yaml
+services:
+  camelmind:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./offline-builds:/app/offline-builds
+```
+
+The container reads the files from `offline-builds/` when handling download requests. To update the downloads, run the build script again on the host. You do not need to rebuild or restart the container.
+
+### Option B: Include offline packages and PDFs in the Docker image
+
+To build offline ZIP packages and master PDFs directly into your container image, use a dedicated Debian-based Docker build stage to generate and store these artifacts during the image build process.
+
+
+Do not install Playwright into the default Alpine-based builder stage. The base `Dockerfile` uses `node:22-alpine`, while Playwright's Chromium installation with `--with-deps` requires an apt-based Linux distribution. Use a separate Debian-based stage for artifact generation.
+
+
+```dockerfile
+# Dedicated stage for offline artifact generation.
+# Playwright's Chromium requires an apt-based distribution.
+FROM node:22-bookworm-slim AS offline-builder
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    zip \
+    curl \
+    python3 \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY . .
+
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+RUN npx playwright install --with-deps chromium
+
+RUN ./scripts/build-offline.sh latest && ./scripts/build-offline.sh v2
+
+# Copy generated artifacts into the runtime image.
+COPY --from=offline-builder --chown=nextjs:nodejs /app/offline-builds ./offline-builds
+```
+
+The artifact build requires `zip`, `python3`, and `curl` because `build-offline.sh` uses these commands to:
+
+- create the offline ZIP
+- serve the static export for PDF generation
+- poll the local server while generating the PDF
+
+Without these dependencies, the build fails.
+
+
+The dedicated stage installs its own npm dependencies and downloads its own copy of Chromium. In testing, a cold build took about 2 minutes: approximately 10 seconds for dependency installation, 30 seconds for the Chromium download, and the remaining time for artifact generation. Docker layer caching speeds up future builds.
+
+
+This approach makes the Docker image self-contained: every deployment includes the generated offline package and PDF.
+
+See [Docker Self-Hosting](/deployment/docker-self-hosting) for the rest of the Docker configuration, including Compose, reverse proxy, and environment variables.
+
+---
+
+## Keep offline package and PDF artifacts up to date across updates
+
+To maintain current downloads when documentation content changes, run the build script to regenerate offline ZIP packages and master PDFs:
+
+```bash
+./scripts/build-offline.sh <version>
+```
+
+For production deployments, include artifact generation in your CI/CD pipeline.
+
+If you mount `offline-builds/` as a volume, regenerate the files on the host and make the updated directory available to the container.
+
+If you bake the artifacts into the Docker image, regenerate them as part of the image build and deploy the new image.
+
+---
+
+## Protect generated artifacts and security access
+
+Because offline package and PDF builds bypass authentication, the build process includes all documentation pages in the generated ZIP and PDF files regardless of web application access controls.
+
+
+Treat generated offline packages and PDFs as copies of the full documentation. Distribute them only to users authorized to access the included content.
+
+
+---
+
+## Troubleshoot offline package and PDF generation errors
+
+Resolve common build failures, missing download icons, 404 errors, and Playwright Chromium browser issues when exporting offline packages and PDFs.
+
+### The build fails because the development server is running
+
+Stop the development server before running the build script:
+
+```bash
+npm run dev
+```
+
+The offline build performs a production build and static export. During the process, it temporarily moves server-only routes such as `/api/download` out of `app/` and restores them when the build finishes.
+
+A running development server can conflict with these changes.
+
+
+
+### PDF generation fails
+
+PDF generation requires Playwright's Chromium browser.
+
+Install Chromium before running the build:
+
+```bash
+npx playwright install chromium
+```
+
+If you are building inside Docker, use the Debian-based artifact-generation stage described above and install Chromium with:
+
+```bash
+npx playwright install --with-deps chromium
+```
+
+
+
+### Download icons do not appear
+
+Check the following:
+
+1. You have defined the version in `versions.yml`.
+2. The version has `stable: true`.
+3. The artifact filenames match the version ID.
+4. If you enable authentication, sign in.
+
+CamelMind displays download icons only for stable versions. When you enable authentication, anonymous users cannot see the icons."
+
+
+
+### The download link returns 404
+
+Check that the generated filenames match the version ID:
+
+```text
+camelmind-<version>-offline.zip
+camelmind-<version>.pdf
+```
+
+Then confirm that:
+
+1. The version ID matches the `id` field in `versions.yml`.
+2. The files exist in `offline-builds/`.
+3. The running server has access to that directory.
+4. For Docker, `offline-builds/` is either mounted into the container or copied into the image.
+
+For a volume-mounted deployment, verify the mount points to the same directory used to generate the artifacts:
+
+```bash
+-v "$(pwd)/offline-builds:/app/offline-builds"
+```
+
+

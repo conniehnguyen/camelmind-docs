@@ -268,6 +268,42 @@ export function getAncestorsForSlug(slug: string): (NavEntry | NavChild)[] {
   return getAncestorsForSlugFromConfig(loadNav(), slug)
 }
 
+// Every slug in the tree (entry, child, or noDropdown-group direct link) with
+// roles.length === 0 on the relevant node. A noDropdown group's own `slug` inherits
+// the roles of its first item, mirroring how getSlugsFromConfig treats that slug as
+// a direct link to that item (see the noDropdown special-case above).
+export function getPublicSlugsFromConfig(nav: NavConfig): string[] {
+  const keep = (roles: string[]) => roles.length === 0
+
+  const slugs: string[] = []
+
+  const walkChildren = (children: NavChild[]) => {
+    for (const child of children) {
+      if (keep(child.roles)) slugs.push(child.slug)
+      if (child.children) walkChildren(child.children)
+    }
+  }
+
+  for (const item of nav.nav) {
+    if ("dropdown" in item) {
+      const group = item as NavGroup
+      if (group.noDropdown && group.slug && group.items?.length) {
+        if (keep(group.items[0].roles)) slugs.push(group.slug)
+      }
+      for (const entry of (group.items ?? [])) {
+        if (keep(entry.roles)) slugs.push(entry.slug)
+        if (entry.section) walkChildren(entry.section)
+        if (entry.children) walkChildren(entry.children)
+      }
+    } else if ("slug" in item) {
+      const entry = item as NavEntry
+      if (keep(entry.roles)) slugs.push(entry.slug)
+    }
+  }
+
+  return slugs
+}
+
 export function getAllPublicEntries(nav: NavConfig): (NavEntry | NavChild)[] {
   const entries: (NavEntry | NavChild)[] = []
   for (const item of nav.nav) {

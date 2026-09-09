@@ -76,7 +76,7 @@ export function AiView({ aiText, issues, llmsUrl, docHref, ragCheckHref, rendere
           .
           {ragCheckHref && (
             <a href={ragCheckHref} className="underline ml-2">
-              Run RAG Check
+              Run RAG check
             </a>
           )}
           <a href={docHref} className="underline ml-auto">

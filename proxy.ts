@@ -54,6 +54,8 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  // Exclude Next.js internals and common static asset extensions served from public/
-  matcher: ["/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|eot|otf)).*)"],
+  // Exclude Next.js internals, common static asset extensions served from public/,
+  // and crawler metadata files (robots.txt/sitemap.xml decide their own content per
+  // auth mode — they must stay reachable even when the site otherwise requires login).
+  matcher: ["/((?!_next/static|_next/image|favicon\\.ico|robots\\.txt|sitemap\\.xml|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|eot|otf)).*)"],
 }

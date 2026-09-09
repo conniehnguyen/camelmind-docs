@@ -359,24 +359,58 @@ body {
 /* Image zoom */
 .prose img {
   cursor: zoom-in;
-  transition: transform 0.3s ease-in-out;
-  position: relative;
-  z-index: 1;
   border-radius: 6px;
 }
 
-.prose img.zoomed {
-  transform: scale(1.7);
-  cursor: zoom-out;
+.image-zoom-overlay {
+  position: fixed;
+  inset: 0;
   z-index: 9999;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  background-color: rgba(0, 0, 0, 0.8);
+  cursor: zoom-out;
+  animation: image-zoom-fade-in 0.2s ease-out;
+}
+
+.image-zoom-overlay-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: image-zoom-scale-in 0.2s ease-out;
+}
+
+@keyframes image-zoom-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes image-zoom-scale-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 /* Mermaid diagram zoom */
+.mermaid-diagram {
+  /* When the diagram is wider than its container, "safe" falls back to
+     start-alignment so the beginning of the diagram is visible by default
+     instead of centering the overflow and hiding both ends equally. */
+  justify-content: safe center;
+}
+
 .mermaid-diagram svg {
   cursor: zoom-in;
   transition: transform 0.3s ease-in-out;
   transform-origin: top left;
+  /* Prevent flexbox from shrinking wide diagrams (e.g. flowchart LR) to fit
+     the container, which would scale down the diagram's text along with it. */
+  flex-shrink: 0;
 }
 
 .mermaid-diagram.zoomed {

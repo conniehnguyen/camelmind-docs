@@ -1,6 +1,7 @@
-import { loadNav, getAllPublicEntries } from "@/lib/nav"
-import { loadFrontmatterOnly } from "@/lib/mdx"
+import { loadNav } from "@/lib/nav"
 import { getConfig } from "@/lib/config"
+import { loadVersions } from "@/lib/versions"
+import { buildLlmsTxtBody } from "@/lib/llms-txt"
 
 export const revalidate = 3600
 
@@ -12,22 +13,15 @@ export async function GET() {
   }
 
   const nav = loadNav()
-  const entries = getAllPublicEntries(nav)
   const baseUrl = config.url.replace(/\/$/, "")
-
-  const lines = entries.filter((entry) => entry.file).map((entry) => {
-    const frontmatter = loadFrontmatterOnly(entry.file!)
-    const desc = frontmatter.description ?? frontmatter.title
-    return `- [${frontmatter.title}](${baseUrl}${entry.slug}): ${desc}`
-  })
+  const { versions } = loadVersions()
 
   const body = [
-    `# ${config.title}`,
+    buildLlmsTxtBody(nav, { title: config.title, tagline: config.tagline, baseUrl }),
     "",
-    ...(config.tagline ? [`> ${config.tagline}`, ""] : []),
-    "## Docs",
+    "## Versions",
     "",
-    ...lines,
+    ...versions.map((v) => `- [${v.label}](${baseUrl}/${v.id}/llms.txt)`),
   ].join("\n")
 
   return new Response(body, {

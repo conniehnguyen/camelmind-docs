@@ -63,9 +63,3 @@ Okta
 repos?
 strikethrough
 severit(?:y|ies)
-IdPs?(?:'s)?
-[Mm]iddleware
-walkthroughs?
-Entra
-Mintlify
-subpaths?
