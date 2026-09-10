@@ -87,9 +87,13 @@ nav:
             slug: /features/auth-rbac
             file: content/features/auth-rbac.mdx
             roles: []
-          - label: "llms.text"
+          - label: "llms.txt"
             slug: /features/llms-txt
             file: content/features/llms-docs.mdx
+            roles: []
+          - label: "Agent & Crawler Discoverability"
+            slug: /features/agent-crawler-discoverability
+            file: content/features/agent-crawler-discoverability.mdx
             roles: []
           - label: "AI View"
             slug: /features/ai-view

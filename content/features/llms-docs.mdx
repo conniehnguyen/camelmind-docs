@@ -55,7 +55,7 @@ When you enable `llms.txt`, CamelMind exposes two types of endpoints for accessi
 
 | Endpoint                | Description                                                                 |
 | ----------------------- | --------------------------------------------------------------------------- |
-| `/llms.txt`             | Plain-text version of your documentation for AI assistants and developers.  |
+| `/llms.txt` | Plain-text version of your documentation for AI assistants and developers. If your site has multiple versions, each version has its own index at `/{version}/llms.txt` (for example, `/v2/llms.txt`), generated from that version's `nav.yml`. |
 | `/api/llms/<page-slug>` | JSON representation of the same documentation content for programmatic use. |
 
 For example, a page at `/features/llms-txt` is available through:
@@ -67,6 +67,7 @@ For example, a page at `/features/llms-txt` is available through:
 <Callout type="tip">
 If you're building an AI assistant, point it to `https://your-docs-site.com/llms.txt` to give it direct access to your documentation.
 </Callout>
+
 
 ---
 

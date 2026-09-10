@@ -1,0 +1,204 @@
+---
+title: Agent and Crawler Discoverability
+description: Configure how CamelMind exposes public documentation to AI agents and search crawlers through llms.txt, robots.txt, and sitemap.xml.
+---
+
+CamelMind provides three machine-readable endpoints that help AI agents and search crawlers discover and read your public documentation without scraping rendered HTML:
+
+| Endpoint | Purpose |
+| --- | --- |
+| `/llms.txt` | Index of public documentation pages, with links to each page's Markdown source. |
+| `/robots.txt` | Crawl rules, AI-bot allowances, and Content Signals policy. |
+| `/sitemap.xml` | List of public documentation URLs available for search indexing. |
+
+CamelMind enables all three endpoints by default and requires no configuration.
+
+This guide explains how CamelMind determines which documentation is public, how it generates each endpoint, and how to configure crawler and AI discoverability.
+
+<Callout type="note">
+Each documentation version has its own `/llms.txt` index at `/{version}/llms.txt` (for example, `/v2/llms.txt`). The index uses that version's `nav.yml`, so agents can discover documentation for a specific version.
+</Callout>
+
+---
+
+## Determine public documentation from nav.yml roles
+
+A page is public when its `roles` field in `nav.yml` is empty:
+
+```yaml
+roles: []
+```
+
+CamelMind treats a page with one or more roles as gated, and excludes it from machine-readable discovery endpoints.
+
+`lib/nav.ts`'s `getPublicSlugsFromConfig(nav)` function collects the public page slugs:
+
+```typescript
+getPublicSlugsFromConfig(nav) // roles.length === 0
+```
+
+The function walks the complete navigation tree, including:
+
+* top-level entries
+* nested sections and children
+* `noDropdown` groups and their direct-link `slug`
+
+<Callout type="note">
+CamelMind does not provide a corresponding `getGatedSlugsFromConfig` function. `sitemap.xml` and `robots.txt` intentionally do not list gated paths.
+</Callout>
+
+---
+
+## Exclude documentation from discovery on private sites
+
+Site-wide authentication can override individual page roles. When you enable both `auth.enabled: true` and `auth.requireLogin: true`, no documentation page is anonymously reachable, regardless of its `roles` value.
+
+CamelMind centralizes this rule in `lib/agent-discovery.ts`:
+
+```typescript
+getPublicSlugsAcrossVersions(includeVersions)
+```
+
+If the site requires login for every page, this function returns no public documentation slugs.
+
+As a result, `sitemap.xml` and `robots.txt` expose only the routes that remain intentionally public on a fully private site.
+
+<Callout type="note">
+`auth.publicPaths` is separate from crawler discoverability. It defines authentication exceptions such as `/login` and `/api/auth`; it is not an allowlist of pages that crawlers should discover.
+</Callout>
+
+---
+
+## Generate robots.txt with crawl rules and Content Signals
+
+CamelMind implements `robots.txt` as the `app/robots.txt/route.ts` Route Handler instead of using Next.js's `app/robots.ts` metadata convention.
+
+The Route Handler allows CamelMind to include Cloudflare's Content Signals policy:
+
+```text
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+```
+
+The standard Next.js `app/robots.ts` convention supports `Allow`, `Disallow`, and `Sitemap`, but does not provide a field for this Content Signals header.
+
+---
+
+## Generate sitemap.xml from public documentation
+
+`app/sitemap.ts` uses Next.js's standard `MetadataRoute.Sitemap` convention — sitemap.xml needs nothing exotic, unlike `robots.txt`.
+
+The sitemap includes public documentation URLs determined from the navigation configuration and version settings. Gated documentation pages are not included.
+
+API Reference pages generated from OpenAPI specifications are not included because they exist outside `nav.yml`. Supporting them needs a separate OpenAPI-walking pass.
+
+---
+
+## Keep discovery endpoints accessible on private sites
+
+CamelMind's authentication matcher in `proxy.ts` excludes `robots.txt` and `sitemap.xml` from authentication. These endpoints remain publicly reachable even when the documentation site requires login.
+
+The endpoints determine what information is safe to expose based on the site's authentication and navigation configuration.
+
+Ordinary documentation pages continue to follow the site's authentication rules and redirect to `/login` when required.
+
+---
+
+## Why gated pages are not listed in robots.txt
+
+CamelMind does not list role-gated documentation paths in `robots.txt` because `robots.txt` is publicly accessible.
+
+Listing a gated path would reveal its URL to anonymous visitors without providing meaningful protection. A compliant crawler should already be unable to read the page because page-level RBAC blocks access, while a non-compliant crawler can ignore `Disallow` rules.
+
+CamelMind applies the same principle to `sitemap.xml`: omitting gated pages.
+
+If a page must not be accessible to anonymous users, gate the page in `nav.yml` or require authentication for the entire site. `robots.txt` and `sitemap.xml` describe publicly accessible content; they do not provide access control.
+
+---
+
+## Scope discovery by documentation version
+
+By default, `sitemap.xml` and `robots.txt` include only versions marked `stable: true` in `versions.yml`. Set `sitemap.includeVersions` to `"all"` to include unstable and beta versions too.
+
+The unversioned `/llms.txt` has separate version-resolution behavior: its documentation links come from `loadNav()`, which resolves unversioned URLs to the first version in `versions.yml` with `stable: true` — the same resolution used for bare, unprefixed documentation URLs.
+
+If multiple versions have `stable: true`, only the first one supplies the unversioned `/llms.txt`. Each version still has its own versioned `/{version}/llms.txt`, and the unversioned index links to the available versioned indexes under a "Versions" heading.
+
+---
+
+## Configure AI and crawler discoverability
+
+All three endpoints are configured under the `ai` key in `camelmind.config.ts`:
+
+```typescript
+ai: {
+  llmsTxt: {
+    enabled: true,
+    directive: "For a complete documentation index, see /llms.txt. ...",
+  },
+  robotsTxt: {
+    enabled: true,
+    contentSignal: {
+      search: "yes",
+      aiInput: "yes",
+      aiTrain: "yes",
+    },
+  },
+  sitemap: {
+    enabled: true,
+    includeVersions: "stable",
+  },
+}
+```
+
+| Option | Default | Effect |
+| --- | --- | --- |
+| `robotsTxt.enabled` | `true` | Serves a bare `Disallow: /` without a sitemap reference when set to `false`. |
+| `robotsTxt.contentSignal.search` | `"yes"` | Signals whether crawlers can use content to build a search index. |
+| `robotsTxt.contentSignal.aiInput` | `"yes"` | Signals whether crawlers can provide content to an AI model to generate a live answer. |
+| `robotsTxt.contentSignal.aiTrain` | `"yes"` | Signals whether developers can use content to train or fine-tune an AI model. |
+| `sitemap.enabled` | `true` | Serves an empty `<urlset>` when set to `false`. |
+| `sitemap.includeVersions` | `"stable"` | Includes unstable and beta documentation versions when set to `"all"`. |
+
+<Callout type="warning">
+Content Signals are declarations, not access controls. Setting `contentSignal.aiTrain` to `"no"` tells cooperating crawlers not to use your content for training, but it cannot technically prevent a non-compliant scraper or an agent that fetches the page directly. Use Content Signals to communicate your preference; apply authentication and RBAC to protect confidential content.
+</Callout>
+
+---
+
+## Choose access control or Content Signals
+
+Use authentication and RBAC when you need to prevent access. Use Content Signals when you want public content to remain discoverable while communicating how cooperating crawlers may use it.
+
+| Goal                                                                         | Configuration                                                                    |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Prevent automated and anonymous access to confidential or restricted content | Add a `roles` entry in `nav.yml`, or require authentication for the entire site. |
+| Keep documentation publicly readable but discourage AI training              | Leave the page public and set `contentSignal.aiTrain` to `"no"`.                 |
+
+If it would be unacceptable for a non-compliant agent to access or train on the content, do not rely on Content Signals alone. Gate the content with authentication and RBAC.
+
+---
+
+## Verify discovery endpoints locally
+
+```bash
+npm run dev
+curl http://localhost:3000/robots.txt
+curl http://localhost:3000/sitemap.xml
+curl http://localhost:3000/llms.txt
+```
+
+To check behavior on a fully private site:
+
+```bash
+CAMELMIND_AUTH_ENABLED=true CAMELMIND_AUTH_REQUIRE_LOGIN=true npm run dev
+```
+
+On a fully private site, `sitemap.xml` should contain only the routes that remain intentionally public, such as `/` and `/home`. `robots.txt` should disallow the private documentation while preserving access to those public routes and `/llms.txt`.
+
+---
+
+## Related documentation
+
+* [llms.txt](/features/llms-txt) — Learn how CamelMind generates AI-readable documentation indexes.
+* [Authentication & RBAC](/features/auth-rbac) — Configure the `roles` field and site-wide authentication that determine documentation access and discoverability.
+

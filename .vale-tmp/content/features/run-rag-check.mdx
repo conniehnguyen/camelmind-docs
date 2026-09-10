@@ -111,9 +111,9 @@ Selections are synchronized across the screen:
 
 Change **Chunk size** or **Chunk overlap** in the middle pane to see how different settings affect your chunk boundaries.
 
-<Callout type="note">
+
 Line numbers refer to the generated AI-readable text, including the `llms.txt` directive prefix. They will not match the line numbers in your original MDX source.
-</Callout>
+
 
 === "Controls and summary"
 
@@ -126,9 +126,9 @@ Use the middle pane to configure chunking, run the check, and review the results
 | **Chunk size** | The maximum amount of text, measured in characters, included in each retrieval chunk. Select **300**, **500**, or **800**, or enter a custom value from **100–4000**. |
 | **Chunk overlap** | The amount of text, measured in characters, repeated between adjacent chunks. Overlap helps preserve context when important information falls near a chunk boundary. Select **0**, **50**, **80**, **100**, or **150**, or enter a custom value smaller than the chunk size. |
 
-<Callout type="tip">
+
 Start with the default **500-character chunk size** and **80-character overlap**, then experiment with different values if your content produces retrieval or chunk-independence findings.
-</Callout>
+
 
 ### Run the check {/* toc:exclude */}
 
@@ -171,9 +171,9 @@ Each query is marked:
 
 Click a test query to see which chunks were retrieved and jump to the relevant content in the left pane.
 
-<Callout type="tip">
+
 Every score is labeled **Heuristic estimate**. Run RAG Check uses a keyword-based retriever as a local proxy for real retrieval. The results can help you identify potential problems, but they are not a substitute for testing your documentation against your production RAG stack.
-</Callout>
+
 
 === "Findings"
 
@@ -215,15 +215,15 @@ Categories shared with AI View (`long-paragraph`, `context-less-code`, `context-
 
 ## Run RAG Check across every doc
 
-You can run a site-wide diagnostic scan across every page in your navigation tree to find low-scoring docs in a single pass:
+The toolbar runs Run RAG Check one page at a time. To score every doc in the nav in one pass and find the pages that need attention first, run:
 
 ```bash
 npx tsx scripts/rag-check-report.ts [threshold]
 ```
 
-The `rag-check-report.ts` script runs the same chunking, question generation, retrieval, and scoring pipeline as the interactive tool against every document in nav.yml. It sorts the results by overall score and outputs pages scoring at or below the specified threshold (default 89).
+`scripts/rag-check-report.ts` runs the same chunk, generate questions, retrieve, and score pipeline as the interactive tool against every doc in the default nav, sorts the results by overall score, and prints the docs scoring at or below `threshold` (default `89`).
 
-For each flagged document, the report displays the overall score, the two lowest-scoring dimensions, and up to five findings:
+For each flagged doc, it prints the overall score, the two weakest scoring dimensions, and up to five findings:
 
 ```text
 --- /features/example-doc (Example Doc) — overall 72 — weakest: crossLinkQuality=40, retrievability=58
@@ -232,10 +232,11 @@ For each flagged document, the report displays the overall score, the two lowest
     ...and 3 more findings
 ```
 
-<Callout type="note">
-- Run rag-check-report.ts locally as a diagnostic tool. CamelMind does not wire this script into package.json or CI build workflows.
-- The script skips entries without a source file (such as `noDropdown` group placeholders) or pages that fail to load, counting them separately in the final summary line.
-</Callout>
+
+This script is a diagnostic tool, not part of the build or CI — it is not wired into `package.json`. Run it locally for a site-wide pass instead of checking pages one at a time.
+
+
+A doc is skipped, and counted separately in the summary line, when its nav entry has no `file` (such as a `noDropdown` group placeholder) or when the file fails to load.
 
 ---
 
