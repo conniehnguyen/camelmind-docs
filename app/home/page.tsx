@@ -148,7 +148,7 @@ export default async function HomePage() {
 
       <footer className="border-t border-[var(--cm-border)] px-6 py-6 bg-[var(--cm-bg-secondary)]">
         <div className="max-w-5xl mx-auto flex items-center justify-between text-xs text-[var(--cm-text-muted)]">
-          <span>© {new Date().getFullYear()} CamelMind. Powered by Camelind, an MIT License platform.</span>
+          <span>© {new Date().getFullYear()} CamelMind. Powered by CamelMind, an MIT License platform.</span>
         </div>
       </footer>
     </div>
