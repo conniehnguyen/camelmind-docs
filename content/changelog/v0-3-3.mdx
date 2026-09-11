@@ -1,0 +1,56 @@
+---
+title: What's in v0.3.3
+description: Key features included in v0.3.3.
+---
+
+## New features
+
+### robots.txt and sitemap.xml for agent and crawler discoverability
+
+CamelMind now extends documentation discoverability with `robots.txt` and `sitemap.xml`, complementing the existing `llms.txt` endpoint.
+
+- `robots.txt` defines crawl rules and Content Signals for AI and search crawlers.
+- `sitemap.xml` lists public documentation URLs for search indexing.
+- Both endpoints automatically respect page-level RBAC, site-wide authentication, and documentation version settings.
+
+No configuration is required. Both endpoints are enabled by default. See [Agent and Crawler Discoverability](/features/agent-crawler-discoverability) for details.
+
+## Improvements
+
+### Expand llms.txt to all documentation versions
+
+The `llms.txt` endpoint is now available for every documentation version. If your site has multiple versions, each version has its own index at `/{version}/llms.txt` (for example, `/v2/llms.txt`), generated from that version's `nav.yml`.
+
+### Improve Vale checks for MDX
+
+We added the `vale-preprocess.mjs` script to improve how Vale parses MDX files. You can now preprocess an MDX file and run the Vale check with a single command:
+
+```bash
+node scripts/vale-preprocess.mjs content/[path-to-mdx-file]
+```
+
+### Run RAG Check across every doc
+
+You can now run a site-wide RAG diagnostic across every page in your navigation tree. The report identifies pages that fall below your specified score threshold in a single pass:
+
+```bash
+npx tsx scripts/rag-check-report.ts [threshold]
+```
+See [Run RAG Check across every doc](/features/run-rag-check#run-rag-check-across-every-doc) for details.
+
+## Document updates
+
+We added instructions for making offline packages and PDF exports available to users on your documentation site. See [Prepare Offline Packages and PDFs](/features/offline-package-and-pdf-export) for details.
+
+<Callout type="tip" title="Updating to a new version">
+
+Use the `update` command to upgrade an existing CamelMind site to the latest platform version. Choose the option that best fits your workflow:
+
+| Option | Command |
+| --- | --- |
+| Update your project to the latest CamelMind version | `npx camelmind@latest update` |
+| Preview the files that would change without modifying your project | `npx camelmind@latest update --dry-run` |
+| Update project files without running `npm install` | `npx camelmind@latest update --no-install` |
+| Preserve a customized file during the update | `npx camelmind@latest update --ignore-file app/page.tsx` |
+
+</Callout>
