@@ -63,11 +63,3 @@ Okta
 repos?
 strikethrough
 severit(?:y|ies)
-Googlebot
-[Dd]iscoverabilit(?:y|ies)
-crawlable
-allowlist
-favicons?
-fetchable
-unversioned
-unprefixed

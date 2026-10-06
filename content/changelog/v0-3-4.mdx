@@ -1,0 +1,36 @@
+---
+title: What's in v0.3.4
+description: Key features included in v0.3.4.
+---
+
+## New features
+### Migrate Docusaurus and MkDocs sites to CamelMind
+
+You can now migrate an existing Docusaurus or MkDocs documentation site to CamelMind with a single command.
+
+The migration tool automatically detects your source framework, converts Markdown files to MDX, and builds your CamelMind navigation from your existing sidebar or navigation structure. Your original repository is never modified.
+
+```bash
+npx camelmind@latest migrate path/to/your-docs-repo
+```
+
+The migration also generates a report highlighting anything that needs manual attention.
+
+For the best results, we recommend migrating your **content and information architecture first**, then reviewing and recreating custom components, plugins, theme overrides, and build customizations using CamelMind's native features where possible.
+
+See the [Docusaurus and MkDocs migration guide](#) for the complete migration process, customization guidance, available options, and validation checklist.
+
+If you have a heavily customized documentation site or run into something the migration tool doesn't handle, use the **feedback widget in CamelMind** to reach out for migration support.
+
+
+## Improvements
+### Added `info` type to Callout
+
+The Callout component now supports an `info` type for highlighting helpful or informational content.
+
+```mdx
+<Callout type="info">
+This is an informational callout.
+</Callout>
+```
+

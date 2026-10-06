@@ -59,6 +59,10 @@ nav:
             slug: /getting-started/installation
             file: content/getting-started/installation.mdx
             roles: []
+          - label: "Migrate to CamelMind"
+            slug: /getting-started/migrate-from-docusaurus-mkdocs
+            file: content/getting-started/migrate-from-docusaurus-mkdocs.mdx
+            roles: []
           - label: "Project Structure"
             slug: /getting-started/project-structure
             file: content/getting-started/project-structure.mdx

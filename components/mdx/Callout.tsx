@@ -1,12 +1,13 @@
 import { Icon } from "./Icon"
 
-type CalloutType = "tip" | "warning" | "important" | "note" | "danger" | "success"
+type CalloutType = "tip" | "warning" | "important" | "note" | "info" | "danger" | "success"
 
 const labels: Record<CalloutType, string> = {
   tip:       "Tip",
   warning:   "Warning",
   important: "Important",
   note:      "Note",
+  info:      "Info",
   danger:    "Danger",
   success:   "Success",
 }
@@ -16,6 +17,7 @@ const defaultIcons: Record<CalloutType, string> = {
   warning:   "triangle-alert",
   important: "info",
   note:      "notebook-pen",
+  info:      "badge-info",
   danger:    "circle-x",
   success:   "circle-check",
 }
