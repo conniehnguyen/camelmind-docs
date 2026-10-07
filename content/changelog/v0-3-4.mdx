@@ -4,27 +4,26 @@ description: Key features included in v0.3.4.
 ---
 
 ## New features
-### Migrate Docusaurus and MkDocs sites to CamelMind
 
-You can now migrate an existing Docusaurus or MkDocs documentation site to CamelMind with a single command.
+### Docusaurus and MkDocs migration
 
-The migration tool automatically detects your source framework, converts Markdown files to MDX, and builds your CamelMind navigation from your existing sidebar or navigation structure. Your original repository is never modified.
+You can now migrate an existing Docusaurus or MkDocs site to CamelMind with a single command:
 
 ```bash
 npx camelmind@latest migrate path/to/your-docs-repo
 ```
 
-The migration also generates a report highlighting anything that needs manual attention.
+The migration automatically detects your framework, converts Markdown to MDX, builds navigation from your existing structure, and generates a report for anything that needs manual attention. Your original repository remains unchanged.
 
-For the best results, we recommend migrating your **content and information architecture first**, then reviewing and recreating custom components, plugins, theme overrides, and build customizations using CamelMind's native features where possible.
+For best results, migrate your **content and information architecture first**, then recreate customizations using CamelMind's native features.
 
-See the [Docusaurus and MkDocs migration guide](#) for the complete migration process, customization guidance, available options, and validation checklist.
+See the [Docusaurus and MkDocs migration guide](/getting-started/migrate-from-docusaurus-mkdocs) for the complete process, options, customization guidance, and validation checklist.
 
-If you have a heavily customized documentation site or run into something the migration tool doesn't handle, use the **feedback widget in CamelMind** to reach out for migration support.
 
 
 ## Improvements
-### Added `info` type to Callout
+
+### Added the Info type to Callout
 
 The Callout component now supports an `info` type for highlighting helpful or informational content.
 
@@ -34,3 +33,15 @@ This is an informational callout.
 </Callout>
 ```
 
+<Callout type="tip" title="Updating to a new version">
+
+Use the `update` command to upgrade an existing CamelMind site to the latest platform version. Choose the option that best fits your workflow:
+
+| Option | Command |
+| --- | --- |
+| Update your project to the latest CamelMind version | `npx camelmind@latest update` |
+| Preview the files that would change without modifying your project | `npx camelmind@latest update --dry-run` |
+| Update project files without running `npm install` | `npx camelmind@latest update --no-install` |
+| Preserve a customized file during the update | `npx camelmind@latest update --ignore-file app/page.tsx` |
+
+</Callout>

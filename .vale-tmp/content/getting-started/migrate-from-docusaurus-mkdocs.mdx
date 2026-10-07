@@ -5,12 +5,10 @@ description: Migrate an existing Docusaurus or MkDocs site to CamelMind with one
 
 Migrate an existing Docusaurus or MkDocs documentation site to a new CamelMind project with one command.
 
-The migration tool detects your documentation framework, converts your Markdown files to MDX, and builds your CamelMind navigation from your existing sidebar or navigation structure.
-
-Your original repository is **never modified**.
+The migration tool detects your documentation framework, converts your Markdown files to MDX, and builds your CamelMind navigation from your existing sidebar or navigation structure. Your original repository stays as is in the same location.
 
 
-If you're migrating a highly customized site, don't try to reproduce every Docusaurus or MkDocs customization immediately. Start with your content and information architecture, validate the migrated site, then replace framework-specific customizations with CamelMind features where possible.
+If you are migrating a highly customized site, do not try to reproduce every Docusaurus or MkDocs customization all at once. Start with your content and information architecture, validate the migrated site, then replace framework-specific customizations with CamelMind features where possible.
 
 
 ---
@@ -23,7 +21,7 @@ Make sure you have:
 - A local copy of your Docusaurus or MkDocs repository
 - A clean or committed working tree in your source repository
 
-You don't need to install CamelMind before running the migration. `npx` fetches the latest version automatically.
+You do not need to install CamelMind before running the migration. `npx` fetches the latest version automatically.
 
 ---
 
@@ -58,8 +56,6 @@ Use `--dry-run` to see what the migration would do without creating or modifying
 npx camelmind@latest migrate path/to/your-docs-repo --dry-run
 ```
 
-Use a dry run if you want to review the migration before creating the CamelMind project.
-
 ---
 
 ## Review the migration report
@@ -71,9 +67,9 @@ Every migration ends with a report. The report identifies:
 - CSS and other assets carried over
 - Items that require manual attention
 
-For example, a navigation entry might be reported if CamelMind cannot resolve it to a source file.
+For example, the report includes a navigation entry if CamelMind cannot resolve it to a source file.
 
-Review the **items need manual attention** section before moving on. These items don't necessarily mean the migration failed — they identify places where the source site's structure or customization requires a decision.
+Review the **items need manual attention** section before moving on. These items do not necessarily mean the migration failed — they identify places where the source site's structure or customization requires a decision.
 
 ---
 
@@ -103,14 +99,14 @@ Open [http://localhost:3000](http://localhost:3000) and review the migrated site
 
 ## Recommended migration workflow
 
-For most sites, we recommend migrating in stages rather than trying to reproduce the existing site exactly on the first run.
+For most sites, we recommend migrating in stages rather than trying to reproduce the existing site on the first run.
 
 
 ### Migrate the content
 
 Start with the Markdown content and basic navigation.
 
-Don't worry about making the site look exactly like the original site yet. The goal is to establish that your documentation content migrated successfully.
+Do not worry about making the site look like the original site yet. The goal is to establish that your documentation content migrated.
 
 
 ### Review the navigation
@@ -121,7 +117,7 @@ Look for:
 
 - Missing pages
 - Pages in the wrong section
-- Links that don't resolve
+- Links that do not resolve
 - Custom navigation entries
 - External links
 - Redirect or URL requirements
@@ -151,7 +147,7 @@ The migration converts Markdown files to MDX, but framework-specific syntax may 
 
 Once the content and navigation are working, review your existing customizations.
 
-This is where it is usually better to **adapt the documentation to CamelMind rather than recreate the old framework implementation**.
+This is where it is better to **adapt the documentation to CamelMind rather than recreate the old framework implementation**.
 
 
 ### Validate the complete site
@@ -171,13 +167,9 @@ Keep the original site available until you've completed your validation.
 
 Docusaurus and MkDocs sites often accumulate custom components, plugins, CSS, scripts, and theme modifications over time.
 
-The migration tool focuses on getting your documentation content and structure into CamelMind. It does not attempt to automatically reproduce every framework-specific customization — this is intentional. A customization that was necessary in Docusaurus or MkDocs may no longer be necessary in CamelMind.
+The migration tool focuses on getting your documentation content and structure into CamelMind. It does not attempt to automatically reproduce every framework-specific customization. A customization that was necessary in Docusaurus or MkDocs may no longer be necessary in CamelMind.
 
-
-When reviewing a customization, first ask what user problem it solves. Then determine the best way to provide that experience in CamelMind.
-
-
-### Custom React components
+=== "Custom React components"
 
 Docusaurus sites may contain custom React components used directly in MDX, for example:
 
@@ -190,29 +182,29 @@ Instead of automatically rebuilding the component, determine whether CamelMind a
 - If the component provides a standard documentation pattern, replace it with the appropriate [CamelMind component](/getting-started/mdx-components).
 - If it provides unique product functionality, evaluate whether that functionality is still necessary before rebuilding it.
 
-### MkDocs plugins
+=== "MkDocs plugins"
 
 MkDocs sites often rely on plugins to add functionality to Markdown processing, navigation, search, or page generation. For each plugin, identify what it actually provides to the reader. Then:
 
 1. Check whether CamelMind already provides the same capability.
 2. Look for a simpler CamelMind-native implementation.
-3. Recreate the plugin behavior only if the functionality is still required.
+3. Recreate the plugin behavior only if you still require the functionality.
 
 This avoids carrying framework-specific dependencies into your new site unnecessarily.
 
-### Custom CSS and themes
+=== "Custom CSS and themes"
 
-If your existing site has extensive CSS overrides, the migration may carry over relevant CSS. Don't assume you need to preserve the entire theme, however.
+If your existing site has extensive CSS overrides, the migration may carry over relevant CSS.
 
 Start with the migrated site and identify the visual customizations that matter to your users — brand colors, typography, logos, layout, callouts, code blocks, navigation, and custom page elements. Then adapt those elements to CamelMind rather than reproducing the entire Docusaurus or MkDocs theme.
 
-### Custom navigation
+=== "Custom navigation"
 
 The migration uses your existing Docusaurus sidebar or MkDocs navigation to generate `nav/nav.yml`.
 
 If your existing navigation contains custom logic, generated entries, or framework-specific behavior, review the generated navigation manually. Prefer [CamelMind's navigation configuration](/getting-started/navigation) over carrying forward scripts that existed only to generate the old framework's navigation.
 
-### Custom landing pages
+=== "Custom landing pages"
 
 Docusaurus and MkDocs sites sometimes use custom React pages or theme templates for their home page. Treat the landing page as a separate design task:
 
@@ -220,14 +212,18 @@ Docusaurus and MkDocs sites sometimes use custom React pages or theme templates 
 2. Recreate that experience in CamelMind.
 3. Remove framework-specific code that no longer serves a purpose.
 
-### Build scripts
+=== "Build scripts"
 
 Review custom build scripts, plugins, and CI steps after the initial migration. Some scripts may no longer be necessary because CamelMind handles the underlying functionality. For each script, ask:
 
 - Does this still solve a problem?
 - Is this required for the content, or only for the old framework?
 - Can CamelMind handle this natively?
-- Can the workflow be simplified?
+- Can you simplify the workflow?
+
+When migrating existing build scripts to a CamelMind project, convert them to TypeScript `.ts` files in `scripts/` to match the rest of the application code (`lib/, camelmind.config.ts`). Keep a plain `.sh` wrapper only when you need to glue together a few shell commands around a script.
+
+===
 
 ---
 
@@ -242,9 +238,9 @@ If your documentation site has significant customizations, migrate a representat
 - A page using special navigation
 - Your home or landing page
 
-Run the migration and use the result to determine what needs to be adapted. Once you're comfortable with the approach, migrate the complete repository.
+Run the migration and use the result to determine what you need to adapt. Once you are comfortable with the approach, migrate the complete repository.
 
-This is generally safer than trying to reproduce a highly customized site in a single migration pass.
+This is safer than trying to reproduce a highly customized site in a single migration pass.
 
 ---
 
@@ -263,7 +259,7 @@ This is generally safer than trying to reproduce a highly customized site in a s
 
 ## Troubleshooting
 
-### CamelMind doesn't detect my site
+### CamelMind does not detect my site
 
 Make sure your repository contains the expected configuration file:
 
@@ -272,21 +268,26 @@ Make sure your repository contains the expected configuration file:
 
 If necessary, use `--sidebars` to explicitly specify the Docusaurus sidebar configuration.
 
+
+
 ### Some navigation entries need manual attention
 
-Review the migration report and the generated `nav/nav.yml`. A navigation entry may require manual attention if its source page cannot be resolved automatically.
+Review the migration report and the generated `nav/nav.yml`. A navigation entry requires manual attention if CamelMind cannot automatically resolve its source page.
 
 Check the original sidebar or `mkdocs.yml` configuration and make the appropriate adjustment in `nav/nav.yml`.
 
-### A custom component doesn't work
 
-Framework-specific components aren't guaranteed to work after migration.
+### A custom component does not work
+
+Framework-specific components may not work after migration.
 
 Identify what the component does and determine whether CamelMind has a native equivalent. If not, simplify or rebuild the component for CamelMind rather than trying to carry over its original implementation unchanged.
 
+
 ### My site has many customizations
 
-Don't migrate everything at once. Use a representative set of pages to establish a migration pattern first. If you're unsure how to approach a particular customization, contact the CamelMind team using the feedback widget.
+Do not migrate everything at once. Use a representative set of pages to establish a migration pattern first. If you're unsure how to approach a particular customization, contact the CamelMind team using the feedback widget.
+
 
 ---
 
