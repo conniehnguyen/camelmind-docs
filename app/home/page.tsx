@@ -119,6 +119,12 @@ export default async function HomePage() {
                   Get Started
                   <ArrowRight size={16} />
                 </Link>
+                <Link
+                  href="/work-with-us"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-md border border-[var(--cm-border)] text-[var(--cm-text-primary)] hover:border-[var(--cm-oasis-teal)] transition-colors"
+                >
+                  How Can We Work Together
+                </Link>
               </div>
             </div>
           </div>

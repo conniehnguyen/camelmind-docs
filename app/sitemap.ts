@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   if (config.ai?.sitemap?.enabled === false) return []
 
   const baseUrl = config.url.replace(/\/$/, "")
-  const staticEntries: MetadataRoute.Sitemap = [{ url: baseUrl }, { url: `${baseUrl}/home` }]
+  const staticEntries: MetadataRoute.Sitemap = [{ url: baseUrl }, { url: `${baseUrl}/home` }, { url: `${baseUrl}/work-with-us` }]
 
   // Nav-role-public pages are not anonymously reachable when the site requires
   // login for everything — getPublicSlugsAcrossVersions already returns [] in

@@ -123,6 +123,16 @@ export function TopNav({ nav, userRoles, userName, authEnabled = false, versions
           </Link>
         )}
 
+        {/* How Can We Work Together — standalone marketing page, outside nav.yml */}
+        <Link
+          href="/work-with-us"
+          className={`hidden md:block text-sm font-medium transition-colors ${
+            currentSlug.startsWith("/work-with-us") ? "text-[var(--cm-oasis-teal)]" : "text-[var(--cm-parchment)] hover:text-[var(--cm-oasis-teal)]"
+          }`}
+        >
+          How Can We Work Together
+        </Link>
+
         {/* Right side */}
         <div className="ml-auto flex items-center gap-3">
           <SearchTrigger />
