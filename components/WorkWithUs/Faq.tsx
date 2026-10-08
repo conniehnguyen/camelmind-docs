@@ -28,7 +28,7 @@ export function Faq({ items }: { items: FaqItem[] }) {
               </span>
             </button>
             {isOpen && (
-              <div className="pb-5 pl-[56px] max-w-2xl text-[15px] leading-relaxed text-[var(--cm-text-secondary)]">
+              <div className="pb-5 pl-[56px] text-[15px] leading-relaxed text-[var(--cm-text-secondary)]">
                 {item.a}
               </div>
             )}

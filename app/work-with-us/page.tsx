@@ -5,162 +5,150 @@ import { loadVersions, getNavForVersion } from "@/lib/versions"
 import { getSession } from "@/lib/auth"
 import { getConfig, isAuthEnabled } from "@/lib/config"
 import { TopNav } from "@/components/Nav/TopNav"
-import { ServicesSection, type Package } from "@/components/WorkWithUs/ServicesSection"
+import { ServiceBlock, type ServiceBlockData } from "@/components/WorkWithUs/ServiceBlock"
+import { WhyUs, WHY_US_REASONS } from "@/components/WorkWithUs/WhyUs"
+import { PricingCards, type PricingCard } from "@/components/WorkWithUs/PricingCards"
 import { Faq, type FaqItem } from "@/components/WorkWithUs/Faq"
 import { WorkWithUs } from "@/components/WorkWithUs/WorkWithUs"
 
 export const metadata = {
   title: "How Can We Work Together — CamelMind",
-  description: "The team behind CamelMind migrates, builds, and maintains documentation for software teams.",
+  description: "Documentation services for software teams, from the team behind CamelMind — strategy and build, migration, and ongoing retainer support.",
 }
 
-const PACKAGES: Package[] = [
+const SERVICES: ServiceBlockData[] = [
   {
-    id: "migration",
-    name: "Migration",
-    tagline: "Move to CamelMind — or away from it — without losing a page.",
-    description:
-      "We migrate existing documentation into CamelMind's content model: Markdown/MDX conversion, nav structure, redirects, versioning, and role mapping. We also run migrations the other way — out of CamelMind into Docusaurus, MkDocs, GitBook, Mintlify, or wherever you're headed next.",
-    tiers: [
-      { label: "Small", scope: "Up to 50 pages, one source platform", price: "$2,000", delivery: "1–2 week delivery" },
-      { label: "Standard", scope: "Up to 150 pages, one source platform", price: "$4,500", delivery: "2–4 week delivery" },
-      { label: "Large", scope: "Up to 400 pages, or multiple source platforms", price: "$8,000", delivery: "4–6 week delivery" },
-      { label: "Custom", scope: "400+ pages, multi-product, or a reverse migration out of CamelMind", price: "Quoted", delivery: "Timeline per scope" },
+    n: "01",
+    title: "Documentation strategy & build",
+    tagline: "Turn product knowledge into documentation developers can actually use.",
+    paragraphs: [
+      "We'll work with your product and engineering teams to understand the product, define the information architecture, and create the documentation from the ground up.",
     ],
-    included: [
-      "Content conversion to Markdown/MDX",
-      "Navigation rebuilt (or exported, for a reverse migration) to match your IA",
-      "Redirect map from old URLs to new slugs",
-      "Image and asset migration",
-      "Role/permission mapping, where the source or target platform supports it",
-      "One QA pass against the original site",
-      "AI-readiness check (llms.txt, AI View) for migrations into CamelMind",
+    listIntro: "Depending on your needs, that can include:",
+    items: [
+      "Information architecture and navigation",
+      "Getting started and onboarding content",
+      "Guides, how-tos, and conceptual documentation",
+      "API documentation and OpenAPI integration",
+      "Developer portal content",
+      "Versioning and content organization",
+      "Authentication and role-based documentation",
+      "Search and discoverability",
+      "AI-readable documentation and retrieval considerations",
+      "Documentation standards and reusable content patterns",
     ],
-    notIncluded: [
-      "New content writing — gaps found during migration are flagged, not filled",
-      "Code sample rewriting or validation",
-      "Custom theming beyond existing design tokens",
-      "Ongoing hosting or maintenance after handoff",
-    ],
-    process: [
-      { step: "1", label: "Scope call", detail: "Confirm source platform, page count, and access." },
-      { step: "2", label: "SOW + 50% deposit", detail: "Work begins on receipt." },
-      { step: "3", label: "Conversion + structure", detail: "Content and navigation rebuilt in the target platform." },
-      { step: "4", label: "QA pass", detail: "Side-by-side comparison against the original site." },
-      { step: "5", label: "Handoff", detail: "Final site, redirect map, and balance due." },
-    ],
-    oneLiner: "Fixed fee by page count — from $2,000 for a small migration to $8,000 for a large one. Covers conversion, structure, redirects, and one QA pass.",
+    closing: "We can build on the platform you already use or help you move to one that better fits your team.",
   },
   {
-    id: "build",
+    n: "02",
+    title: "Documentation migration",
+    tagline: "Move your docs without starting over.",
+    paragraphs: [
+      "Changing documentation platforms shouldn't mean losing years of content, structure, or search equity.",
+      "We can migrate your existing documentation between docs-as-code and documentation platforms, including Markdown and MDX-based systems.",
+    ],
+    listIntro: "We handle:",
+    items: [
+      "Markdown and MDX conversion",
+      "Information architecture and navigation",
+      "URL and redirect mapping",
+      "Images and other assets",
+      "Versioning",
+      "Frontmatter and metadata",
+      "Role and permission mapping, where supported",
+      "Content QA against the original site",
+      "Documentation cleanup and restructuring where appropriate",
+    ],
+    closing: (
+      <>
+        We work across platforms including Docusaurus, MkDocs, Astro, Mintlify, GitBook, and other docs-as-code
+        systems. And yes, we can migrate <span className="text-[var(--cm-oasis-teal)]">to CamelMind</span>.
+      </>
+    ),
+  },
+  {
+    n: "03",
+    title: "Documentation retainer",
+    tagline: "Keep documentation in step with the product.",
+    paragraphs: [
+      "Documentation shouldn't be a cleanup project after every release.",
+      "With an ongoing engagement, we become an extension of your product and engineering team. We can take on a defined amount of documentation work each month, based on your release cadence and priorities.",
+    ],
+    listIntro: "Typical work includes:",
+    items: [
+      "New feature documentation",
+      "Getting-started and onboarding improvements",
+      "How-to and conceptual content",
+      "API documentation updates",
+      "Release notes and changelogs",
+      "Deprecation and migration documentation",
+      "Documentation audits and cleanup",
+      "Information architecture improvements",
+      "Search and discoverability improvements",
+      "AI-readiness and retrieval reviews",
+    ],
+    closing: "Documentation built with the same care as your product.",
+  },
+]
+
+const PRICING: PricingCard[] = [
+  {
     name: "Documentation Build",
-    tagline: "Start from nothing. End with a documentation site your team can run.",
-    description:
-      "A complete CamelMind site — information architecture, written content, API reference, versioning, and auth — scoped and signed off before writing begins.",
-    tiers: [
-      { label: "Feature area", scope: "~15–25 pages", price: "$5,000", delivery: "3–4 week delivery" },
-      { label: "Full product", scope: "~40–60 pages", price: "$9,500", delivery: "5–7 week delivery" },
-      { label: "Full developer portal", scope: "80+ pages, API reference, versioning, RBAC", price: "$16,000", delivery: "8–12 week delivery" },
-      { label: "Custom", scope: "Multi-product or multi-site", price: "Quoted", delivery: "Timeline per scope" },
-    ],
-    included: [
-      "Information architecture and navigation design",
-      "Written content for every page in the agreed outline",
-      "OpenAPI wiring for API Reference, where applicable",
-      "Versioning and RBAC configuration",
-      "llms.txt and AI View setup",
-      "One round of written revisions after delivery",
-      "One 30-minute launch readout call",
-    ],
-    notIncluded: [
-      "Code sample generation beyond what's in the OpenAPI spec",
-      "Hosting setup or CI/CD configuration",
-      "Ongoing updates after launch — see the Retainer",
-      "Video or multimedia content",
-    ],
-    process: [
-      { step: "1", label: "Scope call", detail: "Confirm outline and access to your product." },
-      { step: "2", label: "SOW + 50% deposit", detail: "Work begins on receipt." },
-      { step: "3", label: "IA + draft", detail: "Structure first, then content." },
-      { step: "4", label: "Review", detail: "One round of written feedback incorporated." },
-      { step: "5", label: "Launch + readout", detail: "Delivery, 30-minute call, balance due." },
-    ],
-    oneLiner: "Fixed fee by page count — $5,000 to $16,000 depending on scope. Covers IA, writing, and configuration; one round of revisions included.",
+    description: "For teams starting a new documentation site or rebuilding an existing one.",
+    price: "Starting at $5,000",
   },
   {
-    id: "retainer",
-    name: "Retainer",
-    tagline: "Ongoing coverage, so new features ship with docs instead of after them.",
-    description:
-      "Monthly capacity for release notes, feature docs, and changelog entries on your CamelMind site, plus a monthly doc health summary. Scoped at the start of each month; three-month minimum.",
-    tiers: [
-      { label: "Light", scope: "8 hrs/month", price: "$1,600/mo", delivery: "Billed 1st of month", note: "Low-cadence releases" },
-      { label: "Standard", scope: "15 hrs/month", price: "$2,800/mo", delivery: "Billed 1st of month", note: "Regular release cycles" },
-      { label: "Full", scope: "20 hrs/month", price: "$3,600/mo", delivery: "Billed 1st of month", note: "Fast-moving products" },
-    ],
-    callout: "Hours are a capacity ceiling, not a deliverable count. What gets done within those hours is defined by the monthly task list agreed in advance.",
-    included: [
-      "Monthly task list agreed by the 25th of the prior month",
-      "Release notes and changelog entries for each release",
-      "Feature documentation updates — new pages, edits, deprecation notices",
-      "Monthly doc health summary",
-      "One scheduled check-in call per month",
-      "Async access by email, one business day response",
-    ],
-    notIncluded: [
-      "Net-new product areas or full-site rebuilds — quoted separately as a Build",
-      "Work beyond the agreed monthly task list without written approval",
-      "Unused hours — they don't roll over",
-      "Calls beyond the monthly check-in",
-    ],
-    terms: [
-      { label: "Minimum", detail: "3-month minimum" },
-      { label: "Exit", detail: "Either party may exit with 30 days' written notice after month 3" },
-      { label: "Early exit", detail: "Remaining contract balance due" },
-      { label: "Tier change", detail: "30 days' notice; takes effect the following month" },
-    ],
-    process: [
-      { step: "1", label: "Month 0", detail: "Scope call, SOW signed, first month billed upfront." },
-      { step: "2", label: "25th of month", detail: "Task list agreed for the following month." },
-      { step: "3", label: "1st of month", detail: "Invoice sent, due on receipt." },
-      { step: "4", label: "End of month", detail: "Health summary delivered." },
-    ],
-    oneLiner: "$1,600 to $3,600 a month for eight, fifteen, or twenty hours — scoped monthly, three-month minimum.",
+    name: "Migration",
+    description: "For teams moving documentation between platforms without losing content, structure, or URLs.",
+    price: "Starting at $2,000",
+  },
+  {
+    name: "Documentation Retainer",
+    description: "For teams that need documentation to keep pace with an active product.",
+    price: "Starting at $1,600/month",
   },
 ]
 
 const FAQ: FaqItem[] = [
   {
-    q: "How do you price engagements?",
-    a: "Fixed fee for Migration and Documentation Build — scope, timeline, and price are agreed before any work starts. The Retainer is the one exception: a monthly capacity fee with a task list agreed at the start of each month. No surprise invoices either way.",
+    q: "Do you only work with CamelMind?",
+    a: "No. We're the team behind CamelMind, but our documentation services are platform agnostic. We can work with your existing docs-as-code stack or help you evaluate and migrate to another platform. We're comfortable with Docusaurus, MkDocs, Astro, Mintlify, GitBook, and other modern documentation systems.",
   },
   {
-    q: "Do you only work on CamelMind sites?",
-    a: "Documentation Build and Retainer are CamelMind-native. Migration goes both ways, though: we'll move you into CamelMind from your current tool, or out of CamelMind to Docusaurus, MkDocs, GitBook, Mintlify, or wherever you're headed next.",
+    q: "What makes you different from a technical writing agency?",
+    a: "We're experienced Technical Writers who also build documentation infrastructure. That means we can work at both levels: the content your users read and the system your team uses to create, publish, organize, and maintain that content.",
   },
   {
-    q: "What if we're not sure which engagement we need?",
-    a: "That's fine — a short note is usually enough to figure it out. Tell us roughly where things stand and we'll point you at Migration, Build, or Retainer.",
+    q: "Do you work directly with engineers?",
+    a: "Yes. That's a big part of how we work. We can work from product requirements, API specifications, source code, design documentation, engineering walkthroughs, and conversations with subject-matter experts. Our goal is to take the documentation work off your engineers' plate without losing the technical accuracy developers expect.",
+  },
+  {
+    q: "Can you work with our existing documentation?",
+    a: "Absolutely. We can audit and improve an existing documentation site, restructure its information architecture, migrate it to another platform, or simply take over ongoing documentation work. You don't need to start from scratch.",
   },
   {
     q: "Do you sign NDAs?",
-    a: "Yes, as standard. Most engagements involve unreleased features or internal architecture. A mutual NDA is part of the SOW process before any work begins.",
+    a: "Yes. We're accustomed to working with unreleased products, APIs, architecture, and internal documentation. We can sign a mutual NDA before work begins.",
   },
   {
-    q: "How do you work with engineering teams?",
-    a: "Async-first. We work from a defined scope and communicate through a single point of contact on your side. Expect clear deliverables agreed upfront, written status updates, and a monthly check-in call on Retainer engagements.",
+    q: "How do you work with our team?",
+    a: "We're async-first and work closely with a designated point of contact on your team. Depending on the engagement, we'll collaborate directly with engineering, product, design, developer experience, or customer-facing teams. We establish scope and deliverables up front, communicate progress clearly, and keep the process lightweight.",
   },
   {
-    q: "What's a typical timeline?",
-    a: "Migration runs 1–6 weeks depending on size and number of source platforms. A Documentation Build runs 3–12 weeks depending on scope. A Retainer starts the month after the SOW is signed.",
+    q: "Where are you located?",
+    a: "We're based in Silicon Valley, California, and work with software teams remotely.",
+  },
+  {
+    q: "We're not sure what we need. Can we still talk?",
+    a: "Absolutely. Send us a note about your product, your current documentation setup, and what's not working. We'll help you figure out whether a documentation build, migration, retainer, or something else makes sense.",
   },
 ]
 
-function Metric({ n, label }: { n: string; label: string }) {
+function StatCard({ title, description }: { title: string; description: string }) {
   return (
     <div>
-      <div className="text-3xl font-semibold tracking-tight text-[var(--cm-text-primary)]">{n}</div>
-      <div className="text-xs text-[var(--cm-text-muted)] mt-2">{label}</div>
+      <div className="text-lg font-semibold tracking-tight text-[var(--cm-text-primary)]">{title}</div>
+      <div className="text-xs text-[var(--cm-text-muted)] mt-2 leading-relaxed">{description}</div>
     </div>
   )
 }
@@ -200,65 +188,126 @@ export default async function WorkWithUsPage() {
             <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-10 md:gap-16">
               <div className="hidden md:block">
                 <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium">Index</div>
-                <div className="font-mono text-[13px] text-[var(--cm-text-muted)] mt-3 leading-[1.9]">
-                  001 — Services<br />
-                  002 — FAQ<br />
-                  003 — Contact
+                <div className="font-mono text-[13px] text-[var(--cm-text-muted)] mt-3 leading-[1.9] flex flex-col">
+                  <a href="#services" className="hover:text-[var(--cm-oasis-teal)] transition-colors">001 — Services</a>
+                  <a href="#why-us" className="hover:text-[var(--cm-oasis-teal)] transition-colors">002 — Why us</a>
+                  <a href="#pricing" className="hover:text-[var(--cm-oasis-teal)] transition-colors">003 — Pricing</a>
+                  <a href="#faq" className="hover:text-[var(--cm-oasis-teal)] transition-colors">004 — FAQ</a>
+                  <a href="#contact" className="hover:text-[var(--cm-oasis-teal)] transition-colors">005 — Contact</a>
                 </div>
               </div>
 
               <div>
                 <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-oasis-teal)] font-medium mb-6">
-                  — Documentation services
+                  — Documentation services for software teams
                 </div>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight leading-[1.02] text-[var(--cm-text-primary)] max-w-2xl mb-8">
-                  We write the docs, you write the <span className="text-[var(--cm-oasis-teal)]">code.</span>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight leading-[1.02] text-[var(--cm-text-primary)] mb-8">
+                  Documents built <span className="text-[var(--cm-oasis-teal)]">with the same care as your product.</span>
                 </h1>
-                <p className="text-lg text-[var(--cm-text-secondary)] max-w-xl leading-relaxed mb-10">
-                  CamelMind itself is open-source and free to self-host. The team behind it also migrates, builds, and maintains documentation for software teams — structured so your users, your support tools, and AI search can all find the right answer.
-                </p>
+                <div className="flex flex-col gap-4 mb-8">
+                  <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed">
+                    We&apos;re the team behind CamelMind, and we&apos;ve spent 10+ years writing documentation for developers, building docs platforms, and working alongside engineering and product teams.
+                  </p>
+                  <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed">
+                    We bring that experience to your documentation, wherever it lives.
+                  </p>
+                  <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed">
+                    Whether you&apos;re starting a developer portal, rebuilding an existing knowledge base, migrating between docs-as-code platforms, or need someone to keep documentation in step with your releases, we can help.
+                  </p>
+                  <p className="text-base font-semibold text-[var(--cm-text-primary)]">
+                    Based in Silicon Valley. Working with software teams wherever they are.
+                  </p>
+                </div>
 
                 <div className="flex flex-wrap gap-3 mb-16">
                   <a
                     href="#services"
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-md text-sm font-semibold bg-[var(--cm-oasis-teal)] text-white hover:opacity-90 transition-opacity"
                   >
-                    See the services
+                    See our services
                     <ArrowRight size={16} />
                   </a>
                   <a
                     href="#contact"
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-md text-sm font-medium border border-[var(--cm-border)] text-[var(--cm-text-primary)] hover:border-[var(--cm-oasis-teal)] transition-colors"
                   >
-                    Get in touch
+                    Talk to us
                   </a>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 pt-8 border-t border-[var(--cm-border)]">
-                  <Metric n="3" label="Ways to work" />
-                  <Metric n="1–12" label="Weeks, typical engagement" />
-                  <Metric n="100%" label="Content stays yours" />
-                  <Metric n="MIT" label="Core stays free, always" />
+                  <StatCard title="10+ years" description="Writing for developers" />
+                  <StatCard title="Platform agnostic" description="Docusaurus, MkDocs, Astro, Mintlify, GitBook, and more" />
+                  <StatCard title="Docs as product" description="IA, content, tooling, search, and developer experience" />
+                  <StatCard title="AI-ready" description="Structured for human readers and machine retrieval" />
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Services */}
+        {/* How we can work together */}
         <section id="services" className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24 scroll-mt-20">
-          <div className="mb-12 max-w-2xl">
+          <div className="mb-14">
             <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium mb-4">
               001 / Services
             </div>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-text-primary)] mb-4">
-              Three ways to work.
+              How we can work together
             </h2>
+            <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed mb-2">
+              Good documentation isn&apos;t just well-written pages. It&apos;s the right information, in the right structure, on the right platform, at the right point in the product experience.
+            </p>
             <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed">
-              Scope, price, and what&apos;s not included — made plain. If your situation doesn&apos;t fit one of these, we can talk through a custom engagement.
+              We can work with your existing stack or help you choose a better one.
             </p>
           </div>
-          <ServicesSection packages={PACKAGES} />
+          <div className="flex flex-col gap-14">
+            {SERVICES.map((s) => (
+              <ServiceBlock key={s.n} service={s} />
+            ))}
+          </div>
+        </section>
+
+        {/* Why work with us */}
+        <section id="why-us" className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24 border-t border-[var(--cm-border)] scroll-mt-20">
+          <div className="mb-14">
+            <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium mb-4">
+              002 / Why us
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-text-primary)] mb-5">
+              Why work with us?
+            </h2>
+            <p className="text-xl font-medium text-[var(--cm-text-primary)] mb-4">
+              We&apos;ve been on both sides of the docs stack.
+            </p>
+            <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed mb-3">
+              We&apos;re not a generalist content agency learning your product from the outside. We&apos;re career Technical Writers and Documentation Engineers who have spent 10+ years working with developers, engineers, product managers, and customers.
+            </p>
+            <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed mb-5">
+              We&apos;ve written API documentation, developer guides, product documentation, onboarding content, knowledge bases, and technical explainers. We&apos;ve also built the infrastructure that publishes and maintains those docs. That combination matters.
+            </p>
+            <p className="text-lg font-semibold text-[var(--cm-text-primary)]">
+              We understand the writing. We understand the technology. And we understand the reader.
+            </p>
+          </div>
+          <WhyUs reasons={WHY_US_REASONS} />
+        </section>
+
+        {/* Pricing */}
+        <section id="pricing" className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24 border-t border-[var(--cm-border)] scroll-mt-20">
+          <div className="mb-10">
+            <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium mb-4">
+              003 / Pricing
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-text-primary)]">
+              Our services
+            </h2>
+          </div>
+          <PricingCards cards={PRICING} />
+          <p className="text-sm text-[var(--cm-text-muted)] mt-6">
+            Custom engagements are available for larger documentation programs, multi-product sites, and complex migrations.
+          </p>
         </section>
 
         {/* FAQ */}
@@ -266,10 +315,10 @@ export default async function WorkWithUsPage() {
           <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-10 md:gap-16">
             <div>
               <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium mb-4">
-                002 / FAQ
+                004 / FAQ
               </div>
               <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-text-primary)]">
-                Six questions.
+                Frequently asked questions
               </h2>
             </div>
             <Faq items={FAQ} />
@@ -280,15 +329,23 @@ export default async function WorkWithUsPage() {
         <section id="contact" className="max-w-6xl mx-auto px-6 md:px-10 pb-20 md:pb-28 scroll-mt-20">
           <div className="rounded-xl bg-[var(--cm-night-dune)] px-8 md:px-14 py-14 md:py-16">
             <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-white/50 font-medium mb-4">
-              003 / Contact
+              005 / Contact
             </div>
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-parchment)] max-w-xl mb-4">
-              Let&apos;s talk about your documentation.
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-parchment)] mb-4">
+              Let&apos;s make your documentation better
             </h2>
-            <p className="text-lg text-white/70 max-w-lg mb-8 leading-relaxed">
-              If you&apos;re not sure which engagement makes sense, that&apos;s fine — a short note below is usually enough to figure it out together. We get back to every inquiry within one business day.
+            <div className="flex flex-col gap-2 mb-6">
+              <p className="text-lg text-white/70 leading-relaxed">
+                You don&apos;t need to figure out the documentation strategy, platform, information architecture, and writing process on your own.
+              </p>
+              <p className="text-lg text-white/70 leading-relaxed">
+                Tell us where you are today and where you want your documentation to go. We&apos;ll help you figure out the next step.
+              </p>
+            </div>
+            <p className="text-sm font-semibold text-white/80 mb-8">
+              Based in Silicon Valley. Built by Technical Writers.
             </p>
-            <WorkWithUs tone="onDark" />
+            <WorkWithUs tone="onDark" ctaLabel="Talk to us" />
           </div>
         </section>
       </main>

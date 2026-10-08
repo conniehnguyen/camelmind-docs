@@ -4,16 +4,16 @@ import { useState } from "react"
 import { Mail } from "lucide-react"
 
 const PROJECT_TYPES = [
-  { value: "migration", label: "Migration (into or out of CamelMind)" },
-  { value: "build", label: "Documentation Build" },
-  { value: "retainer", label: "Retainer / ongoing support" },
+  { value: "build", label: "Documentation strategy & build" },
+  { value: "migration", label: "Documentation migration (to or from CamelMind, or another platform)" },
+  { value: "retainer", label: "Documentation retainer" },
   { value: "not-sure", label: "Not sure yet" },
 ]
 
 type Status = "idle" | "open" | "sending" | "sent" | "error"
 type Tone = "onLight" | "onDark"
 
-export function WorkWithUs({ tone = "onLight" }: { tone?: Tone }) {
+export function WorkWithUs({ tone = "onLight", ctaLabel = "Get in touch" }: { tone?: Tone; ctaLabel?: string }) {
   const [status, setStatus] = useState<Status>("idle")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -122,7 +122,7 @@ export function WorkWithUs({ tone = "onLight" }: { tone?: Tone }) {
             className="flex items-center gap-2 px-5 py-3 rounded-md text-sm font-semibold bg-[var(--cm-oasis-teal)] text-white hover:opacity-90 transition-opacity"
           >
             <Mail size={14} strokeWidth={1.75} />
-            {open ? "Close" : "Get in touch"}
+            {open ? "Close" : ctaLabel}
           </button>
         ) : (
           <button
@@ -130,7 +130,7 @@ export function WorkWithUs({ tone = "onLight" }: { tone?: Tone }) {
             className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium border border-gray-300 text-gray-700 hover:border-gray-500 hover:text-gray-900 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-400 dark:hover:text-white transition-colors"
           >
             <Mail size={14} strokeWidth={1.75} />
-            {open ? "Close" : "Get in touch"}
+            {open ? "Close" : ctaLabel}
           </button>
         )}
       </div>
