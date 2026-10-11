@@ -20,11 +20,11 @@ const SERVICES: ServiceBlockData[] = [
   {
     n: "01",
     title: "Documentation strategy & build",
-    tagline: "Turn product knowledge into documentation developers can actually use.",
+    tagline: "Help developers recognize your product as the core building block for their use case.",
     paragraphs: [
-      "We'll work with your product and engineering teams to understand the product, define the information architecture, and create the documentation from the ground up.",
+      "We partner with your team to create clear, solution-driven documentation that makes adoption effortless, guiding developers from initial evaluation to solving their specific challenges.",
     ],
-    listIntro: "Depending on your needs, that can include:",
+    listIntro: "",
     items: [
       "Information architecture and navigation",
       "Getting started and onboarding content",
@@ -36,18 +36,16 @@ const SERVICES: ServiceBlockData[] = [
       "Search and discoverability",
       "AI-readable documentation and retrieval considerations",
       "Documentation standards and reusable content patterns",
-    ],
-    closing: "We can build on the platform you already use or help you move to one that better fits your team.",
+    ]
   },
   {
     n: "02",
     title: "Documentation migration",
-    tagline: "Move your docs without starting over.",
+    tagline: "Migration without disruption.",
     paragraphs: [
-      "Changing documentation platforms shouldn't mean losing years of content, structure, or search equity.",
-      "We can migrate your existing documentation between docs-as-code and documentation platforms, including Markdown and MDX-based systems.",
+      "We can help you plan and execute a migration of your existing documentation between docs-as-code setups and publishing platforms, including Markdown and MDX-based systems, all without disrupting your current operations.",
     ],
-    listIntro: "We handle:",
+    listIntro: "",
     items: [
       "Markdown and MDX conversion",
       "Information architecture and navigation",
@@ -59,22 +57,15 @@ const SERVICES: ServiceBlockData[] = [
       "Content QA against the original site",
       "Documentation cleanup and restructuring where appropriate",
     ],
-    closing: (
-      <>
-        We work across platforms including Docusaurus, MkDocs, Astro, Mintlify, GitBook, and other docs-as-code
-        systems. And yes, we can migrate <span className="text-[var(--cm-oasis-teal)]">to CamelMind</span>.
-      </>
-    ),
   },
   {
     n: "03",
-    title: "Documentation retainer",
+    title: "Ongoing documentation support",
     tagline: "Keep documentation in step with the product.",
     paragraphs: [
-      "Documentation shouldn't be a cleanup project after every release.",
-      "With an ongoing engagement, we become an extension of your product and engineering team. We can take on a defined amount of documentation work each month, based on your release cadence and priorities.",
+      "Outdated docs cause more than just frustration; they cost you developer trust and slow down adoption. We integrate with your product and engineering workflows to keep knowledge current automatically, while taking on a reliable amount of ongoing documentation work each month to match your release cadence.",
     ],
-    listIntro: "Typical work includes:",
+    listIntro: "",
     items: [
       "New feature documentation",
       "Getting-started and onboarding improvements",
@@ -87,7 +78,6 @@ const SERVICES: ServiceBlockData[] = [
       "Search and discoverability improvements",
       "AI-readiness and retrieval reviews",
     ],
-    closing: "Documentation built with the same care as your product.",
   },
 ]
 
@@ -206,7 +196,7 @@ export default async function WorkWithUsPage() {
                 </h1>
                 <div className="flex flex-col gap-4 mb-8">
                   <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed">
-                    We&apos;re the team behind CamelMind, and we&apos;ve spent 10+ years writing documentation for developers, building docs platforms, and working alongside engineering and product teams.
+                     We&apos;re the team behind CamelMind,with 10+ years of experience writing developer documentation, building docs platforms, and working alongside engineering and product teams.
                   </p>
                   <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed">
                     We bring that experience to your documentation, wherever it lives.
@@ -256,7 +246,7 @@ export default async function WorkWithUsPage() {
               How we can work together
             </h2>
             <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed mb-2">
-              Good documentation isn&apos;t just well-written pages. It&apos;s the right information, in the right structure, on the right platform, at the right point in the product experience.
+              Documentation succeeds when it delivers the right information to the target audience, in the right structure, on the right platform to unlock your product&apos;s full potential.
             </p>
             <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed">
               We can work with your existing stack or help you choose a better one.
@@ -278,18 +268,6 @@ export default async function WorkWithUsPage() {
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-text-primary)] mb-5">
               Why work with us?
             </h2>
-            <p className="text-xl font-medium text-[var(--cm-text-primary)] mb-4">
-              We&apos;ve been on both sides of the docs stack.
-            </p>
-            <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed mb-3">
-              We&apos;re not a generalist content agency learning your product from the outside. We&apos;re career Technical Writers and Documentation Engineers who have spent 10+ years working with developers, engineers, product managers, and customers.
-            </p>
-            <p className="text-lg text-[var(--cm-text-secondary)] leading-relaxed mb-5">
-              We&apos;ve written API documentation, developer guides, product documentation, onboarding content, knowledge bases, and technical explainers. We&apos;ve also built the infrastructure that publishes and maintains those docs. That combination matters.
-            </p>
-            <p className="text-lg font-semibold text-[var(--cm-text-primary)]">
-              We understand the writing. We understand the technology. And we understand the reader.
-            </p>
           </div>
           <WhyUs reasons={WHY_US_REASONS} />
         </section>
@@ -336,15 +314,12 @@ export default async function WorkWithUsPage() {
             </h2>
             <div className="flex flex-col gap-2 mb-6">
               <p className="text-lg text-white/70 leading-relaxed">
-                You don&apos;t need to figure out the documentation strategy, platform, information architecture, and writing process on your own.
+                From strategy and platform to information architecture and writing, we&apos;ll help you find the right path forward.
               </p>
               <p className="text-lg text-white/70 leading-relaxed">
-                Tell us where you are today and where you want your documentation to go. We&apos;ll help you figure out the next step.
+                Tell us where you are and where you want to go. Let's get your docs there.
               </p>
             </div>
-            <p className="text-sm font-semibold text-white/80 mb-8">
-              Based in Silicon Valley. Built by Technical Writers.
-            </p>
             <WorkWithUs tone="onDark" ctaLabel="Talk to us" />
           </div>
         </section>

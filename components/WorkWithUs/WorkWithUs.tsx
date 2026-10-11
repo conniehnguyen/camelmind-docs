@@ -5,7 +5,7 @@ import { Mail } from "lucide-react"
 
 const PROJECT_TYPES = [
   { value: "build", label: "Documentation strategy & build" },
-  { value: "migration", label: "Documentation migration (to or from CamelMind, or another platform)" },
+  { value: "migration", label: "Documentation migration" },
   { value: "retainer", label: "Documentation retainer" },
   { value: "not-sure", label: "Not sure yet" },
 ]
