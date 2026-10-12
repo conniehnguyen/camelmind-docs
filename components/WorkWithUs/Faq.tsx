@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { ChevronDown } from "lucide-react"
 
 export type FaqItem = { q: string; a: string }
 
@@ -15,20 +16,16 @@ export function Faq({ items }: { items: FaqItem[] }) {
           <div key={i} className="border-b border-[var(--cm-border)]">
             <button
               onClick={() => setOpen(isOpen ? null : i)}
-              className="w-full grid grid-cols-[40px_1fr_24px] items-center gap-4 py-5 text-left"
+              className="w-full grid grid-cols-[1fr_24px] items-center gap-4 py-5 text-left"
             >
-              <span className="font-mono text-[11px] font-medium text-[var(--cm-oasis-teal)]">
-                Q.{String(i + 1).padStart(2, "0")}
-              </span>
               <span className="text-base font-medium text-[var(--cm-text-primary)]">{item.q}</span>
-              <span
-                className={`text-lg text-[var(--cm-text-muted)] text-right transition-transform duration-200 ${isOpen ? "rotate-45" : ""}`}
-              >
-                +
-              </span>
+              <ChevronDown
+                size={18}
+                className={`justify-self-end text-[var(--cm-text-muted)] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+              />
             </button>
             {isOpen && (
-              <div className="pb-5 pl-[56px] text-[15px] leading-relaxed text-[var(--cm-text-secondary)]">
+              <div className="pb-5 text-[15px] leading-relaxed text-[var(--cm-text-secondary)]">
                 {item.a}
               </div>
             )}

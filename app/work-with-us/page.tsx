@@ -83,19 +83,19 @@ const SERVICES: ServiceBlockData[] = [
 
 const PRICING: PricingCard[] = [
   {
-    name: "Documentation Build",
+    name: "Documentation build",
     description: "For teams starting a new documentation site or rebuilding an existing one.",
-    price: "Starting at $5,000",
+    price: "Starting at $3,000",
   },
   {
     name: "Migration",
     description: "For teams moving documentation between platforms without losing content, structure, or URLs.",
-    price: "Starting at $2,000",
+    price: "Starting at $1,000",
   },
   {
-    name: "Documentation Retainer",
+    name: "Documentation partnership",
     description: "For teams that need documentation to keep pace with an active product.",
-    price: "Starting at $1,600/month",
+    price: "Starting at $1,100/month",
   },
 ]
 
@@ -177,20 +177,16 @@ export default async function WorkWithUsPage() {
           <div className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24">
             <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-10 md:gap-16">
               <div className="hidden md:block">
-                <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium">Index</div>
-                <div className="font-mono text-[13px] text-[var(--cm-text-muted)] mt-3 leading-[1.9] flex flex-col">
-                  <a href="#services" className="hover:text-[var(--cm-oasis-teal)] transition-colors">001 — Services</a>
-                  <a href="#why-us" className="hover:text-[var(--cm-oasis-teal)] transition-colors">002 — Why us</a>
-                  <a href="#pricing" className="hover:text-[var(--cm-oasis-teal)] transition-colors">003 — Pricing</a>
-                  <a href="#faq" className="hover:text-[var(--cm-oasis-teal)] transition-colors">004 — FAQ</a>
-                  <a href="#contact" className="hover:text-[var(--cm-oasis-teal)] transition-colors">005 — Contact</a>
+                <div className="font-mono text-[13px] text-[var(--cm-text-muted)] leading-[1.9] flex flex-col">
+                  <a href="#services" className="hover:text-[var(--cm-oasis-teal)] transition-colors">Services</a>
+                  <a href="#why-us" className="hover:text-[var(--cm-oasis-teal)] transition-colors">Why us</a>
+                  <a href="#pricing" className="hover:text-[var(--cm-oasis-teal)] transition-colors">Pricing</a>
+                  <a href="#faq" className="hover:text-[var(--cm-oasis-teal)] transition-colors">FAQ</a>
+                  <a href="#contact" className="hover:text-[var(--cm-oasis-teal)] transition-colors">Contact</a>
                 </div>
               </div>
 
               <div>
-                <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-oasis-teal)] font-medium mb-6">
-                  — Documentation services for software teams
-                </div>
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight leading-[1.02] text-[var(--cm-text-primary)] mb-8">
                   Documents built <span className="text-[var(--cm-oasis-teal)]">with the same care as your product.</span>
                 </h1>
@@ -239,9 +235,6 @@ export default async function WorkWithUsPage() {
         {/* How we can work together */}
         <section id="services" className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24 scroll-mt-20">
           <div className="mb-14">
-            <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium mb-4">
-              001 / Services
-            </div>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-text-primary)] mb-4">
               How we can work together
             </h2>
@@ -262,9 +255,6 @@ export default async function WorkWithUsPage() {
         {/* Why work with us */}
         <section id="why-us" className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24 border-t border-[var(--cm-border)] scroll-mt-20">
           <div className="mb-14">
-            <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium mb-4">
-              002 / Why us
-            </div>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-text-primary)] mb-5">
               Why work with us?
             </h2>
@@ -275,9 +265,6 @@ export default async function WorkWithUsPage() {
         {/* Pricing */}
         <section id="pricing" className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24 border-t border-[var(--cm-border)] scroll-mt-20">
           <div className="mb-10">
-            <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium mb-4">
-              003 / Pricing
-            </div>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-text-primary)]">
               Our services
             </h2>
@@ -292,9 +279,6 @@ export default async function WorkWithUsPage() {
         <section id="faq" className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24 border-t border-[var(--cm-border)] scroll-mt-20">
           <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-10 md:gap-16">
             <div>
-              <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-[var(--cm-text-muted)] font-medium mb-4">
-                004 / FAQ
-              </div>
               <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-text-primary)]">
                 Frequently asked questions
               </h2>
@@ -306,9 +290,6 @@ export default async function WorkWithUsPage() {
         {/* Contact */}
         <section id="contact" className="max-w-6xl mx-auto px-6 md:px-10 pb-20 md:pb-28 scroll-mt-20">
           <div className="rounded-xl bg-[var(--cm-night-dune)] px-8 md:px-14 py-14 md:py-16">
-            <div className="font-mono text-[11px] tracking-[1.2px] uppercase text-white/50 font-medium mb-4">
-              005 / Contact
-            </div>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--cm-parchment)] mb-4">
               Let&apos;s make your documentation better
             </h2>
@@ -317,7 +298,7 @@ export default async function WorkWithUsPage() {
                 From strategy and platform to information architecture and writing, we&apos;ll help you find the right path forward.
               </p>
               <p className="text-lg text-white/70 leading-relaxed">
-                Tell us where you are and where you want to go. Let's get your docs there.
+                Tell us where you are and where you want to go. Let&apos;s get your docs there.
               </p>
             </div>
             <WorkWithUs tone="onDark" ctaLabel="Talk to us" />

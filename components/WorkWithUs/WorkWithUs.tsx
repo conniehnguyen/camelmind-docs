@@ -6,7 +6,7 @@ import { Mail } from "lucide-react"
 const PROJECT_TYPES = [
   { value: "build", label: "Documentation strategy & build" },
   { value: "migration", label: "Documentation migration" },
-  { value: "retainer", label: "Documentation retainer" },
+  { value: "retainer", label: "Documentation partnership" },
   { value: "not-sure", label: "Not sure yet" },
 ]
 

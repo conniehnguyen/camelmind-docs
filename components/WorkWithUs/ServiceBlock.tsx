@@ -3,9 +3,9 @@ export type ServiceBlockData = {
   title: string
   tagline: string
   paragraphs: string[]
-  listIntro: string
+  listIntro?: string
   items: string[]
-  closing: string | React.ReactNode
+  closing?: string | React.ReactNode
 }
 
 export function ServiceBlock({ service }: { service: ServiceBlockData }) {
@@ -23,7 +23,9 @@ export function ServiceBlock({ service }: { service: ServiceBlockData }) {
           <p key={i} className="text-base leading-relaxed text-[var(--cm-text-secondary)]">{p}</p>
         ))}
         <div>
-          <p className="text-sm font-medium text-[var(--cm-text-primary)] mb-3">{service.listIntro}</p>
+          {service.listIntro && (
+            <p className="text-sm font-medium text-[var(--cm-text-primary)] mb-3">{service.listIntro}</p>
+          )}
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {service.items.map((item, i) => (
               <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed text-[var(--cm-text-secondary)]">
@@ -33,9 +35,11 @@ export function ServiceBlock({ service }: { service: ServiceBlockData }) {
             ))}
           </ul>
         </div>
-        <p className="text-base leading-relaxed text-[var(--cm-text-primary)] font-medium">
-          {service.closing}
-        </p>
+        {service.closing && (
+          <p className="text-base leading-relaxed text-[var(--cm-text-primary)] font-medium">
+            {service.closing}
+          </p>
+        )}
       </div>
     </article>
   )
