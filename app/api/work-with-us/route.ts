@@ -3,7 +3,7 @@ import { Resend } from "resend"
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.RESEND_API_KEY
-  const to = process.env.CONTACT_EMAIL_TO
+  const to = process.env.FEEDBACK_EMAIL_TO
   if (!apiKey || !to) {
     return NextResponse.json({ error: "Email not configured" }, { status: 503 })
   }
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   }
 
   const resend = new Resend(apiKey)
-  const from = process.env.CONTACT_EMAIL_FROM ?? "CamelMind Work With Us <onboarding@resend.dev>"
+  const from = process.env.FEEDBACK_EMAIL_FROM ?? "CamelMind Work With Us <onboarding@resend.dev>"
 
   const projectTypeLabel: Record<string, string> = {
     migration: "Migration (into or out of CamelMind)",
